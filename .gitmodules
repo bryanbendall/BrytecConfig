@@ -1,0 +1,6 @@
+[submodule "BrytecConfig/vendor/glfw"]
+	path = BrytecConfig/vendor/glfw
+	url = https://github.com/bryanbendall/glfw.git
+[submodule "BrytecConfig/vendor/imgui"]
+	path = BrytecConfig/vendor/imgui
+	url = https://github.com/bryanbendall/imgui.git

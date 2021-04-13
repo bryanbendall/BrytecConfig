@@ -30,3 +30,30 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.vcxproj.FileListAbsolute.txt
+
+# Misc
+*.pdb
+*.log
+*.lib.recipe
+*.idb
+*.tlog
+*.lastbuildstate
+*.ipch
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.ilk
+*.suo
+*.recipe
+
+
+
+
