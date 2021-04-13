@@ -27,7 +27,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -53,6 +52,7 @@
 *.ilk
 *.suo
 *.recipe
+BrytecConfig.exe
 
 
 

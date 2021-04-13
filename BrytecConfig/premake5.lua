@@ -25,7 +25,6 @@ project "BrytecConfig"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.FontAwesome}",
-		"%{IncludeDir.ImGui}/examples/libs/gl3w"
 	}
 
 	links
