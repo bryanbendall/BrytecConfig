@@ -4,3 +4,6 @@
 [submodule "BrytecConfig/vendor/imgui"]
 	path = BrytecConfig/vendor/imgui
 	url = https://github.com/bryanbendall/imgui.git
+[submodule "BrytecConfig/vendor/imnodes"]
+	path = BrytecConfig/vendor/imnodes
+	url = https://github.com/bryanbendall/imnodes.git

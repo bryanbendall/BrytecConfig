@@ -6,7 +6,7 @@
 #include "../data/Node.h"
 #include "../data/Selectable.h"
 #include <map>
-#include <imnodes/imnodes.h>
+#include <imnodes.h>
 
 class NodeWindow
 {

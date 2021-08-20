@@ -15,8 +15,6 @@ project "BrytecConfig"
 
 	removefiles
 	{
-		"src/gui/NodeWindow.cpp",
-		"src/gui/NodeWindow.h"
 	}
 
 	includedirs
@@ -25,13 +23,15 @@ project "BrytecConfig"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.FontAwesome}",
+		"%{IncludeDir.imnodes}",
 	}
 
 	links
 	{
         "GLFW",
 		"Glad",
-		"ImGui"
+		"ImGui",
+		"imnodes"
 	}
 
 	filter "system:windows"

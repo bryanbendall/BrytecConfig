@@ -1,12 +1,12 @@
 #include "NodeWindow.h"
 
-#include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
+#include <imgui.h>
+#include <imgui_internal.h>
 #include "../data/Selectable.h"
 #include "../AppManager.h"
 #include <iostream>
 #include <bitset>
-#include <fontawesome/IconsFontAwesome5.h>
+#include <IconsFontAwesome5.h>
 
 NodeWindow::NodeWindow() {
 	imnodes::Initialize();
