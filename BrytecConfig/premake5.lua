@@ -24,6 +24,7 @@ project "BrytecConfig"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.FontAwesome}",
 		"%{IncludeDir.imnodes}",
+		"%{IncludeDir.yaml_cpp}",
 	}
 
 	links
@@ -31,7 +32,8 @@ project "BrytecConfig"
         "GLFW",
 		"Glad",
 		"ImGui",
-		"imnodes"
+		"imnodes",
+		"yaml-cpp"
 	}
 
 	filter "system:windows"

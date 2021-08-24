@@ -7,3 +7,6 @@
 [submodule "BrytecConfig/vendor/imnodes"]
 	path = BrytecConfig/vendor/imnodes
 	url = https://github.com/bryanbendall/imnodes.git
+[submodule "BrytecConfig/vendor/yaml-cpp"]
+	path = BrytecConfig/vendor/yaml-cpp
+	url = https://github.com/bryanbendall/yaml-cpp.git

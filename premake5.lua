@@ -21,6 +21,7 @@ IncludeDir["Glad"] = "vendor/glad/include"
 IncludeDir["ImGui"] = "vendor/imgui"
 IncludeDir["imnodes"] = "vendor/imnodes"
 IncludeDir["FontAwesome"] = "vendor/fontawesome"
+IncludeDir["yaml-cpp"] = "vendor/yaml-cpp"
 
 -- Projects
 group "Dependencies"
@@ -29,6 +30,7 @@ group "Dependencies"
 	include "BrytecConfig/vendor/imgui"
 	include "BrytecConfig/vendor/imnodes"
 	include "BrytecConfig/vendor/FontAwesome"
+	include "BrytecConfig/vendor/yaml-cpp"
 group ""
 
 include "BrytecConfig"
