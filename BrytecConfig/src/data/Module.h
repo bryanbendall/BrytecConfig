@@ -12,8 +12,7 @@ enum class ModuleTypes {
 	Count
 };
 
-class Module : public Selectable
-{
+class Module : public Selectable {
 
 	std::vector<std::shared_ptr<Pin>> m_pins;
 	std::string m_name = "Module";
@@ -21,14 +20,17 @@ class Module : public Selectable
 	bool m_enabled = true;
 	ModuleTypes m_type;
 
-	static std::string typeNames[(size_t)ModuleTypes::Count];
+public:
+	static std::string typeNames[(size_t) ModuleTypes::Count];
 
 public:
 	Module(ModuleTypes type);
-	std::vector<std::shared_ptr<Pin>>& getPins() { return m_pins; }
 
-	friend class PropertiesWindow;
-	friend class ModuleWindow;
-	friend class NodeWindow;
+	const std::vector<std::shared_ptr<Pin>>& getPins() { return m_pins; }
+	std::string& getName() { return m_name; }
+	uint8_t& getAddress() { return m_address; }
+	bool& getEnabled() { return m_enabled; }
+	ModuleTypes& getType() { return m_type; }
+
 };
 

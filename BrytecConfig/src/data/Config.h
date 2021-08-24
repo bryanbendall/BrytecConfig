@@ -11,9 +11,8 @@ class Config
 
 public:
 	Config();
-	std::vector<std::shared_ptr<Module>> getModules() { return m_modules; }
+	const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
 	void addModule(ModuleTypes type);
 
-	friend class PropertiesWindow;
 };
 

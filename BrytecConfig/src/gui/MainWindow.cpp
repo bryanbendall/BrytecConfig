@@ -72,9 +72,9 @@ void MainWindow::drawWindow()
 
     drawMenu();
 
+    m_nodeWindow.drawWindow();
     m_moduleWindow.drawWindow();
     m_propertiesWindow.drawWindow();
-    m_nodeWindow.drawWindow();
 
     ImGui::End();
 }

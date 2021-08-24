@@ -60,10 +60,6 @@ struct NodeConnection {
 
 class Node
 {
-	static const char* s_nodeName[(int) NodeTypes::Count];
-	static const char* s_compareNames[(int) CompareTypes::Count];
-	static const char* s_mathNames[(int) MathTypes::Count];
-	static const char* s_curveNames[(int) CurveTypes::Count];
 
 	int m_id;
 	ImVec2 m_position;
@@ -76,16 +72,28 @@ class Node
 	std::weak_ptr<Pin> m_pinSelecion;
 
 public:
+	static const char* s_nodeName[(int) NodeTypes::Count];
+	static const char* s_compareNames[(int) CompareTypes::Count];
+	static const char* s_mathNames[(int) MathTypes::Count];
+	static const char* s_curveNames[(int) CurveTypes::Count];
+
+public:
 	Node(int id, ImVec2 position, NodeTypes type);
-	float getOutputValue(size_t outputIndex);
-	int getId() { return m_id; }
-	NodeConnection& getInput(int index);
-	unsigned int getSize();
 	void evaluate();
 
-	friend class NodeWindow;
-	friend class PropertiesWindow;
-	friend class Pin;
+	float getOutputValue(size_t outputIndex);
+	int getId() { return m_id; }
+	unsigned int getSize();
+	ImVec2& getPosition() { return m_position; }
+	bool& getLoopFound() { return m_loopFound; }
+	std::string& getName() { return m_name; }
+	NodeTypes& getType() { return m_type; }
+	NodeConnection& getInput(int index) { return m_inputs[index]; }
+	std::vector<NodeConnection>& getInputs() { return m_inputs; }
+	float& getOutput(int index) { return m_outputs[index]; }
+	std::vector<float>& getOutputs() { return m_outputs; }
+	float& getValue(int index) { return m_values[index]; }
+	std::weak_ptr<Pin>& getPinSelection() { return m_pinSelecion; }
 
 private:
 	void evaluateAnd();

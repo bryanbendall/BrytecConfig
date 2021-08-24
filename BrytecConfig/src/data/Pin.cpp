@@ -30,7 +30,7 @@ Pin::Pin(PinDirection direction, const std::vector<PinTypes> availableTypes)
 		case PinDirection::Input:
 			addNode(NodeTypes::Raw_Input_Value, {50.0f, 50.0f});
 			addNode(NodeTypes::Final_Input_Value, {250.0f, 50.0f});
-			m_nodes[1]->m_inputs[0] = {m_nodes[0], 0};
+			m_nodes[1]->getInput(0) = {m_nodes[0], 0};
 			break;
 		case PinDirection::Output:
 			addNode(NodeTypes::Output, {250.0f, 50.0f});
@@ -64,14 +64,14 @@ void Pin::addNode(NodeTypes type, ImVec2 position)
 void Pin::sortNodes() 
 {
 	for(auto& n : m_nodes)
-		n->m_loopFound = false;
+		n->getLoopFound() = false;
 
 	std::deque<std::shared_ptr<Node>> newDeque;
 	std::deque<std::shared_ptr<Node>> loopCheck;
 
 	std::shared_ptr<Node> last;
 	for(auto& n : m_nodes) {
-		if(n->m_type == NodeTypes::Output) {
+		if(n->getType() == NodeTypes::Output) {
 			last = n;
 			break;
 		}
@@ -94,7 +94,7 @@ float Pin::getValue(int attributeIndex) {
 	uint8_t ioIndex = attributeIndex;
 
 	auto& node = getNode(nodeIndex);
-	if(ioIndex >= node->m_outputs.size()) {
+	if(ioIndex >= node->getOutputs().size()) {
 		if(node->getInput(ioIndex).node.expired())
 			return 0.0f;
 		return node->getInput(ioIndex).node.lock()->getOutputValue(node->getInput(ioIndex).outputIndex);
@@ -107,10 +107,10 @@ float Pin::getValue(int attributeIndex) {
 void Pin::deleteNode(int nodeId) 
 {
 	for(size_t i = 0; i < m_nodes.size(); i++) {
-		if(m_nodes[i]->m_id == nodeId) {
-			if(m_nodes[i]->m_type == NodeTypes::Output || 
-				m_nodes[i]->m_type == NodeTypes::Raw_Input_Value || 
-				m_nodes[i]->m_type == NodeTypes::Final_Input_Value)
+		if(m_nodes[i]->getId() == nodeId) {
+			if(m_nodes[i]->getType() == NodeTypes::Output || 
+				m_nodes[i]->getType() == NodeTypes::Raw_Input_Value ||
+				m_nodes[i]->getType() == NodeTypes::Final_Input_Value)
 				return;
 			m_nodes.erase(m_nodes.begin() + i);
 		}
@@ -130,12 +130,12 @@ void Pin::traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared
 		return;
 
 	if(std::find(loopCheck.begin(), loopCheck.end(), node) != loopCheck.end()) {
-		node->m_loopFound = true;
+		node->getLoopFound() = true;
 		return;
 	}
 	loopCheck.push_back(node);
 
-	for(auto c : node->m_inputs) {
+	for(auto& c : node->getInputs()) {
 		if(!c.node.expired())
 			traverseConnections(c.node.lock(), newDeque, loopCheck);
 	}

@@ -148,11 +148,6 @@ float Node::getOutputValue(size_t outputIndex) {
 	return m_outputs[outputIndex];
 }
 
-NodeConnection& Node::getInput(int index) 
-{
-	return m_inputs[index - m_outputs.size()];
-}
-
 unsigned int Node::getSize()
 {
 	if(m_type == NodeTypes::Output || m_type == NodeTypes::Final_Input_Value)

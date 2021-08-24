@@ -50,13 +50,14 @@ class Pin : public Selectable
 	int m_nodeIds = 0;
 	const std::vector<PinTypes> m_availableTypes;
 
+public:
 	static const char* typeNames[(size_t)PinTypes::Count];
 	static const char* currentNames[(size_t) PinCurrentLimit::Count];
 
 public:
 	Pin(PinDirection direction, const std::vector<PinTypes> availableTypes);
 	~Pin();
-	std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
+	const std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
 	std::shared_ptr<Node>& getNode(int id);
 	void addNode(NodeTypes type);
 	void addNode(NodeTypes type, ImVec2 position);
@@ -65,11 +66,15 @@ public:
 	void deleteNode(int nodeId);
 	void evaluateAllNodes();
 
+	std::string& getName() { return m_name; }
+	std::string& getPinoutName() { return m_pinoutName; }
+	PinTypes& getType() { return m_pinType; }
+	PinCurrentLimit& getCurrentLimit() { return m_currentLimit; }
+	bool& getEnabled() { return m_enabled; }
+	const std::vector<PinTypes>& getAvailableTypes() { return m_availableTypes; }
+
 private:
 	void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
 
-	friend class PropertiesWindow;
-	friend class ModuleWindow;
-	friend class NodeWindow;
 };
 
