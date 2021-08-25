@@ -95,9 +95,10 @@ float Pin::getValue(int attributeIndex) {
 
 	auto& node = getNode(nodeIndex);
 	if(ioIndex >= node->getOutputs().size()) {
-		if(node->getInput(ioIndex).node.expired())
+		int inputIndex = ioIndex - node->getOutputs().size();
+		if(node->getInput(inputIndex).node.expired())
 			return 0.0f;
-		return node->getInput(ioIndex).node.lock()->getOutputValue(node->getInput(ioIndex).outputIndex);
+		return node->getInput(inputIndex).node.lock()->getOutputValue(node->getInput(inputIndex).outputIndex);
 	} else {
 		return node->getOutputValue(ioIndex);
 	}
