@@ -16,6 +16,7 @@ public:
 private:
 	void drawModuleProps(std::shared_ptr<Module> module);
 	void drawPinProps(std::shared_ptr<Pin> pin);
+	void drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup);
 	void drawStats(std::shared_ptr<Module> module);
 	void drawStats(std::shared_ptr<Pin> pin);
 	void drawStatsWindow();

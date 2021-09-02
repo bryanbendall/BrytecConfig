@@ -56,27 +56,30 @@ void NodeWindow::drawWindow() {
 
     drawPopupMenu();
     
-    if (pin) {
-        for(auto n : pin->getNodes())
-            drawNode(n);
-    }
+    if(pin && pin->getNodeGroup()) {
+        if(pin->getNodeGroup()->getNodes().size() > 0) {
+            for(auto& n : pin->getNodeGroup()->getNodes())
+                drawNode(n);
+        }
 
-    addLinkData();
+        addLinkData();
+    }
 
     imnodes::EndNodeEditor();
     
-    saveNodePositions();
+    if(pin && pin->getNodeGroup()) {
+        saveNodePositions();
 
-    isLinkCreated();
-    isLinkDeleted();
-    isNodeDeleted();
+        isLinkCreated();
+        isLinkDeleted();
+        isNodeDeleted();
 
-    doValuePopup();
-
+        doValuePopup();
+    }
     ImGui::End();
 
-    if(pin && m_mode == Mode::Simulation)
-        pin->evaluateAllNodes();
+    if(pin && pin->getNodeGroup() && m_mode == Mode::Simulation)
+        pin->getNodeGroup()->evaluateAllNodes();
     
     m_lastSelected = AppManager::getSelectedItem();
 
@@ -108,7 +111,7 @@ void NodeWindow::drawPopupMenu() {
 
         for(int i = (int)NodeTypes::Pin; i < (int)NodeTypes::Count; i++) {
             if(ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) { 
-                pin->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(pin->getNodes().back()->getId(), scene_pos); 
+                pin->getNodeGroup()->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(pin->getNodeGroup()->getNodes().back()->getId(), scene_pos);
             }
         }
 
@@ -215,8 +218,8 @@ void NodeWindow::addLinkData() {
     if (!pin)
         return;
 
-    for (size_t i = 0; i < pin->getNodes().size(); i++) {
-        auto& fromNode = pin->getNodes()[i];
+    for (size_t i = 0; i < pin->getNodeGroup()->getNodes().size(); i++) {
+        auto& fromNode = pin->getNodeGroup()->getNodes()[i];
         if(!fromNode)
             continue;
         for (size_t fromLinkAttribute = 0; fromLinkAttribute < fromNode->getInputs().size(); fromLinkAttribute++) {
@@ -265,22 +268,22 @@ void NodeWindow::isLinkCreated() {
             return;
 
         //Check if start node is an output
-        if (beginAttributeIndex < pin->getNode(beginNodeIndex)->getOutputs().size()) {
+        if (beginAttributeIndex < pin->getNodeGroup()->getNode(beginNodeIndex)->getOutputs().size()) {
             //If also an output return
-            if (endAttributeIndex < pin->getNode(endNodeIndex)->getOutputs().size())
+            if (endAttributeIndex < pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size())
                 return;
-            pin->getNode(endNodeIndex)->getInput(endAttributeIndex - pin->getNode(endNodeIndex)->getOutputs().size()) = { pin->getNode(beginNodeIndex), beginAttributeIndex };
-            pin->sortNodes();
+            pin->getNodeGroup()->getNode(endNodeIndex)->getInput(endAttributeIndex - pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size()) = { pin->getNodeGroup()->getNode(beginNodeIndex), beginAttributeIndex };
+            pin->getNodeGroup()->sortNodes();
             //std::cout << "saving output to input\n";
             return;
         }
 
         //Then start node is an input
         //Make sure the end node is an output
-        if (endAttributeIndex >= pin->getNode(endNodeIndex)->getOutputs().size())
+        if (endAttributeIndex >= pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size())
             return;
-        pin->getNode(beginNodeIndex)->getInput(beginAttributeIndex) = { pin->getNode(endNodeIndex), endAttributeIndex };
-        pin->sortNodes();
+        pin->getNodeGroup()->getNode(beginNodeIndex)->getInput(beginAttributeIndex) = { pin->getNodeGroup()->getNode(endNodeIndex), endAttributeIndex };
+        pin->getNodeGroup()->sortNodes();
     }
 }
 
@@ -299,7 +302,7 @@ void NodeWindow::isLinkDeleted()
         auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
         if(!pin)
             return;
-        pin->sortNodes();
+        pin->getNodeGroup()->sortNodes();
     }
 }
 
@@ -316,8 +319,8 @@ void NodeWindow::isNodeDeleted()
             if(!pin)
                 return;
 
-            pin->deleteNode(node_id);
-            pin->sortNodes();
+            pin->getNodeGroup()->deleteNode(node_id);
+            pin->getNodeGroup()->sortNodes();
         }
     }
 }
@@ -328,7 +331,7 @@ void NodeWindow::saveNodePositions()
     if (!pin)
         return;
 
-    for(auto n : pin->getNodes()) {
+    for(auto n : pin->getNodeGroup()->getNodes()) {
         n->getPosition() = imnodes::GetNodeGridSpacePos(n->getId());
     }
     
@@ -342,7 +345,7 @@ void NodeWindow::doValuePopup()
 
     int hovered;
     if(m_mode == Mode::Simulation && imnodes::IsPinHovered(&hovered)) {
-        ImGui::SetTooltip("%.2f", pin->getValue(hovered));
+        ImGui::SetTooltip("%.2f", pin->getNodeGroup()->getValue(hovered));
 
     }
 }
@@ -366,9 +369,9 @@ void NodeWindow::drawOutput(std::shared_ptr<Node>& node) {
         float value = !node->getInput(0).node.expired() ? node->getInput(0).node.lock()->getOutputValue(node->getInput(0).outputIndex) : 0.0f;
         auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
         
-        if(pin && pin->getType() == PinTypes::Output_12V_Pwm)
-            ImGui::ProgressBar(value / 100.0f, ImVec2(100.0f, 0.0f));
-
+        //if(pin && pin->getType() == PinTypes::Output_12V_Pwm)
+            //ImGui::ProgressBar(value / 100.0f, ImVec2(100.0f, 0.0f));
+        if(false) {}
         else {
             const char* text;
             ImU32 color;
@@ -430,6 +433,7 @@ void NodeWindow::drawPin(std::shared_ptr<Node>& node) {
     // Fix padding on combo box
     ImGui::PopStyleVar(2);
 
+    /*
     if(ImGui::BeginCombo("###pinsCombo", node->getPinSelection().expired() ? "" : node->getPinSelection().lock()->getName().c_str())) {
         for(auto& module : AppManager::getConfig().getModules()) {
             for(auto& pin : module->getPins()) {
@@ -451,18 +455,21 @@ void NodeWindow::drawPin(std::shared_ptr<Node>& node) {
         }
         ImGui::EndCombo();
     }
+    */
 
     // End fix padding on combo box
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.f, 1.f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 
     if(m_mode == Mode::Simulation) {
+        /*
         if(!node->getPinSelection().expired() && node->getPinSelection().lock()->getType() == PinTypes::Input_5V_Variable)
             ImGui::DragFloat("###float1", &node->getValue(0), 0.01f, 0.0f, 5.0f, "%.2f");
 
         else if(!node->getPinSelection().expired() && node->getPinSelection().lock()->getType() == PinTypes::Output_12V_Pwm)
             ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 100.0f, "%.0f");
-
+        */
+        if(false){}
         else {
             const char* text;
             ImU32 color;

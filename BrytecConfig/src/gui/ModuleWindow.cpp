@@ -2,6 +2,8 @@
 #include "../AppManager.h"
 #include <iostream>
 #include <IconsFontAwesome5.h>
+#include "../utils/ModuleBuilder.h"
+#include <filesystem>
 
 ModuleWindow::ModuleWindow() {
 
@@ -22,11 +24,18 @@ void ModuleWindow::drawMenubar()
 {
     if(ImGui::BeginMenuBar()) {
         if(ImGui::BeginMenu("Add")) {
-
+            // TODO
+            /*
             for(int i = 0; i < (size_t)ModuleTypes::Count; i++) {// auto moduleTypeName : Module::typeNames) {
                 if(ImGui::MenuItem(Module::typeNames[i].c_str())) {
                     AppManager::getConfig().addModule((ModuleTypes)i);
                 }
+            }
+            */
+            auto moduleList = ModuleBuilder::readModulesFromDisk();
+            for(auto& modulePath : moduleList) {
+                if(ImGui::MenuItem(modulePath.stem().string().c_str()))
+                    AppManager::getConfig().addModule(modulePath);
             }
 
             ImGui::EndMenu();
@@ -42,17 +51,21 @@ void ModuleWindow::drawModules()
     float nextSizeX = 150;
     ImGuiStyle& style = ImGui::GetStyle();
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
+
+    //ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
     for (unsigned int n = 0; n < moduleCount; n++)
     {
         ImGui::PushID(n);
         std::shared_ptr<Module> m = AppManager::getConfig().getModules()[n];
         drawModule(m);
+        //ImGui::Button("i/o", ImVec2(150, 25));
         float last_button_x2 = ImGui::GetItemRectMax().x;
         float next_button_x2 = last_button_x2 + style.ItemSpacing.x + nextSizeX; // Expected position if next button was on same line
         if (n + 1 < moduleCount && next_button_x2 < window_visible_x2)
             ImGui::SameLine();
         ImGui::PopID();
     }
+    //ImGui::PopStyleVar();
 }
 
 void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
@@ -78,7 +91,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(0, 0, 0, 0));
     
-    // Drag Module button
+    // Draw Module button
     if (ImGui::Button(m->getName().c_str(), { 150, titleBarHeight })) 
         AppManager::setSelected(m);
     titleHovered = ImGui::IsItemHovered();
@@ -98,11 +111,12 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     // Draw Pin buttons
     for (unsigned int i = 0; i < numPins; i++) {
         ImGui::PushID(i);
-        if (!m->getPins()[i]->getEnabled()) 
+        bool enabled = m->getPins()[i]->getNodeGroup() ? m->getPins()[i]->getNodeGroup()->getEnabled() : false;
+        if (!enabled)
             ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-        if(ImGui::Button(m->getPins()[i].get()->getName().c_str(), { 140, 0 })) 
+        if(ImGui::Button(m->getPins()[i].get()->getPinoutName().c_str(), { 140, 0 }))
             AppManager::setSelected(m->getPins()[i]);        
-        if (!m->getPins()[i]->getEnabled()) 
+        if (!enabled)
             ImGui::PopStyleColor();
 
         // Selection boarder

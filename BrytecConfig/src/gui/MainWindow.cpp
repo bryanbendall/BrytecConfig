@@ -75,6 +75,7 @@ void MainWindow::drawWindow()
     m_nodeWindow.drawWindow();
     m_moduleWindow.drawWindow();
     m_propertiesWindow.drawWindow();
+    m_nodeGroupWindow.drawWindow();
 
     ImGui::End();
 }

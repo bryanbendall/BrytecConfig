@@ -19,8 +19,17 @@ void PropertiesWindow::drawWindow() {
 			drawModuleProps(module);
 
 		auto pin = std::dynamic_pointer_cast<Pin>(selected);
-		if (pin)
+		if(pin) {
 			drawPinProps(pin);
+
+			auto nodeGroup = pin->getNodeGroup();
+			if(nodeGroup)
+				drawNodeGroupProps(nodeGroup);
+		}
+
+		auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected);
+		if(nodeGroup)
+			drawNodeGroupProps(nodeGroup);
 		
 	}
 
@@ -51,12 +60,14 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 	ImGui::NextColumn();
 
 	// Module Type
+	/*
 	ImGui::TextUnformatted("Module Type");
 	ImGui::NextColumn();
 	ImGui::SetNextItemWidth(-FLT_MIN);
 	ImGui::InputText("###modType", &Module::typeNames[(size_t)module->getType()], ImGuiInputTextFlags_ReadOnly);
 	ImGui::NextColumn();
-
+	*/
+	
 	// Enabled
 	ImGui::TextUnformatted("Enabled");
 	ImGui::NextColumn();
@@ -73,13 +84,6 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 	ImGui::Columns(2, "###PinColumn", true);
 	ImGui::SetColumnWidth(-1, 100.0f);
 
-	// Name
-	ImGui::TextUnformatted("Name");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputText("###Name", &pin->getName());
-	ImGui::NextColumn();
-
 	// Pinout
 	ImGui::TextUnformatted("Pinout");
 	ImGui::NextColumn();
@@ -87,13 +91,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 	ImGui::InputText("###pinout", &pin->getPinoutName(), ImGuiInputTextFlags_ReadOnly);
 	ImGui::NextColumn();
 
-	// Enabled
-	ImGui::TextUnformatted("Enabled");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::Checkbox("###Enabled", &pin->getEnabled());
-	ImGui::NextColumn();
-
+	/*
 	// Pin Type
 	ImGui::TextUnformatted("Pin Type");
 	ImGui::NextColumn();
@@ -112,6 +110,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::EndCombo();
 	}
 	ImGui::NextColumn();
+	*/
 
 	// Current Limit
 	ImGui::TextUnformatted("Current Limit");
@@ -122,9 +121,34 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 	// End Columns
 	ImGui::Columns(1);
 
+}
+
+void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup) 
+{
+	// Setup Columns
+	ImGui::Columns(2, "###NodeGroupColumn", true);
+	ImGui::SetColumnWidth(-1, 100.0f);
+
+	// Name
+	ImGui::TextUnformatted("Name");
+	ImGui::NextColumn();
+	ImGui::SetNextItemWidth(-FLT_MIN);
+	ImGui::InputText("###Name", &nodeGroup->getName());
+	ImGui::NextColumn();
+
+	// Enabled
+	ImGui::TextUnformatted("Enabled");
+	ImGui::NextColumn();
+	ImGui::SetNextItemWidth(-FLT_MIN);
+	ImGui::Checkbox("###Enabled", &nodeGroup->getEnabled());
+	ImGui::NextColumn();
+
+	// End Columns
+	ImGui::Columns(1);
+
 	// Nodes
 	ImGui::Separator();
-	for(auto n : pin->getNodes()) {
+	for(auto n : nodeGroup->getNodes()) {
 		ImGui::LabelText(n->getName().c_str(), "%i", n->getId());
 	}
 }
@@ -137,15 +161,17 @@ void PropertiesWindow::drawStats(std::shared_ptr<Module> module)
 	ImGui::SetNextItemWidth(-FLT_MIN);
 	int totalNodes = 0;
 	for(auto pin : module->getPins())
-		totalNodes += pin->getNodes().size();
+		totalNodes += pin->getNodeGroup() ? pin->getNodeGroup()->getNodes().size() :0;
 	ImGui::Text("%i", totalNodes);
 	ImGui::NextColumn();
 
 	// Bytes in module
 	int totalBytes = 0;
 	for(auto p : module->getPins()) {
-		for(auto n : p->getNodes())
-			totalBytes += n->getSize();
+		if(p->getNodeGroup()) {
+			for(auto n : p->getNodeGroup()->getNodes())
+				totalBytes += n->getSize();
+		}
 	}
 	ImGui::TextUnformatted("Bytes in module");
 	ImGui::NextColumn();
@@ -165,12 +191,12 @@ void PropertiesWindow::drawStats(std::shared_ptr<Pin> pin)
 	ImGui::TextUnformatted("Pin Nodes");
 	ImGui::NextColumn();
 	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::Text("%i", pin->getNodes().size());
+	ImGui::Text("%i", pin->getNodeGroup()->getNodes().size());
 	ImGui::NextColumn();
 
 	// Bytes in pin
 	int totalBytes = 0;
-	for(auto n : pin->getNodes())
+	for(auto n : pin->getNodeGroup()->getNodes())
 		totalBytes += n->getSize();
 	ImGui::TextUnformatted("Bytes in pin");
 	ImGui::NextColumn();
@@ -213,6 +239,7 @@ void PropertiesWindow::drawStatsWindow()
 	ImGui::Text("%i", AppManager::getConfig().getModules().size());
 	ImGui::NextColumn();
 
+	/*
 	// Calculating number of objects
 	int totalPins = 0;
 	int totalNodes = 0;
@@ -220,8 +247,8 @@ void PropertiesWindow::drawStatsWindow()
 	for(auto m : AppManager::getConfig().getModules()) {
 		totalPins += m->getPins().size();
 		for(auto p : m->getPins()) {
-			totalNodes += p->getNodes().size();
-			for(auto n : p->getNodes()) {
+			totalNodes += p->getNodeGroup()->getNodes().size();
+			for(auto n : p->getNodeGroup()->getNodes()) {
 				for(auto& i : n->getInputs()) {
 					if(!i.node.expired())
 						totalLinks += 1;
@@ -229,7 +256,7 @@ void PropertiesWindow::drawStatsWindow()
 			}
 		}
 	}
-
+	
 	// Total Pins
 	ImGui::TextUnformatted("Total Pins");
 	ImGui::NextColumn();
@@ -247,6 +274,7 @@ void PropertiesWindow::drawStatsWindow()
 	ImGui::NextColumn();
 	ImGui::Text("%i", totalLinks);
 	ImGui::NextColumn();
+	*/
 
 	// Selection stats
 	ImGui::Columns(1);
@@ -259,12 +287,12 @@ void PropertiesWindow::drawStatsWindow()
 	if(selected) {
 
 		auto module = std::dynamic_pointer_cast<Module>(selected);
-		if(module)
-			drawStats(module);
+		//if(module)
+			//drawStats(module);
 
 		auto pin = std::dynamic_pointer_cast<Pin>(selected);
-		if(pin)
-			drawStats(pin);
+		//if(pin)
+			//drawStats(pin);
 
 	}
 

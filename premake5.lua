@@ -21,7 +21,7 @@ IncludeDir["Glad"] = "vendor/glad/include"
 IncludeDir["ImGui"] = "vendor/imgui"
 IncludeDir["imnodes"] = "vendor/imnodes"
 IncludeDir["FontAwesome"] = "vendor/fontawesome"
-IncludeDir["yaml-cpp"] = "vendor/yaml-cpp"
+IncludeDir["yaml_cpp"] = "vendor/yaml-cpp/include"
 
 -- Projects
 group "Dependencies"
