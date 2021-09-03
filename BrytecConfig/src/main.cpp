@@ -4,7 +4,6 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <glad/glad.h>          // Initialize with gladLoadGL()
 #include <GLFW/glfw3.h>         // Include glfw3.h after our OpenGL definitions
-#include "gui/MainWindow.h"
 #include "AppManager.h"
 
 static void glfw_error_callback(int error, const char* description) {
@@ -23,6 +22,7 @@ int main(int, char**) {
 
     // Create window with graphics context
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Brytec Configuration", NULL, NULL);
+    glfwMaximizeWindow(window);
     if(window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -47,14 +47,10 @@ int main(int, char**) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    MainWindow mainWindow(window);
-    mainWindow.setupFonts();
-    mainWindow.setupStyle();
+    AppManager appManager(window);
 
 // Main loop
     while(!glfwWindowShouldClose(window)) {
-
-        mainWindow.loadLayout();
 
         glfwPollEvents();
 
@@ -65,8 +61,7 @@ int main(int, char**) {
 
         //ImGui::ShowDemoWindow();
 
-        mainWindow.drawWindow();
-        AppManager::update();
+        appManager.update();
 
 
         // Rendering

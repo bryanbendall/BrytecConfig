@@ -1,8 +1,16 @@
 #include "AppManager.h"
 
-AppManagerData AppManager::s_data = {};
+AppManager* AppManager::s_context;
 
-void AppManager::update() 
+AppManager::AppManager(GLFWwindow* window)
 {
-	
+	s_context = this;
+	m_mainWindow.setWindow(window);
+	m_mainWindow.setupFonts();
+	m_mainWindow.setupStyle();
+}
+
+void AppManager::update()
+{
+	m_mainWindow.drawWindow();
 }

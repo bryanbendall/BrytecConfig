@@ -5,6 +5,7 @@
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
 #include "NodeGroupWindow.h"
+#include "ModuleBuilderWindow.h"
 
 class MainWindow {
 
@@ -13,10 +14,12 @@ class MainWindow {
 	NodeWindow m_nodeWindow;
 	PropertiesWindow m_propertiesWindow;
 	NodeGroupWindow m_nodeGroupWindow;
+	ModuleBuilderWindow m_moduleBuilderWindow;
 	const char* m_ini_to_load = NULL;
 
 public:
-	MainWindow(GLFWwindow* window);
+	MainWindow();
+	void setWindow(GLFWwindow* window) { m_window = window; }
 	void setupFonts();
 	void setupStyle();
 	void loadLayout();
@@ -24,6 +27,6 @@ public:
 
 private:
 	void drawMenu();
-	void drawMenuBar();
+	void drawToolBar();
 
 };

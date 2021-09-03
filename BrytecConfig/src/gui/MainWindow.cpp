@@ -5,10 +5,8 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <IconsFontAwesome5.h>
 
-MainWindow::MainWindow(GLFWwindow* window) 
-    : m_window(window)
+MainWindow::MainWindow() 
 {
-
 }
 
 void MainWindow::setupFonts() 
@@ -64,7 +62,7 @@ void MainWindow::drawWindow()
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
 
-    drawMenuBar();
+    drawToolBar();
 
     // DockSpace
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -76,6 +74,7 @@ void MainWindow::drawWindow()
     m_moduleWindow.drawWindow();
     m_propertiesWindow.drawWindow();
     m_nodeGroupWindow.drawWindow();
+    m_moduleBuilderWindow.drawWindow();
 
     ImGui::End();
 }
@@ -90,22 +89,28 @@ void MainWindow::drawMenu()
 
         if(ImGui::BeginMenu("View")) {
             if(ImGui::MenuItem("Open Module Window"))       m_moduleWindow.setOpenedState(true);
-            //if(ImGui::MenuItem("Open Node Window"))         m_nodeWindow.setOpenedState(true);
+            if(ImGui::MenuItem("Open Node Window"))         m_nodeWindow.setOpenedState(true);
             if(ImGui::MenuItem("Open Properties Window"))   m_propertiesWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
         if(ImGui::BeginMenu("Layout")) {
-            if(ImGui::MenuItem("Pinout")) m_ini_to_load = "imguiPinLayout.ini";
-            if(ImGui::MenuItem("Node"))   m_ini_to_load = "imguiNodeLayout.ini";
+            if(ImGui::MenuItem("Pinout"))                   m_ini_to_load = "imguiPinLayout.ini";
+            if(ImGui::MenuItem("Node"))                     m_ini_to_load = "imguiNodeLayout.ini";
+            ImGui::EndMenu();
+        }
+
+        if(ImGui::BeginMenu("Tools")) {
+            if(ImGui::MenuItem("Module Builder"))           m_moduleBuilderWindow.showWindow();
             ImGui::EndMenu();
         }
 
         ImGui::EndMenuBar();
     }
+
 }
 
-void MainWindow::drawMenuBar() 
+void MainWindow::drawToolBar() 
 {
     ImGui::Spacing();
     ImGui::Spacing();
@@ -129,4 +134,11 @@ void MainWindow::drawMenuBar()
         }
         ImGui::EndPopup();
     }
+
+    ImGui::SameLine();
+    if(ImGui::Button("Module Builder"))
+        m_moduleBuilderWindow.showWindow();
+
+    
+
 }

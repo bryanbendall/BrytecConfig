@@ -43,6 +43,7 @@ void ModuleWindow::drawMenubar()
 
         ImGui::EndMenuBar();
     }
+
 }
 
 void ModuleWindow::drawModules()
@@ -66,6 +67,7 @@ void ModuleWindow::drawModules()
         ImGui::PopID();
     }
     //ImGui::PopStyleVar();
+
 }
 
 void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
