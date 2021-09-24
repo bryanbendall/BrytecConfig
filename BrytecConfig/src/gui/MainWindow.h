@@ -9,7 +9,7 @@
 
 class MainWindow {
 
-	GLFWwindow* m_window;
+	GLFWwindow* m_window = nullptr;
 	ModuleWindow m_moduleWindow;
 	NodeWindow m_nodeWindow;
 	PropertiesWindow m_propertiesWindow;
@@ -27,6 +27,7 @@ public:
 
 private:
 	void drawMenu();
-	void drawToolBar();
+	void setDarkThemeColors();
+	void drawMenuBar();
 
 };

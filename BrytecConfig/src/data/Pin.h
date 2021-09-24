@@ -32,11 +32,11 @@ public:
 	static const char* currentNames[(size_t) PinCurrentLimit::Count];
 
 public:
-	Pin(std::string pinoutName, std::vector<IOTypes::Types> availableTypes);
+	Pin(const std::string& pinoutName, const std::vector<IOTypes::Types>& availableTypes);
 	~Pin();
 	std::string& getPinoutName() { return m_pinoutName; }
 	PinCurrentLimit& getCurrentLimit() { return m_currentLimit; }
-	const std::vector<IOTypes::Types>& getAvailableTypes() { return m_availableTypes; }
+	std::vector<IOTypes::Types>& getAvailableTypes() { return m_availableTypes; }
 	std::shared_ptr<NodeGroup> getNodeGroup() { return m_nodeGroup.lock(); }
 
 };

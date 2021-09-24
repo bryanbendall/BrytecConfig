@@ -58,15 +58,6 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 	ImGui::SetNextItemWidth(-FLT_MIN);
 	ImGui::InputScalar("###addr", ImGuiDataType_U8, &module->getAddress(), &showButtons);
 	ImGui::NextColumn();
-
-	// Module Type
-	/*
-	ImGui::TextUnformatted("Module Type");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputText("###modType", &Module::typeNames[(size_t)module->getType()], ImGuiInputTextFlags_ReadOnly);
-	ImGui::NextColumn();
-	*/
 	
 	// Enabled
 	ImGui::TextUnformatted("Enabled");

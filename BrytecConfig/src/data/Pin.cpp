@@ -11,7 +11,7 @@ const char* Pin::currentNames[] = {
 	"17 Amps"
 };
 
-Pin::Pin(std::string pinoutName, std::vector<IOTypes::Types> availableTypes)
+Pin::Pin(const std::string& pinoutName, const std::vector<IOTypes::Types>& availableTypes)
 	: m_pinoutName(pinoutName), m_availableTypes(availableTypes)
 {
 }

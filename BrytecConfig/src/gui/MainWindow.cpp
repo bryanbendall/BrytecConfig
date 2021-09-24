@@ -15,7 +15,7 @@ void MainWindow::setupFonts()
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF("vendor\\imgui\\misc\\fonts\\DroidSans.ttf", 16.0f);
-
+    
     static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
@@ -32,8 +32,9 @@ void MainWindow::setupStyle()
     ImGui::StyleColorsDark();
 
     ImGuiStyle* style = &ImGui::GetStyle();
-    style->WindowMenuButtonPosition = ImGuiDir_None;
     style->Colors[ImGuiCol_TitleBgActive] = style->Colors[ImGuiCol_TitleBg];
+
+    //setDarkThemeColors();
 }
 
 void MainWindow::loadLayout() 
@@ -46,11 +47,6 @@ void MainWindow::loadLayout()
 
 void MainWindow::drawWindow()
 {
-    ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->GetWorkPos());
-    ImGui::SetNextWindowSize(viewport->GetWorkSize());
-    ImGui::SetNextWindowViewport(viewport->ID);
-
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
         | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
         | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -62,13 +58,12 @@ void MainWindow::drawWindow()
     ImGui::PopStyleVar();
     ImGui::PopStyleVar();
 
-    drawToolBar();
-
     // DockSpace
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
     ImGui::DockSpace(ImGui::GetID("MyDockSpace"), ImVec2(0.0f, 0.0f), dockspace_flags);
 
     drawMenu();
+    drawMenuBar();
 
     m_nodeWindow.drawWindow();
     m_moduleWindow.drawWindow();
@@ -83,25 +78,32 @@ void MainWindow::drawMenu()
 {
     if(ImGui::BeginMenuBar()) {
         if(ImGui::BeginMenu("File")) {
-            if(ImGui::MenuItem("Exit"))                     glfwSetWindowShouldClose(m_window, 1);
+            if(ImGui::MenuItem("Exit"))                     
+                glfwSetWindowShouldClose(m_window, 1);
             ImGui::EndMenu();
         }
 
         if(ImGui::BeginMenu("View")) {
-            if(ImGui::MenuItem("Open Module Window"))       m_moduleWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Open Node Window"))         m_nodeWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Open Properties Window"))   m_propertiesWindow.setOpenedState(true);
+            if(ImGui::MenuItem("Open Module Window"))       
+                m_moduleWindow.setOpenedState(true);
+            if(ImGui::MenuItem("Open Node Window"))         
+                m_nodeWindow.setOpenedState(true);
+            if(ImGui::MenuItem("Open Properties Window"))   
+                m_propertiesWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
         if(ImGui::BeginMenu("Layout")) {
-            if(ImGui::MenuItem("Pinout"))                   m_ini_to_load = "imguiPinLayout.ini";
-            if(ImGui::MenuItem("Node"))                     m_ini_to_load = "imguiNodeLayout.ini";
+            if(ImGui::MenuItem("Pinout"))                  
+                m_ini_to_load = "imguiPinLayout.ini";
+            if(ImGui::MenuItem("Node"))                     
+                m_ini_to_load = "imguiNodeLayout.ini";
             ImGui::EndMenu();
         }
 
         if(ImGui::BeginMenu("Tools")) {
-            if(ImGui::MenuItem("Module Builder"))           m_moduleBuilderWindow.showWindow();
+            if(ImGui::MenuItem("Module Builder"))
+                m_moduleBuilderWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
@@ -110,35 +112,52 @@ void MainWindow::drawMenu()
 
 }
 
-void MainWindow::drawToolBar() 
+void MainWindow::setDarkThemeColors()
 {
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::Button(ICON_FA_DICE_D6);
-    ImGui::SameLine();
-    bool sel = false;
-    ImGui::Selectable(ICON_FA_DICE_D6, &sel, 0, ImVec2(ImGui::CalcTextSize(ICON_FA_DICE_D6).x, 0));
-    ImGui::SameLine();
+    auto& colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
 
-    if(ImGui::Button("popup")) {
-        ImGui::OpenPopup("popup!");
-    }
+    // Headers
+    colors[ImGuiCol_Header] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_HeaderActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
-    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-    ImGui::SetNextWindowSize(ImVec2(300.0f, 400.0f));
-    if(ImGui::BeginPopupModal("popup!", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-        if(ImGui::Button("Close")) {
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::EndPopup();
-    }
+    // Buttons
+    colors[ImGuiCol_Button] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_ButtonActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
-    ImGui::SameLine();
-    if(ImGui::Button("Module Builder"))
-        m_moduleBuilderWindow.showWindow();
+    // Frame BG
+    colors[ImGuiCol_FrameBg] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
-    
+    // Tabs
+    colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.3805f, 0.381f, 1.0f};
+    colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.2805f, 0.281f, 1.0f};
+    colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
 
+    // Title
+    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+}
+
+void MainWindow::drawMenuBar()
+{
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+    //ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.305f, 0.31f, 0.5f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.1505f, 0.151f, 0.5f));
+
+    ImGui::Begin("##Menu Bar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+
+    ImGui::PopStyleColor(3);
+    ImGui::Button("sfhsdfs");
+
+    ImGui::PopStyleVar(1);
+    ImGui::End();
 }

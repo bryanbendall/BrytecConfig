@@ -47,15 +47,15 @@ void ModuleBuilder::saveModuleFile(std::filesystem::path& filepath, std::shared_
 {
 	YAML::Emitter out;
 	out << YAML::BeginMap;
-	out << YAML::Key << "Module" << YAML::Value << "Untitled";
+	out << YAML::Key << "Module" << YAML::Value << module->getName();
 	out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
 
 	for(auto pin : module->getPins()) {
 		out << YAML::BeginMap;
 		out << YAML::Key << "PinoutName" << YAML::Value << pin->getPinoutName();
-		out << YAML::Key << "AvailableTypes" << YAML::Flow << YAML::BeginSeq;
-		for(auto type : pin->getAvailableTypes()) 
-			out << (unsigned int)type;
+		out << YAML::Key << "AvailableTypes" << YAML::Value << YAML::BeginSeq;
+		for(auto type : pin->getAvailableTypes())
+			out << (unsigned int) type << YAML::Comment(IOTypes::Strings[(int) type]);
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 	}
