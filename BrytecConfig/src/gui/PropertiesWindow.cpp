@@ -6,29 +6,30 @@
 #include <IconsFontAwesome5.h>
 #include <memory>
 
+static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+
 void PropertiesWindow::drawWindow() {
 	if (!m_opened)
 		return;
+
 	ImGui::Begin(ICON_FA_COG" Properties", &m_opened);
 
 	std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
 	if (selected) {
 		
-		auto module = std::dynamic_pointer_cast<Module>(selected);
-		if (module)
+		if (auto module = std::dynamic_pointer_cast<Module>(selected))
 			drawModuleProps(module);
 
-		auto pin = std::dynamic_pointer_cast<Pin>(selected);
-		if(pin) {
+		if(auto pin = std::dynamic_pointer_cast<Pin>(selected)) {
 			drawPinProps(pin);
 
-			auto nodeGroup = pin->getNodeGroup();
-			if(nodeGroup)
-				drawNodeGroupProps(nodeGroup);
+			//auto nodeGroup = pin->getNodeGroup();
+			//if(nodeGroup)
+			//	drawNodeGroupProps(nodeGroup);
 		}
 
-		auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected);
-		if(nodeGroup)
+		
+		if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected))
 			drawNodeGroupProps(nodeGroup);
 		
 	}
@@ -40,102 +41,131 @@ void PropertiesWindow::drawWindow() {
 
 void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 {
-	// Setup Columns
-	ImGui::Columns(2, "###PropColumn", true);
-	ImGui::SetColumnWidth(-1, 100.0f);
 
-	// Name
-	ImGui::TextUnformatted("Name");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputText("###Name", &module->getName());
-	ImGui::NextColumn();
+	if(ImGui::BeginTable("ModuleProps", 2, flags)) {
 
-	// Address
-	ImGui::TextUnformatted("Address");
-	ImGui::NextColumn();
-	static bool showButtons = true;
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputScalar("###addr", ImGuiDataType_U8, &module->getAddress(), &showButtons);
-	ImGui::NextColumn();
-	
-	// Enabled
-	ImGui::TextUnformatted("Enabled");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::Checkbox("###Enabled", &module->getEnabled());
+		ImGui::TableSetupColumn("Module", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableHeadersRow();
 
-	// End Columns
-	ImGui::Columns(1);
+		// Name
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Name");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputText("###MouduleName", &module->getName());
+
+		// Address
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Address");
+		ImGui::TableNextColumn();
+		static bool showButtons = true;
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &module->getAddress(), &showButtons);
+
+		// Enabled
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Enabled");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Checkbox("###MouduleEnabled", &module->getEnabled());
+
+		ImGui::EndTable();
+	}
+
 }
 
 void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 {
-	// Setup Columns
-	ImGui::Columns(2, "###PinColumn", true);
-	ImGui::SetColumnWidth(-1, 100.0f);
 
-	// Pinout
-	ImGui::TextUnformatted("Pinout");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputText("###pinout", &pin->getPinoutName(), ImGuiInputTextFlags_ReadOnly);
-	ImGui::NextColumn();
+	if(ImGui::BeginTable("PinProps", 2, flags)) {
 
-	/*
-	// Pin Type
-	ImGui::TextUnformatted("Pin Type");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	if(ImGui::BeginCombo("###pintype", (int) pin->getType() >= 0 ? Pin::typeNames[(size_t) pin->getType()] : " ")) {
-		for(auto& type : pin->getAvailableTypes()) {
-			ImGui::PushID(&pin);
-			bool isSelected = type == pin->getType();
-			if(ImGui::Selectable(Pin::typeNames[(size_t) type], isSelected))
-				pin->getType() = type;
-			ImGui::PopID();
+		ImGui::TableSetupColumn("Pin", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableHeadersRow();
 
-			if(isSelected)
-				ImGui::SetItemDefaultFocus();
+		// Name
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Name");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputText("###pinName", &pin->getPinoutName());
+
+		// Current Limit
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Current Limit");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Combo("###Current Limit", (int*) &pin->getCurrentLimit(), Pin::currentNames, IM_ARRAYSIZE(Pin::currentNames));
+
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		if(ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding)) {
+
+			// Start at 1 to ignore undefined type
+			for(int j = 1; j < (int) IOTypes::Types::Count; j++) {
+				ImGui::PushID(j);
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::TableNextColumn();
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text(IOTypes::Strings[j]);
+
+				ImGui::PopID();
+			}
+
+			ImGui::TreePop();
 		}
-		ImGui::EndCombo();
-	}
-	ImGui::NextColumn();
-	*/
 
-	// Current Limit
-	ImGui::TextUnformatted("Current Limit");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::Combo("###Current Limit", (int*)&pin->getCurrentLimit(), Pin::currentNames, IM_ARRAYSIZE(Pin::currentNames));
-	
-	// End Columns
-	ImGui::Columns(1);
+		ImGui::EndTable();
+	}
 
 }
 
 void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup) 
 {
-	// Setup Columns
-	ImGui::Columns(2, "###NodeGroupColumn", true);
-	ImGui::SetColumnWidth(-1, 100.0f);
+	if(ImGui::BeginTable("NodeGroupProps", 2, flags)) {
 
-	// Name
-	ImGui::TextUnformatted("Name");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::InputText("###Name", &nodeGroup->getName());
-	ImGui::NextColumn();
+		ImGui::TableSetupColumn("I/O", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableHeadersRow();
 
-	// Enabled
-	ImGui::TextUnformatted("Enabled");
-	ImGui::NextColumn();
-	ImGui::SetNextItemWidth(-FLT_MIN);
-	ImGui::Checkbox("###Enabled", &nodeGroup->getEnabled());
-	ImGui::NextColumn();
+		// Name
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Name");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::InputText("###pinName", &nodeGroup->getName());
 
-	// End Columns
-	ImGui::Columns(1);
+		// Enabled
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Enabled");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Checkbox("###MouduleEnabled", &nodeGroup->getEnabled());
+
+		// Type
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Type");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Combo("###Node Group Type", (int*) &nodeGroup->getType() , IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
+
+		ImGui::EndTable();
+	}
 
 	// Nodes
 	ImGui::Separator();

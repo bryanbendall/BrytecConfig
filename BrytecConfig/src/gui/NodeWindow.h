@@ -27,6 +27,7 @@ public:
 	void setOpenedState(bool state) { m_opened = state; }
 
 private:
+	void drawMenubar();
 	void drawPopupMenu();
 	void drawNode(std::shared_ptr<Node>& node);
 	void addLinkData();

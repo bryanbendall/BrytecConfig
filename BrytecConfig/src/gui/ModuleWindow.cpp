@@ -41,6 +41,10 @@ void ModuleWindow::drawMenubar()
             ImGui::EndMenu();
         }
 
+        if(ImGui::MenuItem("test")) {
+            std::cout << "test menu item" << std::endl;
+        }
+
         ImGui::EndMenuBar();
     }
 

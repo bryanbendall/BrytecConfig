@@ -16,30 +16,33 @@ void ModuleBuilderWindow::drawWindow()
     if(!m_opened)
         return;
 
-    ImGui::Begin(ICON_FA_DICE_D6" Module Builder", &m_opened);
+    ImGui::Begin(ICON_FA_DICE_D6" Module Builder", &m_opened, ImGuiWindowFlags_MenuBar);
 
-    drawMenuBar();
+    drawMenubar();
     drawModuleTable();
 
     ImGui::End();
 }
 
-void ModuleBuilderWindow::drawMenuBar()
+void ModuleBuilderWindow::drawMenubar()
 {
-    if(ImGui::Button("New Module"))
-        m_module = std::make_shared<Module>();
+    if(ImGui::BeginMenuBar()) {
 
-    ImGui::SameLine();
-    if(ImGui::Button("Save Module")) {
-        std::string filepath = "data/modules/";
-        filepath += m_module->getName();
-        filepath += ".yaml";
-        ModuleBuilder::saveModuleFile(std::filesystem::path(filepath), m_module);
+        if(ImGui::MenuItem("New Module"))
+            m_module = std::make_shared<Module>();
+
+        if(ImGui::MenuItem("Save Module")) {
+            std::string filepath = "data/modules/";
+            filepath += m_module->getName();
+            filepath += ".yaml";
+            ModuleBuilder::saveModuleFile(std::filesystem::path(filepath), m_module);
+        }
+
+        if(ImGui::MenuItem("Add Pin"))
+            m_module->addPin();
+
+        ImGui::EndMenuBar();
     }
-
-    ImGui::SameLine();
-    if(ImGui::Button("Add Pin"))
-        m_module->addPin();
 }
 
 void ModuleBuilderWindow::drawModuleTable()

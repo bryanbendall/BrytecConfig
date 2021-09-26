@@ -38,18 +38,11 @@ void NodeWindow::drawWindow() {
         imnodes::EditorContextSet(getContext(pin));
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin(ICON_FA_PROJECT_DIAGRAM" Node Editor", &m_opened);
+    ImGui::Begin(ICON_FA_PROJECT_DIAGRAM" Node Editor", &m_opened, ImGuiWindowFlags_MenuBar);
     ImGui::PopStyleVar();
 
-    // Button row for modes
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    bool buildMode = (m_mode == Mode::Build);
-    if(ImGui::Selectable("Building Mode", buildMode, 0, ImVec2(ImGui::CalcTextSize("Building Mode").x, 0))) { m_mode = Mode::Build; }
-    ImGui::SameLine();
-    if(ImGui::Selectable("Simulation Mode", !buildMode, 0, ImVec2(ImGui::CalcTextSize("Simulation Mode").x, 0))) { m_mode = Mode::Simulation; }
-    
+    drawMenubar();
+
     imnodes::BeginNodeEditor();
 
     imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingVertical, 5.0f);
@@ -83,6 +76,19 @@ void NodeWindow::drawWindow() {
     
     m_lastSelected = AppManager::getSelectedItem();
 
+}
+
+void NodeWindow::drawMenubar()
+{
+    if(ImGui::BeginMenuBar()) {
+
+        bool buildMode = (m_mode == Mode::Build);
+        if(ImGui::Selectable("Building Mode", buildMode, 0, ImVec2(ImGui::CalcTextSize("Building Mode").x, 0))) { m_mode = Mode::Build; }
+        ImGui::SameLine();
+        if(ImGui::Selectable("Simulation Mode", !buildMode, 0, ImVec2(ImGui::CalcTextSize("Simulation Mode").x, 0))) { m_mode = Mode::Simulation; }
+
+        ImGui::EndMenuBar();
+    }
 }
 
 void NodeWindow::drawPopupMenu() {

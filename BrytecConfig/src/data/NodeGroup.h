@@ -21,6 +21,7 @@ public:
 	std::shared_ptr<Node> getNode(int id);
 	std::string& getName() { return m_name; }
 	bool& getEnabled() { return m_enabled; }
+	IOTypes::Types& getType() { return m_type; }
 	void addNode(NodeTypes type, ImVec2 position = {0.0f, 0.0f});
 	void sortNodes();
 	float getValue(int attributeIndex);
