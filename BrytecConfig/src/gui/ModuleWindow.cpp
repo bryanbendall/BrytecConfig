@@ -23,26 +23,14 @@ void ModuleWindow::drawWindow() {
 void ModuleWindow::drawMenubar() 
 {
     if(ImGui::BeginMenuBar()) {
+
         if(ImGui::BeginMenu("Add")) {
-            // TODO
-            /*
-            for(int i = 0; i < (size_t)ModuleTypes::Count; i++) {// auto moduleTypeName : Module::typeNames) {
-                if(ImGui::MenuItem(Module::typeNames[i].c_str())) {
-                    AppManager::getConfig().addModule((ModuleTypes)i);
-                }
-            }
-            */
             auto moduleList = ModuleBuilder::readModulesFromDisk();
             for(auto& modulePath : moduleList) {
                 if(ImGui::MenuItem(modulePath.stem().string().c_str()))
                     AppManager::getConfig().addModule(modulePath);
             }
-
             ImGui::EndMenu();
-        }
-
-        if(ImGui::MenuItem("test")) {
-            std::cout << "test menu item" << std::endl;
         }
 
         ImGui::EndMenuBar();
@@ -117,20 +105,35 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     // Draw Pin buttons
     for (unsigned int i = 0; i < numPins; i++) {
         ImGui::PushID(i);
-        bool enabled = m->getPins()[i]->getNodeGroup() ? m->getPins()[i]->getNodeGroup()->getEnabled() : false;
+        auto pin = m->getPins()[i];
+        bool enabled = pin->getNodeGroup() ? pin->getNodeGroup()->getEnabled() : false;
+        std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : pin->getPinoutName();
         if (!enabled)
             ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-        if(ImGui::Button(m->getPins()[i].get()->getPinoutName().c_str(), { 140, 0 }))
-            AppManager::setSelected(m->getPins()[i]);        
+        if(ImGui::Button(buttonText.c_str(), { 140, 0 }))
+            AppManager::setSelected(pin);
         if (!enabled)
             ImGui::PopStyleColor();
 
         // Selection boarder
-        if (m->getPins()[i] == std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock())) {
+        if (pin == std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock())) {
             ImVec2 rectMin = ImGui::GetItemRectMin();
             ImVec2 rectMax = ImGui::GetItemRectMax();
             drawList->AddRect(rectMin, rectMax, IM_COL32_WHITE, 4.0f);
         }
+
+        // Drop Node Group
+        if(ImGui::BeginDragDropTarget()) {
+            if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
+
+                // TODO: check if it is right type?
+                int nodeGroupIndex = *(int*) payload->Data;
+                auto& nodeGroup = AppManager::getConfig().getNodeGroups()[nodeGroupIndex];
+                pin->setNodeGroup(nodeGroup);
+            }
+            ImGui::EndDragDropTarget();
+        }
+
         ImGui::PopID();
     }
 

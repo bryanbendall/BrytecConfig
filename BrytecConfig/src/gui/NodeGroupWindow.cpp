@@ -14,14 +14,27 @@ void NodeGroupWindow::drawWindow()
 {
     if(!m_opened)
         return;
-    ImGui::Begin(ICON_FA_DICE_D6" I/O", &m_opened);
+    ImGui::Begin(ICON_FA_DICE_D6" I/O", &m_opened, ImGuiWindowFlags_MenuBar);
 
     if(ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
         AppManager::setSelected(std::weak_ptr<Selectable>());
 
+    drawMenubar();
+
     drawNodeGroups();
 
     ImGui::End();
+}
+
+void NodeGroupWindow::drawMenubar()
+{
+    if(ImGui::BeginMenuBar()) {
+
+        if(ImGui::MenuItem("Add Node Group"))
+            AppManager::getConfig().addNodeGroup();
+
+        ImGui::EndMenuBar();
+    }
 }
 
 void NodeGroupWindow::drawNodeGroups()
@@ -42,10 +55,22 @@ void NodeGroupWindow::drawNodeGroups()
             ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 255));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
         }
-        
-        if(ImGui::Button(nodeGroup->getName().c_str(), {buttonWidth, 25})) {
+
+
+        if(ImGui::Button(nodeGroup->getName().c_str(), {buttonWidth, 0})) {
             AppManager::setSelected(nodeGroup);
         }
+
+        if(ImGui::BeginDragDropSource()) {
+            ImGui::SetDragDropPayload("NodeGroup", &i, sizeof(int));
+
+            ImGui::Text(nodeGroup->getName().c_str());
+            ImGui::TextDisabled("%s", IOTypes::Strings[(int)nodeGroup->getType()]);
+
+            ImGui::EndDragDropSource();
+        }
+        
+
 
         if(selected) {
             ImGui::PopStyleVar();

@@ -92,10 +92,10 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
 		ImGui::AlignTextToFramePadding();
-		ImGui::Text("Name");
+		ImGui::Text("Pinout Name");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputText("###pinName", &pin->getPinoutName());
+		ImGui::Text(pin->getPinoutName().c_str());
 
 		// Current Limit
 		ImGui::TableNextRow();
@@ -105,6 +105,19 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		ImGui::Combo("###Current Limit", (int*) &pin->getCurrentLimit(), Pin::currentNames, IM_ARRAYSIZE(Pin::currentNames));
+
+		// Node Group
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Node Group");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		std::string nodeGroup = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Not Assigned";
+		if(ImGui::Selectable(nodeGroup.c_str())) {
+			if(pin->getNodeGroup())
+				AppManager::setSelected(pin->getNodeGroup());
+		}
 
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
