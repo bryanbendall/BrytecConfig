@@ -124,12 +124,26 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 
         // Drop Node Group
         if(ImGui::BeginDragDropTarget()) {
-            if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
 
-                // TODO: check if it is right type?
-                int nodeGroupIndex = *(int*) payload->Data;
+            // Check type to do the outline for drop
+            bool accepted = false;
+            if(const ImGuiPayload * tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
+                int nodeGroupIndex = *(int*) tempPayload->Data;
                 auto& nodeGroup = AppManager::getConfig().getNodeGroups()[nodeGroupIndex];
-                pin->setNodeGroup(nodeGroup);
+                if(std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
+                    accepted = true;
+                }
+            }
+
+            // Recieve the data if it is a compatible type
+            if(accepted) {
+                if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
+
+                    // TODO: check if it is right type?
+                    int nodeGroupIndex = *(int*) payload->Data;
+                    auto& nodeGroup = AppManager::getConfig().getNodeGroups()[nodeGroupIndex];
+                    pin->setNodeGroup(nodeGroup);
+                }
             }
             ImGui::EndDragDropTarget();
         }

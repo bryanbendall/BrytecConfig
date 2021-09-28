@@ -23,11 +23,9 @@ void PropertiesWindow::drawWindow() {
 		if(auto pin = std::dynamic_pointer_cast<Pin>(selected)) {
 			drawPinProps(pin);
 
-			//auto nodeGroup = pin->getNodeGroup();
-			//if(nodeGroup)
-			//	drawNodeGroupProps(nodeGroup);
+			if(auto nodeGroup = pin->getNodeGroup())
+				drawNodeGroupProps(nodeGroup);
 		}
-
 		
 		if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected))
 			drawNodeGroupProps(nodeGroup);
@@ -114,23 +112,19 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		std::string nodeGroup = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Not Assigned";
-		if(ImGui::Selectable(nodeGroup.c_str())) {
-			if(pin->getNodeGroup())
-				AppManager::setSelected(pin->getNodeGroup());
-		}
+		ImGui::Text(nodeGroup.c_str());
 
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
 		if(ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding)) {
 
-			// Start at 1 to ignore undefined type
-			for(int j = 1; j < (int) IOTypes::Types::Count; j++) {
-				ImGui::PushID(j);
+			for(auto& type : pin->getAvailableTypes()) {
+				ImGui::PushID((int)type);
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImGui::TableNextColumn();
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text(IOTypes::Strings[j]);
+				ImGui::Text(IOTypes::Strings[(int)type]);
 
 				ImGui::PopID();
 			}

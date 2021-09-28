@@ -3,7 +3,7 @@
 #include <vector>
 #include <utility>
 #include <memory>
-#include "../data/Node.h"
+#include "../data/NodeGroup.h"
 #include "../data/Selectable.h"
 #include <map>
 #include <imnodes.h>
@@ -17,7 +17,8 @@ class NodeWindow
 	bool m_opened = true;
 	std::weak_ptr<Selectable> m_lastSelected;
 	Mode m_mode = Mode::Build;
-	std::map<std::shared_ptr<Pin>, imnodes::EditorContext*> m_contexts;
+	// TODO remove node groups when deleted
+	std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;
 
 public:
 	NodeWindow();
@@ -30,13 +31,13 @@ private:
 	void drawMenubar();
 	void drawPopupMenu();
 	void drawNode(std::shared_ptr<Node>& node);
-	void addLinkData();
-	void isLinkCreated();
-	void isLinkDeleted();
-	void isNodeDeleted();
-	void saveNodePositions();
+	void addLinkData(std::shared_ptr<NodeGroup>& nodeGroup);
+	void isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup);
+	void isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup);
+	void isNodeDeleted(std::shared_ptr<NodeGroup>& nodeGroup);
+	void saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup);
 	void doValuePopup();
-	imnodes::EditorContext* getContext(std::shared_ptr<Pin>& pin);
+	imnodes::EditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
 
 	//Node Types
 	void drawOutput		(std::shared_ptr<Node>& node);

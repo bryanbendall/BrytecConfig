@@ -33,9 +33,15 @@ void NodeWindow::drawWindow() {
     if (!m_opened)
         return;
 
+    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
+    if(nodeGroup)
+        imnodes::EditorContextSet(getContext(nodeGroup));
+
     auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-    if(pin)
-        imnodes::EditorContextSet(getContext(pin));
+    if(pin && pin->getNodeGroup()) {
+        nodeGroup = pin->getNodeGroup();
+        imnodes::EditorContextSet(getContext(nodeGroup));
+    }
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin(ICON_FA_PROJECT_DIAGRAM" Node Editor", &m_opened, ImGuiWindowFlags_MenuBar);
@@ -49,30 +55,30 @@ void NodeWindow::drawWindow() {
 
     drawPopupMenu();
     
-    if(pin && pin->getNodeGroup()) {
-        if(pin->getNodeGroup()->getNodes().size() > 0) {
-            for(auto& n : pin->getNodeGroup()->getNodes())
+    if(nodeGroup) {
+        if(nodeGroup->getNodes().size() > 0) {
+            for(auto& n : nodeGroup->getNodes())
                 drawNode(n);
         }
 
-        addLinkData();
+        addLinkData(nodeGroup);
     }
 
     imnodes::EndNodeEditor();
     
-    if(pin && pin->getNodeGroup()) {
-        saveNodePositions();
+    if(nodeGroup) {
+        saveNodePositions(nodeGroup);
 
-        isLinkCreated();
-        isLinkDeleted();
-        isNodeDeleted();
+        isLinkCreated(nodeGroup);
+        isLinkDeleted(nodeGroup);
+        isNodeDeleted(nodeGroup);
 
         doValuePopup();
     }
     ImGui::End();
 
-    if(pin && pin->getNodeGroup() && m_mode == Mode::Simulation)
-        pin->getNodeGroup()->evaluateAllNodes();
+    if(nodeGroup && m_mode == Mode::Simulation)
+        nodeGroup->evaluateAllNodes();
     
     m_lastSelected = AppManager::getSelectedItem();
 
@@ -219,13 +225,12 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node) {
     }
 }
 
-void NodeWindow::addLinkData() {
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-    if (!pin)
+void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup) {
+    if (!nodeGroup)
         return;
 
-    for (size_t i = 0; i < pin->getNodeGroup()->getNodes().size(); i++) {
-        auto& fromNode = pin->getNodeGroup()->getNodes()[i];
+    for (size_t i = 0; i < nodeGroup->getNodes().size(); i++) {
+        auto& fromNode = nodeGroup->getNodes()[i];
         if(!fromNode)
             continue;
         for (size_t fromLinkAttribute = 0; fromLinkAttribute < fromNode->getInputs().size(); fromLinkAttribute++) {
@@ -257,7 +262,7 @@ void NodeWindow::addLinkData() {
 
 }
 
-void NodeWindow::isLinkCreated() {
+void NodeWindow::isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup) {
     int begin, end;
     if (imnodes::IsLinkCreated(&begin, &end)) {
         unsigned char beginNodeIndex = begin >> 8;
@@ -269,31 +274,30 @@ void NodeWindow::isLinkCreated() {
         if (beginNodeIndex == endNodeIndex)
             return;
 
-        auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-        if (!pin)
+        if (!nodeGroup)
             return;
 
         //Check if start node is an output
-        if (beginAttributeIndex < pin->getNodeGroup()->getNode(beginNodeIndex)->getOutputs().size()) {
+        if (beginAttributeIndex < nodeGroup->getNode(beginNodeIndex)->getOutputs().size()) {
             //If also an output return
-            if (endAttributeIndex < pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size())
+            if (endAttributeIndex < nodeGroup->getNode(endNodeIndex)->getOutputs().size())
                 return;
-            pin->getNodeGroup()->getNode(endNodeIndex)->getInput(endAttributeIndex - pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size()) = { pin->getNodeGroup()->getNode(beginNodeIndex), beginAttributeIndex };
-            pin->getNodeGroup()->sortNodes();
+            nodeGroup->getNode(endNodeIndex)->getInput(endAttributeIndex - nodeGroup->getNode(endNodeIndex)->getOutputs().size()) = {nodeGroup->getNode(beginNodeIndex), beginAttributeIndex };
+            nodeGroup->sortNodes();
             //std::cout << "saving output to input\n";
             return;
         }
 
         //Then start node is an input
         //Make sure the end node is an output
-        if (endAttributeIndex >= pin->getNodeGroup()->getNode(endNodeIndex)->getOutputs().size())
+        if (endAttributeIndex >= nodeGroup->getNode(endNodeIndex)->getOutputs().size())
             return;
-        pin->getNodeGroup()->getNode(beginNodeIndex)->getInput(beginAttributeIndex) = { pin->getNodeGroup()->getNode(endNodeIndex), endAttributeIndex };
-        pin->getNodeGroup()->sortNodes();
+        nodeGroup->getNode(beginNodeIndex)->getInput(beginAttributeIndex) = {nodeGroup->getNode(endNodeIndex), endAttributeIndex };
+        nodeGroup->sortNodes();
     }
 }
 
-void NodeWindow::isLinkDeleted() 
+void NodeWindow::isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     const int num_selected = imnodes::NumSelectedLinks();
     if(num_selected > 0 && ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
@@ -305,14 +309,12 @@ void NodeWindow::isLinkDeleted()
             // TODO
         }
 
-        auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-        if(!pin)
-            return;
-        pin->getNodeGroup()->sortNodes();
+        if(nodeGroup)
+            nodeGroup->sortNodes();
     }
 }
 
-void NodeWindow::isNodeDeleted() 
+void NodeWindow::isNodeDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     const int num_selected = imnodes::NumSelectedNodes();
     if(num_selected > 0 && ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
@@ -321,23 +323,21 @@ void NodeWindow::isNodeDeleted()
         imnodes::GetSelectedNodes(selected_nodes.data());
         for(const int node_id : selected_nodes) {
             
-            auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-            if(!pin)
+            if(!nodeGroup)
                 return;
 
-            pin->getNodeGroup()->deleteNode(node_id);
-            pin->getNodeGroup()->sortNodes();
+            nodeGroup->deleteNode(node_id);
+            nodeGroup->sortNodes();
         }
     }
 }
 
-void NodeWindow::saveNodePositions()
+void NodeWindow::saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup)
 {
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-    if (!pin)
+    if (!nodeGroup)
         return;
 
-    for(auto n : pin->getNodeGroup()->getNodes()) {
+    for(auto n : nodeGroup->getNodes()) {
         n->getPosition() = imnodes::GetNodeGridSpacePos(n->getId());
     }
     
@@ -356,12 +356,12 @@ void NodeWindow::doValuePopup()
     }
 }
 
-imnodes::EditorContext* NodeWindow::getContext(std::shared_ptr<Pin>& pin) {
+imnodes::EditorContext* NodeWindow::getContext(std::shared_ptr<NodeGroup>& nodeGroup) {
 
-    if(m_contexts.find(pin) == m_contexts.end())
-        m_contexts[pin] = imnodes::EditorContextCreate();
+    if(m_contexts.find(nodeGroup) == m_contexts.end())
+        m_contexts[nodeGroup] = imnodes::EditorContextCreate();
         
-    return m_contexts[pin];
+    return m_contexts[nodeGroup];
 }
 
 void NodeWindow::drawOutput(std::shared_ptr<Node>& node) {
