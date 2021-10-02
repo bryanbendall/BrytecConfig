@@ -48,6 +48,7 @@ void ModuleBuilder::saveModuleFile(std::filesystem::path& filepath, std::shared_
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 	out << YAML::Key << "Module" << YAML::Value << module->getName();
+	out << YAML::Key << "Address" << YAML::Value << (int)module->getAddress();
 	out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
 
 	for(auto pin : module->getPins()) {
@@ -74,6 +75,8 @@ bool ModuleBuilder::readModuleFile(std::filesystem::path& filepath, std::shared_
 		return false;
 
 	outModule->getName() = data["Module"].as<std::string>();
+
+	outModule->getAddress() = data["Address"].as<int>();
 
 	auto pins = data["Pins"];
 	if(pins) {

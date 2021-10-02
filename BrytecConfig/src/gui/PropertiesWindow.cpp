@@ -14,7 +14,7 @@ void PropertiesWindow::drawWindow() {
 
 	ImGui::Begin(ICON_FA_COG" Properties", &m_opened);
 
-	std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
+	std::shared_ptr<Selectable> selected = AppManager::get()->getSelectedItem().lock();
 	if (selected) {
 		
 		if (auto module = std::dynamic_pointer_cast<Module>(selected))
@@ -111,12 +111,22 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::Text("Node Group");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		std::string nodeGroup = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Not Assigned";
-		ImGui::Text(nodeGroup.c_str());
+		if(pin->getNodeGroup())
+			ImGui::Text(pin->getNodeGroup()->getName().c_str());
+		else
+			ImGui::TextDisabled("None");
+
+		if(pin->getNodeGroup()) {
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+			if(ImGui::Button("Remove Node Group"))
+				pin->setNodeGroup(nullptr);
+		}
 
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
-		if(ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding)) {
+		if(ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen)) {
 
 			for(auto& type : pin->getAvailableTypes()) {
 				ImGui::PushID((int)type);
@@ -169,7 +179,11 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::Text("Type");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Combo("###Node Group Type", (int*) &nodeGroup->getType() , IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
+		if(nodeGroup->getAssigned()) {
+			ImGui::Text("%s %s", IOTypes::Strings[(int)nodeGroup->getType()], ICON_FA_LOCK);
+		} else {
+			ImGui::Combo("###Node Group Type", (int*) &nodeGroup->getType() , IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
+		}
 
 		ImGui::EndTable();
 	}
@@ -264,7 +278,7 @@ void PropertiesWindow::drawStatsWindow()
 	// Numer of modules
 	ImGui::TextUnformatted("Total Modules");
 	ImGui::NextColumn();
-	ImGui::Text("%i", AppManager::getConfig().getModules().size());
+	ImGui::Text("%i", AppManager::get()->getConfig()->getModules().size());
 	ImGui::NextColumn();
 
 	/*
@@ -311,7 +325,7 @@ void PropertiesWindow::drawStatsWindow()
 	ImGui::Separator();
 	ImGui::Columns(2, "###Column", true);
 
-	std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
+	std::shared_ptr<Selectable> selected = AppManager::get()->getSelectedItem().lock();
 	if(selected) {
 
 		auto module = std::dynamic_pointer_cast<Module>(selected);

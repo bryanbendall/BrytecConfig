@@ -15,7 +15,7 @@ void ModuleWindow::drawWindow() {
 	ImGui::Begin(ICON_FA_DICE_D6" Modules", &m_opened, ImGuiWindowFlags_MenuBar);
     drawMenubar();
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
-        AppManager::setSelected(std::weak_ptr<Selectable>());
+        AppManager::get()->setSelected(std::weak_ptr<Selectable>());
     drawModules();
 	ImGui::End();
 }
@@ -24,11 +24,11 @@ void ModuleWindow::drawMenubar()
 {
     if(ImGui::BeginMenuBar()) {
 
-        if(ImGui::BeginMenu("Add")) {
+        if(ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
             auto moduleList = ModuleBuilder::readModulesFromDisk();
             for(auto& modulePath : moduleList) {
                 if(ImGui::MenuItem(modulePath.stem().string().c_str()))
-                    AppManager::getConfig().addModule(modulePath);
+                    AppManager::get()->getConfig()->addModule(modulePath);
             }
             ImGui::EndMenu();
         }
@@ -40,7 +40,7 @@ void ModuleWindow::drawMenubar()
 
 void ModuleWindow::drawModules()
 {
-    unsigned int moduleCount = AppManager::getConfig().getModules().size();
+    unsigned int moduleCount = AppManager::get()->getConfig()->getModules().size();
     float nextSizeX = 150;
     ImGuiStyle& style = ImGui::GetStyle();
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
@@ -49,7 +49,7 @@ void ModuleWindow::drawModules()
     for (unsigned int n = 0; n < moduleCount; n++)
     {
         ImGui::PushID(n);
-        std::shared_ptr<Module> m = AppManager::getConfig().getModules()[n];
+        std::shared_ptr<Module> m = AppManager::get()->getConfig()->getModules()[n];
         drawModule(m);
         //ImGui::Button("i/o", ImVec2(150, 25));
         float last_button_x2 = ImGui::GetItemRectMax().x;
@@ -66,7 +66,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 {
     unsigned int numPins = m->getPins().size();
 
-    bool selected = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock()) == m;
+    bool selected = std::dynamic_pointer_cast<Module>(AppManager::get()->getSelectedItem().lock()) == m;
 
     // Split output to draw background after
     ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -87,7 +87,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     
     // Draw Module button
     if (ImGui::Button(m->getName().c_str(), { 150, titleBarHeight })) 
-        AppManager::setSelected(m);
+        AppManager::get()->setSelected(m);
     titleHovered = ImGui::IsItemHovered();
 
     // Module style end
@@ -111,16 +111,25 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         if (!enabled)
             ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
         if(ImGui::Button(buttonText.c_str(), { 140, 0 }))
-            AppManager::setSelected(pin);
+            AppManager::get()->setSelected(pin);
         if (!enabled)
             ImGui::PopStyleColor();
 
+        if(pin->getNodeGroup()) {
+            if(ImGui::BeginPopupContextItem()) {
+                if(ImGui::MenuItem("Remove Node Group", NULL, false))
+                    pin->setNodeGroup(nullptr);
+                ImGui::EndPopup();
+            }
+        }
+        
         // Selection boarder
-        if (pin == std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock())) {
+        if (pin == std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock())) {
             ImVec2 rectMin = ImGui::GetItemRectMin();
             ImVec2 rectMax = ImGui::GetItemRectMax();
             drawList->AddRect(rectMin, rectMax, IM_COL32_WHITE, 4.0f);
         }
+
 
         // Drop Node Group
         if(ImGui::BeginDragDropTarget()) {
@@ -129,7 +138,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
             bool accepted = false;
             if(const ImGuiPayload * tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
                 int nodeGroupIndex = *(int*) tempPayload->Data;
-                auto& nodeGroup = AppManager::getConfig().getNodeGroups()[nodeGroupIndex];
+                auto& nodeGroup = AppManager::get()->getConfig()->getNodeGroups()[nodeGroupIndex];
                 if(std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
                     accepted = true;
                 }
@@ -141,7 +150,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 
                     // TODO: check if it is right type?
                     int nodeGroupIndex = *(int*) payload->Data;
-                    auto& nodeGroup = AppManager::getConfig().getNodeGroups()[nodeGroupIndex];
+                    auto& nodeGroup = AppManager::get()->getConfig()->getNodeGroups()[nodeGroupIndex];
                     pin->setNodeGroup(nodeGroup);
                 }
             }

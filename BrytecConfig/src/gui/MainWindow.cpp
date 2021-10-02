@@ -4,6 +4,8 @@
 //#include <misc/freetype/imgui_freetype.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <IconsFontAwesome5.h>
+#include "../AppManager.h"
+#include <functional>
 
 MainWindow::MainWindow() 
 {
@@ -11,7 +13,6 @@ MainWindow::MainWindow()
 
 void MainWindow::setupFonts() 
 {
-    ImGui::GetStyle();
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF("vendor\\imgui\\misc\\fonts\\DroidSans.ttf", 16.0f);
@@ -22,6 +23,11 @@ void MainWindow::setupFonts()
     icons_config.PixelSnapH = true;
     io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 14.0f, &icons_config, icons_ranges);
     //ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::ForceAutoHint | ImGuiFreeType::MonoHinting);
+
+    ImFontConfig icons_config2;
+    icons_config2.PixelSnapH = true;
+    AppManager::get()->setBigIconFont(io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
+
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
 }
@@ -47,7 +53,6 @@ void MainWindow::loadLayout()
 
 void MainWindow::drawWindow()
 {
-
     // Note: Switch this to true to enable dockspace
     static bool dockspaceOpen = true;
     static bool opt_fullscreen_persistant = true;
@@ -102,14 +107,23 @@ void MainWindow::drawWindow()
     m_moduleBuilderWindow.drawWindow();
 
     ImGui::End();
+
 }
 
 void MainWindow::drawMenu() 
 {
+    AppManager* app = AppManager::get();
+
     if(ImGui::BeginMenuBar()) {
         if(ImGui::BeginMenu("File")) {
-            if(ImGui::MenuItem("Exit"))                     
-                glfwSetWindowShouldClose(m_window, 1);
+            if(ImGui::MenuItem("New"))
+                app->newConfig();
+            if(ImGui::MenuItem("Open"))
+                app->openConfig();
+            if(ImGui::MenuItem("Save"))
+                app->saveConfig();
+            if(ImGui::MenuItem("Exit"))
+                app->exit();
             ImGui::EndMenu();
         }
 
@@ -175,19 +189,45 @@ void MainWindow::setDarkThemeColors()
     colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 }
 
+static void ToolbarButton(const char* icon, const char* tooltip, std::function<void(void)> function)
+{
+    static float iconSize = 40.0f;
+    ImGui::SameLine();
+    if(ImGui::Button(icon, ImVec2(iconSize, iconSize)))
+        function();
+    ImGui::PopFont();
+    ImGui::PopStyleVar(2);
+    if(ImGui::IsItemHovered())
+        ImGui::SetTooltip(tooltip);
+    ImGui::PushFont(AppManager::get()->getBigIconFont());
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+}
+
 void MainWindow::drawMenuBar()
 {
+    AppManager* app = AppManager::get();
+
+    ImGui::PushFont(app->getBigIconFont());
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
-    //ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.305f, 0.31f, 0.5f));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.15f, 0.1505f, 0.151f, 0.5f));
 
     ImGui::Begin("##Menu Bar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    ImGui::PopStyleColor(3);
-    ImGui::Button("sfhsdfs");
+    ToolbarButton(ICON_FA_FILE,         "New",  std::bind(&AppManager::newConfig, app));
+    ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", std::bind(&AppManager::openConfig, app));
+    ToolbarButton(ICON_FA_SAVE,         "Save", std::bind(&AppManager::saveConfig, app));
 
-    ImGui::PopStyleVar(1);
+    //ImGui::SameLine(0.0f, 50.0f);
+    //ImGui::Button(ICON_FA_FOLDER_OPEN, ImVec2(iconSize, iconSize));
+
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar(2);
     ImGui::End();
+
+    ImGui::PopFont();
 }

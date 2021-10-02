@@ -3,7 +3,8 @@
 #include "../utils/ModuleBuilder.h"
 #include "Module.h"
 
-Config::Config()
+Config::Config(const std::filesystem::path& path)
+	: m_path(path)
 {
 	//for(int i = 0; i < 100; i++)
 	//	addNodeGroup();

@@ -38,7 +38,7 @@ public:
 	PinCurrentLimit& getCurrentLimit() { return m_currentLimit; }
 	std::vector<IOTypes::Types>& getAvailableTypes() { return m_availableTypes; }
 	std::shared_ptr<NodeGroup> getNodeGroup() { return m_nodeGroup.lock(); }
-	void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup) { m_nodeGroup = nodeGroup; }
+	void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup);
 
 };
 

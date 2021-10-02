@@ -5,21 +5,37 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 #include "gui/MainWindow.h"
+#include "imgui.h"
 
 class AppManager
 {
-	static AppManager* s_context;
-	Config m_config;
-	std::weak_ptr<Selectable> m_selectedItem;
-	MainWindow m_mainWindow;
 
 public:
 	AppManager(GLFWwindow* window);
 	void update();
+	std::shared_ptr<Config>& getConfig() { return m_config; }
+	std::weak_ptr<Selectable> getSelectedItem() { return m_selectedItem; }
+	void setSelected(std::weak_ptr<Selectable> sel) { m_selectedItem = sel; }
+	void setBigIconFont(ImFont* font) { m_bigIcons = font; }
+	ImFont* getBigIconFont() { return m_bigIcons; }
 
-	static Config& getConfig() { return s_context->m_config; }
-	static std::weak_ptr<Selectable> getSelectedItem() { return s_context->m_selectedItem; }
-	static void setSelected(std::weak_ptr<Selectable> sel) { s_context->m_selectedItem = sel; }
+	// Commands
+	void newConfig();
+	void openConfig();
+	void saveConfig();
+	void saveAsConfig();
+
+	void exit();
+
+	static AppManager* get() { return s_context; }
+
+private:
+	static AppManager* s_context;
+	std::shared_ptr<Config> m_config;
+	std::weak_ptr<Selectable> m_selectedItem;
+	GLFWwindow* m_window;
+	MainWindow m_mainWindow;
+	ImFont* m_bigIcons = nullptr;
 
 };
 

@@ -29,7 +29,7 @@ public:
 
 private:
 	void drawMenubar();
-	void drawPopupMenu();
+	void drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup);
 	void drawNode(std::shared_ptr<Node>& node);
 	void addLinkData(std::shared_ptr<NodeGroup>& nodeGroup);
 	void isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup);

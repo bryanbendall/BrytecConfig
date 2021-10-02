@@ -33,11 +33,11 @@ void NodeWindow::drawWindow() {
     if (!m_opened)
         return;
 
-    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
+    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock());
     if(nodeGroup)
         imnodes::EditorContextSet(getContext(nodeGroup));
 
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
+    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock());
     if(pin && pin->getNodeGroup()) {
         nodeGroup = pin->getNodeGroup();
         imnodes::EditorContextSet(getContext(nodeGroup));
@@ -53,7 +53,7 @@ void NodeWindow::drawWindow() {
 
     imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingVertical, 5.0f);
 
-    drawPopupMenu();
+    drawPopupMenu(nodeGroup);
     
     if(nodeGroup) {
         if(nodeGroup->getNodes().size() > 0) {
@@ -80,7 +80,7 @@ void NodeWindow::drawWindow() {
     if(nodeGroup && m_mode == Mode::Simulation)
         nodeGroup->evaluateAllNodes();
     
-    m_lastSelected = AppManager::getSelectedItem();
+    m_lastSelected = AppManager::get()->getSelectedItem();
 
 }
 
@@ -97,9 +97,9 @@ void NodeWindow::drawMenubar()
     }
 }
 
-void NodeWindow::drawPopupMenu() {
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
-    if(!pin)
+void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup) {
+
+    if(!nodeGroup)
         return;
 
     bool open_context_menu = false;
@@ -112,18 +112,18 @@ void NodeWindow::drawPopupMenu() {
         }
     if (open_context_menu)
     {
-        ImGui::OpenPopup("context_menu");
+        ImGui::OpenPopup("NodeWindowPopup");
     }
 
     // Draw context menu
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
-    if (ImGui::BeginPopup("context_menu"))
+    if (ImGui::BeginPopup("NodeWindowPopup"))
     {
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
         for(int i = (int)NodeTypes::Pin; i < (int)NodeTypes::Count; i++) {
             if(ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) { 
-                pin->getNodeGroup()->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(pin->getNodeGroup()->getNodes().back()->getId(), scene_pos);
+                nodeGroup->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }
         }
 
@@ -137,7 +137,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node) {
     if(!node)
         return;
 
-    if (m_lastSelected.lock() != AppManager::getSelectedItem().lock())
+    if (m_lastSelected.lock() != AppManager::get()->getSelectedItem().lock())
         imnodes::SetNodeGridSpacePos(node->getId(), node->getPosition());
 
     // Style for nodes
@@ -345,7 +345,7 @@ void NodeWindow::saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup)
 
 void NodeWindow::doValuePopup() 
 {
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
+    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock());
     if(!pin)
         return;
 
@@ -373,7 +373,7 @@ void NodeWindow::drawOutput(std::shared_ptr<Node>& node) {
     if(m_mode == Mode::Simulation) {
 
         float value = !node->getInput(0).node.expired() ? node->getInput(0).node.lock()->getOutputValue(node->getInput(0).outputIndex) : 0.0f;
-        auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
+        auto pin = std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock());
         
         //if(pin && pin->getType() == PinTypes::Output_12V_Pwm)
             //ImGui::ProgressBar(value / 100.0f, ImVec2(100.0f, 0.0f));

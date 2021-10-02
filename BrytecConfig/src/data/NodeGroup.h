@@ -13,6 +13,7 @@ class NodeGroup : public Selectable {
 	IOTypes::Types m_type = IOTypes::Types::Undefined;
 	std::string m_name = "Undefined IO";
 	bool m_enabled = true;
+	bool m_assignedToPin = false;
 	int m_nodeIds = 0;
 
 public:
@@ -27,6 +28,8 @@ public:
 	float getValue(int attributeIndex);
 	void deleteNode(int nodeId);
 	void evaluateAllNodes();
+	bool getAssigned() { return m_assignedToPin; }
+	void setAssigned(bool state) { m_assignedToPin = state; }
 
 private:
 	void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
