@@ -10,3 +10,6 @@
 [submodule "BrytecConfig/vendor/yaml-cpp"]
 	path = BrytecConfig/vendor/yaml-cpp
 	url = https://github.com/bryanbendall/yaml-cpp.git
+[submodule "BrytecConfig/vendor/nativefiledialog"]
+	path = BrytecConfig/vendor/nativefiledialog
+	url = https://github.com/bryanbendall/nativefiledialog.git

@@ -25,6 +25,7 @@ project "BrytecConfig"
 		"%{IncludeDir.FontAwesome}",
 		"%{IncludeDir.imnodes}",
 		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.nativefiledialog}",
 	}
 
 	links
@@ -33,7 +34,8 @@ project "BrytecConfig"
 		"Glad",
 		"ImGui",
 		"imnodes",
-		"yaml-cpp"
+		"yaml-cpp",
+		"nativefiledialog"
 	}
 
 	filter "system:windows"

@@ -116,27 +116,32 @@ void MainWindow::drawMenu()
 
     if(ImGui::BeginMenuBar()) {
         if(ImGui::BeginMenu("File")) {
-            if(ImGui::MenuItem("New"))
+            if(ImGui::MenuItem("New", "Ctrl+N"))
                 app->newConfig();
-            if(ImGui::MenuItem("Open"))
+            if(ImGui::MenuItem("Open", "Ctrl+O"))
                 app->openConfig();
-            if(ImGui::MenuItem("Save"))
+            ImGui::Separator();
+            if(ImGui::MenuItem("Save", "Ctrl+S"))
                 app->saveConfig();
-            if(ImGui::MenuItem("Exit"))
+            if(ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+                app->saveAsConfig();
+            ImGui::Separator();
+            if(ImGui::MenuItem("Exit", "Alt+F4"))
                 app->exit();
             ImGui::EndMenu();
         }
 
         if(ImGui::BeginMenu("View")) {
-            if(ImGui::MenuItem("Open Module Window"))       
+            if(ImGui::MenuItem("Module Window", "", m_moduleWindow.getOpenedState()))       
                 m_moduleWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Open Node Window"))         
+            if(ImGui::MenuItem("Node Window", "", m_nodeWindow.getOpenedState()))
                 m_nodeWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Open Properties Window"))   
+            if(ImGui::MenuItem("Properties Window", "", m_propertiesWindow.getOpenedState()))
                 m_propertiesWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
+#if 0
         if(ImGui::BeginMenu("Layout")) {
             if(ImGui::MenuItem("Pinout"))                  
                 m_ini_to_load = "imguiPinLayout.ini";
@@ -144,6 +149,7 @@ void MainWindow::drawMenu()
                 m_ini_to_load = "imguiNodeLayout.ini";
             ImGui::EndMenu();
         }
+#endif
 
         if(ImGui::BeginMenu("Tools")) {
             if(ImGui::MenuItem("Module Builder"))
@@ -189,6 +195,9 @@ void MainWindow::setDarkThemeColors()
     colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 }
 
+static bool anyItemHovered = false;
+static int hoveredTime = 0;
+
 static void ToolbarButton(const char* icon, const char* tooltip, std::function<void(void)> function)
 {
     static float iconSize = 40.0f;
@@ -197,8 +206,11 @@ static void ToolbarButton(const char* icon, const char* tooltip, std::function<v
         function();
     ImGui::PopFont();
     ImGui::PopStyleVar(2);
-    if(ImGui::IsItemHovered())
-        ImGui::SetTooltip(tooltip);
+    if(ImGui::IsItemHovered()) {
+        anyItemHovered = true;
+        if(hoveredTime > 40)
+            ImGui::SetTooltip(tooltip);
+    }
     ImGui::PushFont(AppManager::get()->getBigIconFont());
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -222,8 +234,12 @@ void MainWindow::drawMenuBar()
     ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", std::bind(&AppManager::openConfig, app));
     ToolbarButton(ICON_FA_SAVE,         "Save", std::bind(&AppManager::saveConfig, app));
 
-    //ImGui::SameLine(0.0f, 50.0f);
-    //ImGui::Button(ICON_FA_FOLDER_OPEN, ImVec2(iconSize, iconSize));
+    if(anyItemHovered) {
+        anyItemHovered = false;
+        hoveredTime++;
+    } else {
+        hoveredTime = 0;
+    }
 
     ImGui::PopStyleColor(3);
     ImGui::PopStyleVar(2);

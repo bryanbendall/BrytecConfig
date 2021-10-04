@@ -6,10 +6,6 @@
 Config::Config(const std::filesystem::path& path)
 	: m_path(path)
 {
-	//for(int i = 0; i < 100; i++)
-	//	addNodeGroup();
-
-
 }
 
 void Config::addModule(std::filesystem::path modulePath)

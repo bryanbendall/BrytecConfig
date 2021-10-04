@@ -42,7 +42,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 
 	if(ImGui::BeginTable("ModuleProps", 2, flags)) {
 
-		ImGui::TableSetupColumn("Module", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableSetupColumn("Module", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 100.0f);
 		ImGui::TableHeadersRow();
 
 		// Name
@@ -83,7 +83,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 
 	if(ImGui::BeginTable("PinProps", 2, flags)) {
 
-		ImGui::TableSetupColumn("Pin", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableSetupColumn("Pin", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 100.0f);
 		ImGui::TableHeadersRow();
 
 		// Name
@@ -151,7 +151,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 {
 	if(ImGui::BeginTable("NodeGroupProps", 2, flags)) {
 
-		ImGui::TableSetupColumn("I/O", ImGuiTableColumnFlags_NoHide);
+		ImGui::TableSetupColumn("Node Group", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 100.0f);
 		ImGui::TableHeadersRow();
 
 		// Name

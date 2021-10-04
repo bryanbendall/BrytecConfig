@@ -5,6 +5,7 @@
 #include "../AppManager.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include "../utils/ModuleBuilder.h"
+#include "../utils/FileDialogs.h"
 
 ModuleBuilderWindow::ModuleBuilderWindow()
 {
@@ -28,17 +29,21 @@ void ModuleBuilderWindow::drawMenubar()
 {
     if(ImGui::BeginMenuBar()) {
 
-        if(ImGui::MenuItem("New Module"))
+        // New
+        if(ImGui::MenuItem(ICON_FA_FILE))
             m_module = std::make_shared<Module>();
 
-        if(ImGui::MenuItem("Save Module")) {
-            std::string filepath = "data/modules/";
-            filepath += m_module->getName();
-            filepath += ".yaml";
-            ModuleBuilder::saveModuleFile(std::filesystem::path(filepath), m_module);
+        // Save
+        if(ImGui::MenuItem(ICON_FA_SAVE)) {
+            auto defaultPath = std::filesystem::absolute("data/modules/");
+            auto path = FileDialogs::SaveFile("yaml", defaultPath.string().c_str());
+
+            if(!path.empty())
+                ModuleBuilder::saveModuleFile(path, m_module);
         }
 
-        if(ImGui::MenuItem("Add Pin"))
+        // Add Pin
+        if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
             m_module->addPin();
 
         ImGui::EndMenuBar();
@@ -53,7 +58,7 @@ void ModuleBuilderWindow::drawModuleTable()
     static ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding;
 
     if(ImGui::BeginTable("3ways", 2, flags)) {
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
+        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 200.0f);
         ImGui::TableSetupColumn("Value");
         ImGui::TableHeadersRow();
 

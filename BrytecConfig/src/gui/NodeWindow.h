@@ -26,6 +26,7 @@ public:
 
 	void drawWindow();
 	void setOpenedState(bool state) { m_opened = state; }
+	bool getOpenedState() { return m_opened; }
 
 private:
 	void drawMenubar();

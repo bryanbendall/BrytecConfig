@@ -11,7 +11,7 @@ class NodeGroup : public Selectable {
 
 	std::deque<std::shared_ptr<Node>> m_nodes;
 	IOTypes::Types m_type = IOTypes::Types::Undefined;
-	std::string m_name = "Undefined IO";
+	std::string m_name = "Unnamed";
 	bool m_enabled = true;
 	bool m_assignedToPin = false;
 	int m_nodeIds = 0;

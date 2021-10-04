@@ -1,8 +1,0 @@
-Module: Untitled
-Pins:
-  - PinoutName: Pin1
-    AvailableTypes: [5, 9, 4]
-  - PinoutName: B9
-    AvailableTypes: [5, 9, 4]
-  - PinoutName: sfdsfsd
-    AvailableTypes: [5, 9, 4]

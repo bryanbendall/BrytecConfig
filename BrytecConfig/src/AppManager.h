@@ -30,6 +30,10 @@ public:
 	static AppManager* get() { return s_context; }
 
 private:
+	void updateWindowTitle();
+	void handleKeyEvents();
+
+private:
 	static AppManager* s_context;
 	std::shared_ptr<Config> m_config;
 	std::weak_ptr<Selectable> m_selectedItem;
