@@ -2,7 +2,7 @@
 #include "../AppManager.h"
 #include <iostream>
 #include <IconsFontAwesome5.h>
-#include "../utils/ModuleBuilder.h"
+#include "../utils/ModuleSerializer.h"
 #include <filesystem>
 
 ModuleWindow::ModuleWindow() {
@@ -25,7 +25,7 @@ void ModuleWindow::drawMenubar()
     if(ImGui::BeginMenuBar()) {
 
         if(ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
-            auto moduleList = ModuleBuilder::readModulesFromDisk();
+            auto moduleList = ModuleSerializer::readModulesFromDisk();
             for(auto& modulePath : moduleList) {
                 if(ImGui::MenuItem(modulePath.stem().string().c_str()))
                     AppManager::get()->getConfig()->addModule(modulePath);

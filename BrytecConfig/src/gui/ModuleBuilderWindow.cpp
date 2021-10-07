@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include "../AppManager.h"
 #include <misc/cpp/imgui_stdlib.h>
-#include "../utils/ModuleBuilder.h"
+#include "../utils/ModuleSerializer.h"
 #include "../utils/FileDialogs.h"
 
 ModuleBuilderWindow::ModuleBuilderWindow()
@@ -38,8 +38,10 @@ void ModuleBuilderWindow::drawMenubar()
             auto defaultPath = std::filesystem::absolute("data/modules/");
             auto path = FileDialogs::SaveFile("yaml", defaultPath.string().c_str());
 
-            if(!path.empty())
-                ModuleBuilder::saveModuleFile(path, m_module);
+            if(!path.empty()) {
+                ModuleSerializer serializer(m_module);
+                serializer.serializeText(path);
+            }
         }
 
         // Add Pin

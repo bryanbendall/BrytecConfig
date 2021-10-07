@@ -24,7 +24,7 @@ void NodeGroup::addNode(NodeTypes type, ImVec2 position)
 void NodeGroup::sortNodes() 
 {
 	for(auto& n : m_nodes)
-		n->getLoopFound() = false;
+		n->setLoopFound(false);
 
 	std::deque<std::shared_ptr<Node>> newDeque;
 	std::deque<std::shared_ptr<Node>> loopCheck;
@@ -90,7 +90,7 @@ void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::
 		return;
 
 	if(std::find(loopCheck.begin(), loopCheck.end(), node) != loopCheck.end()) {
-		node->getLoopFound() = true;
+		node->setLoopFound(true);
 		return;
 	}
 	loopCheck.push_back(node);

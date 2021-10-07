@@ -1,0 +1,59 @@
+Config: test
+Modules:
+  - Module: font
+    Address: 7
+    Enabled: true
+    Pins:
+      - PinoutName: all inputs
+        AvailableTypes:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
+          - 7  # 5V Switched Input
+          - 8  # 5V Variable Input
+      - PinoutName: can
+        AvailableTypes:
+          - 9  # Can Input
+      - PinoutName: all outputs
+        AvailableTypes:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+          - 3  # 12V Low Current Output
+          - 4  # Ground Output
+  - Module: rear
+    Address: 5
+    Enabled: true
+    Pins:
+      - PinoutName: all inputs
+        AvailableTypes:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
+          - 7  # 5V Switched Input
+          - 8  # 5V Variable Input
+      - PinoutName: can
+        AvailableTypes:
+          - 9  # Can Input
+      - PinoutName: all outputs
+        AvailableTypes:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+          - 3  # 12V Low Current Output
+          - 4  # Ground Output
+  - Module: inside
+    Address: 3
+    Enabled: false
+    Pins:
+      - PinoutName: all inputs
+        AvailableTypes:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
+          - 7  # 5V Switched Input
+          - 8  # 5V Variable Input
+      - PinoutName: can
+        AvailableTypes:
+          - 9  # Can Input
+      - PinoutName: all outputs
+        AvailableTypes:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+          - 3  # 12V Low Current Output
+          - 4  # Ground Output

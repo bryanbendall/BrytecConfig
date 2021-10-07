@@ -15,6 +15,7 @@ class NodeWindow
 	};
 
 	bool m_opened = true;
+	bool m_isFocused = false;
 	std::weak_ptr<Selectable> m_lastSelected;
 	Mode m_mode = Mode::Build;
 	// TODO remove node groups when deleted
@@ -27,6 +28,7 @@ public:
 	void drawWindow();
 	void setOpenedState(bool state) { m_opened = state; }
 	bool getOpenedState() { return m_opened; }
+	bool getIsWindowFocused() { return m_isFocused; }
 
 private:
 	void drawMenubar();

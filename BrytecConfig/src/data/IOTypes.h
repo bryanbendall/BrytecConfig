@@ -18,6 +18,8 @@ struct IOTypes
 	};
 
 	static const char* Strings[(size_t) Types::Count];
+
+	static const char* getString(Types type) { return Strings[(int)type]; }
 };
 
 

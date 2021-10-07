@@ -34,7 +34,7 @@ void PropertiesWindow::drawWindow() {
 
 	ImGui::End();
 
-	drawStatsWindow();
+	//drawStatsWindow();
 }
 
 void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
@@ -134,7 +134,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 				ImGui::TableNextColumn();
 				ImGui::TableNextColumn();
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text(IOTypes::Strings[(int)type]);
+				ImGui::Text(IOTypes::getString(type));
 
 				ImGui::PopID();
 			}
@@ -180,7 +180,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		if(nodeGroup->getAssigned()) {
-			ImGui::Text("%s %s", IOTypes::Strings[(int)nodeGroup->getType()], ICON_FA_LOCK);
+			ImGui::Text("%s %s", IOTypes::getString(nodeGroup->getType()), ICON_FA_LOCK);
 		} else {
 			ImGui::Combo("###Node Group Type", (int*) &nodeGroup->getType() , IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
 		}

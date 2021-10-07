@@ -67,7 +67,7 @@ void NodeGroupWindow::drawNodeGroups()
                 ImGui::SetDragDropPayload("NodeGroup", &i, sizeof(int));
 
                 ImGui::Text(nodeGroup->getName().c_str());
-                ImGui::TextDisabled("%s", IOTypes::Strings[(int) nodeGroup->getType()]);
+                ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
 
                 ImGui::EndDragDropSource();
             }

@@ -3,6 +3,8 @@
 #include "utils/ConfigSerializer.h"
 #include <iostream>
 #include "utils/FileDialogs.h"
+#include <memory>
+#include <imgui.h>
 
 AppManager* AppManager::s_context;
 
@@ -37,7 +39,7 @@ void AppManager::openConfig()
 
 	std::shared_ptr<Config> config = std::make_shared<Config>(path);
 	ConfigSerializer serializer(config);
-	if(serializer.DeserializeText(config->getFilepath())) {
+	if(serializer.deserializeText(config->getFilepath())) {
 		m_config = config;
 		updateWindowTitle();
 	}
@@ -48,7 +50,7 @@ void AppManager::openConfig()
 static void save(std::shared_ptr<Config>& config, const std::filesystem::path& path)
 {
 	ConfigSerializer serializer(config);
-	serializer.SerializeText(path);
+	serializer.serializeText(path);
 }
 
 void AppManager::saveConfig()
@@ -65,6 +67,9 @@ void AppManager::saveAsConfig()
 
 	if(path.empty())
 		return;
+
+	if(path.extension().empty())
+		path.replace_extension("btconfig");
 
 	save(m_config, path);
 	m_config->setFilepath(path);
@@ -114,6 +119,26 @@ void AppManager::handleKeyEvents()
 			saveAsConfig();
 		else
 			saveConfig();
+	}
+
+	// Delete
+	if(ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
+		if(!m_mainWindow.isNodeWindowFocused()) {
+			std::shared_ptr<Selectable> selected = m_selectedItem.lock();
+			if(!selected)
+				return;
+
+			if(auto module = std::dynamic_pointer_cast<Module>(selected)) {
+				setSelected(std::weak_ptr<Selectable>());
+				m_config->removeModule(module);
+			}
+
+			if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
+				setSelected(std::weak_ptr<Selectable>());
+				m_config->removeNodeGroup(nodeGroup);
+			}
+
+		}
 	}
 
 }

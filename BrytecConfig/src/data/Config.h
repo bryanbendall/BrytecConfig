@@ -11,10 +11,16 @@ class Config
 
 public:
 	Config(const std::filesystem::path& path);
-	const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
-	const std::vector<std::shared_ptr<NodeGroup>>& getNodeGroups() { return m_nodeGroups; }
+	
 	void addModule(std::filesystem::path modulePath);
+	void addModule(std::shared_ptr<Module>& module);
+	void removeModule(std::shared_ptr<Module>& module);
+	const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
+	
 	void addNodeGroup();
+	void removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup);
+	const std::vector<std::shared_ptr<NodeGroup>>& getNodeGroups() { return m_nodeGroups; }
+
 	const std::filesystem::path& getFilepath() { return m_path; }
 	void setFilepath(const std::filesystem::path& path) { m_path = path; }
 

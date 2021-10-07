@@ -6,7 +6,7 @@ std::filesystem::path FileDialogs::OpenFile(const char* filter)
 {
 	nfdchar_t* outPath = NULL;
 	nfdresult_t result = NFD_OpenDialog(filter, NULL, &outPath);
-
+	
 	if(result != NFD_OKAY)
 		return std::filesystem::path();
 

@@ -59,7 +59,6 @@ int main(int, char**) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        //ImGui::ShowDemoWindow();
 
         appManager.update();
 

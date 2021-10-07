@@ -8,7 +8,7 @@
 #include <functional>
 
 MainWindow::MainWindow() 
-{
+{ 
 }
 
 void MainWindow::setupFonts() 
@@ -99,6 +99,9 @@ void MainWindow::drawWindow()
 
     drawMenu();
     drawMenuBar();
+
+    //ImGui::ShowDemoWindow();
+    ImGui::ShowMetricsWindow();
 
     m_nodeWindow.drawWindow();
     m_moduleWindow.drawWindow();

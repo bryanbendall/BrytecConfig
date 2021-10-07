@@ -24,6 +24,7 @@ public:
 	void setupStyle();
 	void loadLayout();
 	void drawWindow();
+	bool isNodeWindowFocused() { return m_nodeWindow.getIsWindowFocused(); }
 
 private:
 	void drawMenu();
