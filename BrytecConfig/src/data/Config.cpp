@@ -22,9 +22,11 @@ void Config::addModule(std::shared_ptr<Module>& module)
 	m_modules.push_back(module);
 }
 
-void Config::addNodeGroup()
+std::shared_ptr<NodeGroup> Config::addNodeGroup()
 {
-	m_nodeGroups.push_back(std::make_shared<NodeGroup>());
+	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
+	m_nodeGroups.push_back(nodeGroup);
+	return nodeGroup;
 }
 
 void Config::removeModule(std::shared_ptr<Module>& module)

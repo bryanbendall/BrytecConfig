@@ -14,8 +14,14 @@ public:
 	NodeGroup();
 	
 	std::string& getName() { return m_name; }
-	bool& getEnabled() { return m_enabled; }
+	void setName(const std::string& name) { m_name = name; }
+
 	IOTypes::Types& getType() { return m_type; }
+	void setType(IOTypes::Types type) { m_type = type; }
+
+	bool& getEnabled() { return m_enabled; }
+	void setEnabled(bool state) { m_enabled = state; }
+
 	float getValue(int attributeIndex);
 
 	bool getAssigned() { return m_assignedToPin; }
@@ -32,11 +38,11 @@ private:
 	void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
 
 private:
-	std::deque<std::shared_ptr<Node>> m_nodes;
-	IOTypes::Types m_type = IOTypes::Types::Undefined;
 	std::string m_name = "Unnamed";
+	IOTypes::Types m_type = IOTypes::Types::Undefined;
 	bool m_enabled = true;
 	bool m_assignedToPin = false;
+	std::deque<std::shared_ptr<Node>> m_nodes;
 	int m_nodeIds = 0;
 
 };

@@ -26,7 +26,7 @@ void ModuleSerializer::serializeText(const std::filesystem::path& filepath)
 bool ModuleSerializer::deserializeText(const std::filesystem::path& filepath)
 {
 	YAML::Node data = YAML::LoadFile(filepath.string());
-	if(!data["Module"]) {
+	if(!data["Name"]) {
 		assert(false);
 		return false;
 	}
@@ -63,7 +63,7 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
 
 void ModuleSerializer::serializeModuleTemplate(YAML::Emitter& out)
 {
-	out << YAML::Key << "Module" << YAML::Value << m_module->getName();
+	out << YAML::Key << "Name" << YAML::Value << m_module->getName();
 	out << YAML::Key << "Address" << YAML::Value << (int) m_module->getAddress();
 	out << YAML::Key << "Enabled" << YAML::Value << m_module->getEnabled();
 	out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
@@ -74,6 +74,9 @@ void ModuleSerializer::serializeModuleTemplate(YAML::Emitter& out)
 		out << YAML::Key << "AvailableTypes" << YAML::Value << YAML::BeginSeq;
 		for(auto type : pin->getAvailableTypes())
 			out << (unsigned int) type << YAML::Comment(IOTypes::getString(type));
+
+		// TODO - Nodes
+
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 	}

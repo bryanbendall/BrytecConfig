@@ -19,7 +19,7 @@ private:
 	template<typename T>
 	bool deserializeModuleTemplate(T& data)
 	{
-		m_module->setName(data["Module"].as<std::string>());
+		m_module->setName(data["Name"].as<std::string>());
 
 		m_module->setAddress(data["Address"].as<int>());
 

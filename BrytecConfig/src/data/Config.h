@@ -17,7 +17,7 @@ public:
 	void removeModule(std::shared_ptr<Module>& module);
 	const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
 	
-	void addNodeGroup();
+	std::shared_ptr<NodeGroup> addNodeGroup();
 	void removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup);
 	const std::vector<std::shared_ptr<NodeGroup>>& getNodeGroups() { return m_nodeGroups; }
 

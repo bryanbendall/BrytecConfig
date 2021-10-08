@@ -1,6 +1,13 @@
-Module: Test Module
-Address: 2
+Name: Test Module
+Address: 5
+Enabled: true
 Pins:
+  - PinoutName: all outputs
+    AvailableTypes:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+      - 3  # 12V Low Current Output
+      - 4  # Ground Output
   - PinoutName: all inputs
     AvailableTypes:
       - 5  # 12V Switched Input
@@ -10,9 +17,3 @@ Pins:
   - PinoutName: can
     AvailableTypes:
       - 9  # Can Input
-  - PinoutName: all outputs
-    AvailableTypes:
-      - 1  # 12V High Current PWM Output
-      - 2  # 12V High Current Output
-      - 3  # 12V Low Current Output
-      - 4  # Ground Output
