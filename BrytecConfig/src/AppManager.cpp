@@ -27,6 +27,7 @@ void AppManager::update()
 
 void AppManager::newConfig()
 {
+	clearSelected();
 	m_config = std::make_shared<Config>("");
 	updateWindowTitle();
 }
@@ -40,6 +41,7 @@ void AppManager::openConfig()
 	std::shared_ptr<Config> config = std::make_shared<Config>(path);
 	ConfigSerializer serializer(config);
 	if(serializer.deserializeText(config->getFilepath())) {
+		clearSelected();
 		m_config = config;
 		updateWindowTitle();
 	}
@@ -129,12 +131,12 @@ void AppManager::handleKeyEvents()
 				return;
 
 			if(auto module = std::dynamic_pointer_cast<Module>(selected)) {
-				setSelected(std::weak_ptr<Selectable>());
+				clearSelected();
 				m_config->removeModule(module);
 			}
 
 			if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
-				setSelected(std::weak_ptr<Selectable>());
+				clearSelected();
 				m_config->removeNodeGroup(nodeGroup);
 			}
 

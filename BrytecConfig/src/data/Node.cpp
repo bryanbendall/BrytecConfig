@@ -148,7 +148,7 @@ float Node::getOutputValue(size_t outputIndex) {
 	return m_outputs[outputIndex];
 }
 
-unsigned int Node::getSize()
+unsigned int Node::getBytesSize()
 {
 	if(m_type == NodeTypes::Output || m_type == NodeTypes::Final_Input_Value)
 		return 4;
@@ -488,18 +488,19 @@ void Node::evaulateCurve()
 
 void Node::evaluatePushButton() 
 {
-	float& pushButtonIn = getInputValue(0);
-	float& brakeIn = getInputValue(1);
-	float& engineRunningIn = getInputValue(2);
 	float& ignitionOut = m_outputs[0];
 	float& starterOut = m_outputs[1];
 	float& lastEngineRunning = m_values[0];
 
-	if(!hasConnection(0) || !hasConnection(1)) {
+	if(!hasConnection(0) || !hasConnection(1) || !hasConnection(2)) {
 		ignitionOut = 0.0f;
 		starterOut = 0.0f;
 		return;
 	}
+
+	float& pushButtonIn = getInputValue(0);
+	float& brakeIn = getInputValue(1);
+	float& engineRunningIn = getInputValue(2);
 
 	float lastEngingRunning = 0.0f;
 	if(lastEngingRunning <= 0.0f && engineRunningIn > 0.0f && starterOut > 0.0f) {

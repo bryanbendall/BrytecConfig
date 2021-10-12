@@ -1,8 +1,10 @@
 #include "NodeGroup.h"
 
-NodeGroup::NodeGroup() 
+NodeGroup::NodeGroup(UUID uuid)
+	: m_uuid(uuid)
 {
 	addNode(NodeTypes::Raw_Input_Value, {50.0f, 50.0f});
+	addNode(NodeTypes::Output, {350.0f, 50.0f});
 }
 
 std::shared_ptr<Node> NodeGroup::getNode(int id) 
@@ -17,8 +19,8 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 
 void NodeGroup::addNode(NodeTypes type, ImVec2 position) 
 {
-	m_nodes.push_back(std::make_shared<Node>(m_nodeIds, position, type));
-	m_nodeIds++;
+	m_nodes.push_back(std::make_shared<Node>(m_nodesIds, position, type));
+	m_nodesIds++;
 }
 
 void NodeGroup::sortNodes() 
@@ -29,17 +31,17 @@ void NodeGroup::sortNodes()
 	std::deque<std::shared_ptr<Node>> newDeque;
 	std::deque<std::shared_ptr<Node>> loopCheck;
 
-	std::shared_ptr<Node> last;
+	std::shared_ptr<Node> lastNode;
 	for(auto& n : m_nodes) {
 		if(n->getType() == NodeTypes::Output) {
-			last = n;
+			lastNode = n;
 			break;
 		}
 	}
-	if(!last)
+	if(!lastNode)
 		return;
 
-	traverseConnections(last, newDeque, loopCheck);
+	traverseConnections(lastNode, newDeque, loopCheck);
 
 	//add remaining nodes at begining
 	for(auto n : m_nodes) {

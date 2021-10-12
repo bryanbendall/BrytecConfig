@@ -6,12 +6,13 @@
 #include <string>
 #include "Selectable.h"
 #include "IOTypes.h"
+#include "../utils/UUID.h"
 
 class NodeGroup : public Selectable 
 {
 
 public:
-	NodeGroup();
+	NodeGroup(UUID uuid);
 	
 	std::string& getName() { return m_name; }
 	void setName(const std::string& name) { m_name = name; }
@@ -21,6 +22,8 @@ public:
 
 	bool& getEnabled() { return m_enabled; }
 	void setEnabled(bool state) { m_enabled = state; }
+
+	const UUID& getId() { return m_uuid; }
 
 	float getValue(int attributeIndex);
 
@@ -39,10 +42,11 @@ private:
 
 private:
 	std::string m_name = "Unnamed";
+	UUID m_uuid;
 	IOTypes::Types m_type = IOTypes::Types::Undefined;
 	bool m_enabled = true;
 	bool m_assignedToPin = false;
 	std::deque<std::shared_ptr<Node>> m_nodes;
-	int m_nodeIds = 0;
+	int m_nodesIds = 0;
 
 };

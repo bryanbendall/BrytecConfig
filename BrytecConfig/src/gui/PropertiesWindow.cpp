@@ -163,6 +163,15 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		ImGui::InputText("###pinName", &nodeGroup->getName());
 
+		// Id
+		ImGui::TableNextRow();
+		ImGui::TableNextColumn();
+		ImGui::AlignTextToFramePadding();
+		ImGui::Text("Id");
+		ImGui::TableNextColumn();
+		ImGui::SetNextItemWidth(-FLT_MIN);
+		ImGui::Text("%llu", nodeGroup->getId());
+
 		// Enabled
 		ImGui::TableNextRow();
 		ImGui::TableNextColumn();
@@ -212,7 +221,7 @@ void PropertiesWindow::drawStats(std::shared_ptr<Module> module)
 	for(auto p : module->getPins()) {
 		if(p->getNodeGroup()) {
 			for(auto n : p->getNodeGroup()->getNodes())
-				totalBytes += n->getSize();
+				totalBytes += n->getBytesSize();
 		}
 	}
 	ImGui::TextUnformatted("Bytes in module");
@@ -239,7 +248,7 @@ void PropertiesWindow::drawStats(std::shared_ptr<Pin> pin)
 	// Bytes in pin
 	int totalBytes = 0;
 	for(auto n : pin->getNodeGroup()->getNodes())
-		totalBytes += n->getSize();
+		totalBytes += n->getBytesSize();
 	ImGui::TextUnformatted("Bytes in pin");
 	ImGui::NextColumn();
 	ImGui::Text("%i %s", totalBytes, "bytes");

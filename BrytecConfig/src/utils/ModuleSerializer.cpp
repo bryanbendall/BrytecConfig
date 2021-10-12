@@ -10,12 +10,17 @@ ModuleSerializer::ModuleSerializer(std::shared_ptr<Module>& module)
 {
 }
 
-void ModuleSerializer::serializeText(const std::filesystem::path& filepath)
+ModuleSerializer::ModuleSerializer(std::shared_ptr<Config>& config, std::shared_ptr<Module>& module)
+	: m_config(config), m_module(module)
+{
+}
+
+void ModuleSerializer::serializeTemplateText(const std::filesystem::path& filepath)
 {
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 
-	serializeModuleTemplate(out);
+	serializeTemplate(out);
 
 	out << YAML::EndMap;
 
@@ -23,14 +28,25 @@ void ModuleSerializer::serializeText(const std::filesystem::path& filepath)
 	fout << out.c_str();
 }
 
-bool ModuleSerializer::deserializeText(const std::filesystem::path& filepath)
+bool ModuleSerializer::deserializeTemplateText(const std::filesystem::path& filepath)
 {
 	YAML::Node data = YAML::LoadFile(filepath.string());
 	if(!data["Name"]) {
 		assert(false);
 		return false;
 	}
-	return deserializeModuleTemplate(data);
+	return deserializeTemplate(data);
+}
+
+void ModuleSerializer::serializeTemplateBinary(const std::filesystem::path& filepath)
+{
+	assert(false);
+}
+
+bool ModuleSerializer::deserializeTemplateBinary(const std::filesystem::path& filepath)
+{
+	assert(false);
+	return false;
 }
 
 std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
@@ -61,26 +77,28 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
 	return moduleList;
 }
 
-void ModuleSerializer::serializeModuleTemplate(YAML::Emitter& out)
+void ModuleSerializer::serializeTemplate(YAML::Emitter& out)
 {
 	out << YAML::Key << "Name" << YAML::Value << m_module->getName();
 	out << YAML::Key << "Address" << YAML::Value << (int) m_module->getAddress();
 	out << YAML::Key << "Enabled" << YAML::Value << m_module->getEnabled();
+	
 	out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
-
 	for(auto pin : m_module->getPins()) {
 		out << YAML::BeginMap;
-		out << YAML::Key << "PinoutName" << YAML::Value << pin->getPinoutName();
-		out << YAML::Key << "AvailableTypes" << YAML::Value << YAML::BeginSeq;
+		out << YAML::Key << "Pinout Name" << YAML::Value << pin->getPinoutName();
+		out << YAML::Key << "Available Types" << YAML::Value << YAML::BeginSeq;
 		for(auto type : pin->getAvailableTypes())
 			out << (unsigned int) type << YAML::Comment(IOTypes::getString(type));
-
-		// TODO - Nodes
-
 		out << YAML::EndSeq;
+
+		if(m_config) {
+			if(auto nodeGroup = pin->getNodeGroup())
+				out << YAML::Key << "Node Group Id" << YAML::Value << nodeGroup->getId();
+		}
+
 		out << YAML::EndMap;
 	}
-
 	out << YAML::EndSeq;
 }
 

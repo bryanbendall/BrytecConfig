@@ -40,7 +40,7 @@ void ModuleBuilderWindow::drawMenubar()
 
             if(!path.empty()) {
                 ModuleSerializer serializer(m_module);
-                serializer.serializeText(path);
+                serializer.serializeTemplateText(path);
             }
         }
 

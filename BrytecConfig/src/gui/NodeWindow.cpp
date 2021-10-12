@@ -515,27 +515,27 @@ void NodeWindow::drawPin(std::shared_ptr<Node>& node) {
 
 void NodeWindow::drawAnd(std::shared_ptr<Node>& node)
 {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 3);
+    imnodes::BeginInputAttribute(node->getIntputId(2));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 4);
+    imnodes::BeginInputAttribute(node->getIntputId(3));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 5);
+    imnodes::BeginInputAttribute(node->getIntputId(4));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
@@ -546,41 +546,41 @@ void NodeWindow::drawOr(std::shared_ptr<Node>& node) {
 }
 
 void NodeWindow::drawTwoStage(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Stage 1");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 3);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
     ImGui::DragFloat("###float1", &node->getValue(0), 0.5f, 0.0f, 100.0f, "%.0f");
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Stage 2");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 4);
+    imnodes::BeginStaticAttribute(node->getValueId(1));
     ImGui::DragFloat("###float1", &node->getValue(1), 0.5f, 0.0f, 100.0f, "%.0f");
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawCurve(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 2);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
 
     // Fix padding on combo box
     ImGui::PopStyleVar(2);
 
     int type = (int) node->getValue(0);
     if(ImGui::Combo("###Combo", &type, Node::s_curveNames, (int) CurveTypes::Count))
-        node->getValue(0) = (float) type;
+        node->setValue(0, (float) type);
 
     // End fix padding on combo box
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.f, 1.f));
@@ -588,17 +588,17 @@ void NodeWindow::drawCurve(std::shared_ptr<Node>& node) {
 
     bool repeat = node->getValue(1);
     if(ImGui::Checkbox("Repeat", &repeat))
-        node->getValue(1) = repeat;
+        node->setValue(1, repeat);
 
     bool onShutdown = node->getValue(2);
     if(ImGui::Checkbox("On Shutdown", &onShutdown))
-        node->getValue(2) = onShutdown;
+        node->setValue(2, onShutdown);
 
     ImGui::DragFloat("###float1", &node->getValue(3), 0.05f, 0.0f, 10.0f, "%.2f sec");
 
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
@@ -606,65 +606,65 @@ void NodeWindow::drawCurve(std::shared_ptr<Node>& node) {
 
 void NodeWindow::drawCompare(std::shared_ptr<Node>& node) 
 {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input 1");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 3);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
     // Fix padding on combo box
     ImGui::PopStyleVar(2);
 
     int type = (int)node->getValue(0);
     if(ImGui::Combo("###Combo", &type, Node::s_compareNames, (int)CompareTypes::Count))
-        node->getValue(0) = (float)type;
+        node->setValue(0, (float)type);
 
     // End fix padding on combo box
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.f, 1.f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Input 2");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawOnOff(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("On");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Off");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawInvert(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawToggle(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
@@ -672,50 +672,50 @@ void NodeWindow::drawToggle(std::shared_ptr<Node>& node) {
 
 void NodeWindow::drawDelay(std::shared_ptr<Node>& node) 
 {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 2);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
     ImGui::DragFloat("###float1", &node->getValue(0), 0.05f, 0.0f, 10.0f, "%.2f sec");
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawPushButton(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Button");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 3);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Neutral Safety");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 4);
+    imnodes::BeginInputAttribute(node->getIntputId(2));
     ImGui::Text("Engine Running");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Ignition").x);
     ImGui::Text("Ignition");
     imnodes::EndOutputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginOutputAttribute(node->getOutputId(1));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Starter").x);
     ImGui::Text("Starter");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawMapValue(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 2);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
     ImGui::Text("From Min");
     ImGui::DragFloat("###hidelabel1", &node->getValue(0), 1.0f, 0.0f, 0.0f, "%.2f");
     ImGui::Text("To Min");
@@ -726,35 +726,35 @@ void NodeWindow::drawMapValue(std::shared_ptr<Node>& node) {
     ImGui::DragFloat("###hidelabel4", &node->getValue(3), 1.0f, 0.0f, 0.0f, "%.2f");
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
 }
 
 void NodeWindow::drawMath(std::shared_ptr<Node>& node) {
-    imnodes::BeginInputAttribute((node->getId() << 8) + 1);
+    imnodes::BeginInputAttribute(node->getIntputId(0));
     ImGui::Text("Input 1");
     imnodes::EndInputAttribute();
 
     // Fix padding on combo box
     ImGui::PopStyleVar(2);
-    imnodes::BeginStaticAttribute((node->getId() << 8) + 3);
+    imnodes::BeginStaticAttribute(node->getValueId(0));
 
     int type = (int)node->getValue(0);
     if(ImGui::Combo("###Combo", &type, Node::s_mathNames, (int)MathTypes::Count))
-        node->getValue(0) = (float) type;
+        node->setValue(0, (float) type);
 
     // End fix padding on combo box
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.f, 1.f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
     imnodes::EndStaticAttribute();
 
-    imnodes::BeginInputAttribute((node->getId() << 8) + 2);
+    imnodes::BeginInputAttribute(node->getIntputId(1));
     ImGui::Text("Input 2");
     imnodes::EndInputAttribute();
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();
@@ -762,12 +762,12 @@ void NodeWindow::drawMath(std::shared_ptr<Node>& node) {
 
 void NodeWindow::drawValue(std::shared_ptr<Node>& node) {
     if(m_mode == Mode::Simulation) {
-        imnodes::BeginStaticAttribute((node->getId() << 8) + 1);
+        imnodes::BeginStaticAttribute(node->getValueId(0));
         ImGui::DragFloat("###float1", &node->getValue(0), 5.0f, 0.0f, 10000.0f, "%.2f");
         imnodes::EndStaticAttribute();
     }
 
-    imnodes::BeginOutputAttribute((node->getId() << 8) + 0);
+    imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
     ImGui::Text("Output");
     imnodes::EndOutputAttribute();

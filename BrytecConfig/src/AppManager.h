@@ -13,9 +13,13 @@ class AppManager
 public:
 	AppManager(GLFWwindow* window);
 	void update();
+	
 	std::shared_ptr<Config>& getConfig() { return m_config; }
+
 	std::weak_ptr<Selectable> getSelectedItem() { return m_selectedItem; }
 	void setSelected(std::weak_ptr<Selectable> sel) { m_selectedItem = sel; }
+	void clearSelected() { setSelected(std::weak_ptr<Selectable>()); }
+
 	void setBigIconFont(ImFont* font) { m_bigIcons = font; }
 	ImFont* getBigIconFont() { return m_bigIcons; }
 
@@ -24,7 +28,6 @@ public:
 	void openConfig();
 	void saveConfig();
 	void saveAsConfig();
-
 	void exit();
 
 	static AppManager* get() { return s_context; }

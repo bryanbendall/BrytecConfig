@@ -12,7 +12,7 @@ void Config::addModule(std::filesystem::path modulePath)
 {
 	std::shared_ptr<Module> module = std::make_shared<Module>();
 	ModuleSerializer serializer(module);
-	if(serializer.deserializeText(modulePath)) {
+	if(serializer.deserializeTemplateText(modulePath)) {
 		m_modules.push_back(module);
 	}
 }
@@ -22,9 +22,9 @@ void Config::addModule(std::shared_ptr<Module>& module)
 	m_modules.push_back(module);
 }
 
-std::shared_ptr<NodeGroup> Config::addNodeGroup()
+std::shared_ptr<NodeGroup> Config::addNodeGroup(UUID uuid)
 {
-	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
+	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>(uuid);
 	m_nodeGroups.push_back(nodeGroup);
 	return nodeGroup;
 }
@@ -39,4 +39,14 @@ void Config::removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup)
 {
 	auto it = std::find(m_nodeGroups.begin(), m_nodeGroups.end(), nodeGroup);
 	m_nodeGroups.erase(it);
+}
+
+const std::shared_ptr<NodeGroup>& Config::findNodeGroup(UUID uuid)
+{
+	for(auto& nodeGroup : m_nodeGroups) {
+		if(nodeGroup->getId() == uuid)
+			return nodeGroup;
+	}
+
+	return nullptr;
 }
