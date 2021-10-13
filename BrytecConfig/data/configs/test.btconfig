@@ -1,24 +1,38 @@
 Config: test
 Node Groups:
   - Name: Unnamed
-    Id: 6929543993539638101
+    Id: 16391544558090513929
     Type: 0  # Undefined
     Enabled: true
     Nodes:
-      - Name: Raw Value
-        Type: 2  # Raw Value
+      - Name: Initial Value
+        Type: 0  # Initial Value
         Position: [50, 50]
-      - Name: Output
-        Type: 0  # Output
-        Position: [350, 50]
-      - Name: Curve
-        Type: 7  # Curve
-        Position: [184, 179]
-      - Name: Value
-        Type: 16  # Value
-        Position: [520, 254]
-      - Name: Push Button Start
-        Type: 13  # Push Button Start
-        Position: [361, 170]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Or
+        Type: 4  # Or
+        Position: [258, 43]
+        Inputs:
+          - [-1, -1]
+          - [-1, -1]
+          - [0, 0]
+          - [-1, -1]
+          - [-1, -1]
+        Values: []
+      - Name: On/Off
+        Type: 8  # On/Off
+        Position: [445, 141]
+        Inputs:
+          - [1, 0]
+          - [1, 0]
+        Values: []
+      - Name: Final Value
+        Type: 1  # Final Value
+        Position: [479, 56]
+        Inputs:
+          - [2, 0]
+        Values: []
 Modules:
   []

@@ -2,9 +2,8 @@
 #include <iostream>
 
 const char* Node::s_nodeName[(int) NodeTypes::Count] = {
-	"Output",
+	"Initial Value",
 	"Final Value",
-	"Raw Value",
 	"Pin",
 	"And",
 	"Or",
@@ -42,7 +41,8 @@ const char* Node::s_curveNames[(int) CurveTypes::Count] = {
 	"Breathing"
 };
 
-Node::Node(int id, ImVec2 position, NodeTypes type) : m_id(id), m_position(position), m_type(type), m_name(Node::s_nodeName[(int)type])
+Node::Node(int id, ImVec2 position, NodeTypes type) 
+	: m_id(id), m_position(position), m_type(type), m_name(Node::s_nodeName[(int)type])
 {
 	int inputs = 0;
 	int outputs = 0;
@@ -50,15 +50,12 @@ Node::Node(int id, ImVec2 position, NodeTypes type) : m_id(id), m_position(posit
 
 	switch (type)
 	{
-	case NodeTypes::Output:
-		inputs = 1;
-		break;
-	case NodeTypes::Final_Input_Value:
-		inputs = 1;
-		break;
-	case NodeTypes::Raw_Input_Value:
+	case NodeTypes::Initial_Value:
 		outputs = 1;
 		values = 1;
+		break;
+	case NodeTypes::Final_Value:
+		inputs = 1;
 		break;
 	case NodeTypes::Pin:
 		outputs = 1;
@@ -150,22 +147,13 @@ float Node::getOutputValue(size_t outputIndex) {
 
 unsigned int Node::getBytesSize()
 {
-	if(m_type == NodeTypes::Output || m_type == NodeTypes::Final_Input_Value)
-		return 4;
-
-	unsigned int ret = 0;
-	ret += 4; // char for type
-	ret += m_outputs.size() * 4;
-	ret += m_inputs.size() * 4;
-	ret += m_values.size() * 4;
-	return ret;
+	return 0;
 }
 
 void Node::evaluate() {
 	switch(m_type) {
-		case NodeTypes::Output:											break;
-		case NodeTypes::Final_Input_Value:								break;
-		case NodeTypes::Raw_Input_Value:	m_outputs[0] = m_values[0]; break;
+		case NodeTypes::Initial_Value:		m_outputs[0] = m_values[0];	break;
+		case NodeTypes::Final_Value:									break;
 		case NodeTypes::Pin:				m_outputs[0] = m_values[0]; break;
 		case NodeTypes::And:				evaluateAnd();				break;
 		case NodeTypes::Or:					evaluateOr();				break;

@@ -3,8 +3,8 @@
 NodeGroup::NodeGroup(UUID uuid)
 	: m_uuid(uuid)
 {
-	addNode(NodeTypes::Raw_Input_Value, {50.0f, 50.0f});
-	addNode(NodeTypes::Output, {350.0f, 50.0f});
+	addNode(NodeTypes::Initial_Value, {50.0f, 50.0f});
+	addNode(NodeTypes::Final_Value, {350.0f, 50.0f});
 }
 
 std::shared_ptr<Node> NodeGroup::getNode(int id) 
@@ -15,6 +15,16 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 	}
 	assert(false);
 	return nullptr;
+}
+
+int NodeGroup::getNodeIndex(std::shared_ptr<Node>& node)
+{
+	for(int i = 0; i < m_nodes.size(); i++) {
+		if(m_nodes[i] == node)
+			return i;
+	}
+
+	return -1;
 }
 
 void NodeGroup::addNode(NodeTypes type, ImVec2 position) 
@@ -33,7 +43,7 @@ void NodeGroup::sortNodes()
 
 	std::shared_ptr<Node> lastNode;
 	for(auto& n : m_nodes) {
-		if(n->getType() == NodeTypes::Output) {
+		if(n->getType() == NodeTypes::Final_Value) {
 			lastNode = n;
 			break;
 		}
@@ -71,9 +81,8 @@ void NodeGroup::deleteNode(int nodeId)
 {
 	for(size_t i = 0; i < m_nodes.size(); i++) {
 		if(m_nodes[i]->getId() == nodeId) {
-			if(m_nodes[i]->getType() == NodeTypes::Output ||
-				m_nodes[i]->getType() == NodeTypes::Raw_Input_Value ||
-				m_nodes[i]->getType() == NodeTypes::Final_Input_Value)
+			if(m_nodes[i]->getType() == NodeTypes::Initial_Value ||
+				m_nodes[i]->getType() == NodeTypes::Final_Value)
 				return;
 			m_nodes.erase(m_nodes.begin() + i);
 		}

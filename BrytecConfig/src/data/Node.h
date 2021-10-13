@@ -6,9 +6,8 @@
 #include <memory>
 
 enum class NodeTypes {
-	Output,
-	Final_Input_Value,
-	Raw_Input_Value,
+	Initial_Value,
+	Final_Value,
 	Pin,
 	And,
 	Or,
@@ -75,6 +74,7 @@ public:
 	int getValueId(int index) { return (m_id << 8) + m_values.size() + m_outputs.size() + index; }
 	
 	float getOutputValue(size_t outputIndex);
+	std::vector<float>& getValues() { return m_values; }
 	float& getValue(int index) { return m_values[index]; }
 	void setValue(int index, float value) { m_values[index] = value; }
 
