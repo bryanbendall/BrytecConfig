@@ -145,6 +145,12 @@ float Node::getOutputValue(size_t outputIndex) {
 	return m_outputs[outputIndex];
 }
 
+void Node::setInput(int inputIndex, NodeConnection nodeConnection)
+{
+	assert(!(inputIndex > m_inputs.size()));
+	m_inputs[inputIndex] = nodeConnection;
+}
+
 unsigned int Node::getBytesSize()
 {
 	return 0;

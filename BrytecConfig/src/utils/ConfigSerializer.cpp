@@ -56,7 +56,7 @@ bool ConfigSerializer::deserializeText(const std::filesystem::path& filepath)
 	if(nodeGroups) {
 		for(auto nodeGroup : nodeGroups) {
 			UUID uuid = nodeGroup["Id"].as<uint64_t>();
-			auto newNodeGroup = m_config->addNodeGroup(uuid);
+			auto newNodeGroup = m_config->addEmptyNodeGroup(uuid);
 			NodeGroupSerializer nodeGroupSerializer(newNodeGroup);
 			assert(nodeGroupSerializer.deserializeTemplate(nodeGroup));
 		}

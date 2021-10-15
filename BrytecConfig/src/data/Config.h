@@ -17,7 +17,8 @@ public:
 	void removeModule(std::shared_ptr<Module>& module);
 	const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
 	
-	std::shared_ptr<NodeGroup> addNodeGroup(UUID uuid = UUID());
+	std::shared_ptr<NodeGroup> addNodeGroup();
+	std::shared_ptr<NodeGroup> addEmptyNodeGroup(UUID uuid);
 	void removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup);
 	const std::vector<std::shared_ptr<NodeGroup>>& getNodeGroups() { return m_nodeGroups; }
 	const std::shared_ptr<NodeGroup>& findNodeGroup(UUID uuid);

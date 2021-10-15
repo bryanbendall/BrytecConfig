@@ -52,7 +52,7 @@ enum class CurveTypes {
 class Node;
 struct NodeConnection {
 	std::weak_ptr<Node> node;
-	unsigned int outputIndex;
+	int outputIndex;
 };
 
 class Node
@@ -80,6 +80,7 @@ public:
 
 	NodeConnection& getInput(int index) { return m_inputs[index]; }
 	std::vector<NodeConnection>& getInputs() { return m_inputs; }
+	void setInput(int inputIndex, NodeConnection nodeConnection);
 
 	float& getOutput(int index) { return m_outputs[index]; }
 	std::vector<float>& getOutputs() { return m_outputs; }

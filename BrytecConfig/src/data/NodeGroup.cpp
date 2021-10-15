@@ -1,10 +1,15 @@
 #include "NodeGroup.h"
 
-NodeGroup::NodeGroup(UUID uuid)
-	: m_uuid(uuid)
+NodeGroup::NodeGroup()
+	: m_uuid(UUID())
 {
 	addNode(NodeTypes::Initial_Value, {50.0f, 50.0f});
 	addNode(NodeTypes::Final_Value, {350.0f, 50.0f});
+}
+
+NodeGroup::NodeGroup(UUID uuid)
+	: m_uuid(uuid)
+{
 }
 
 std::shared_ptr<Node> NodeGroup::getNode(int id) 
@@ -19,7 +24,7 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 
 int NodeGroup::getNodeIndex(std::shared_ptr<Node>& node)
 {
-	for(int i = 0; i < m_nodes.size(); i++) {
+	for(size_t i = 0; i < m_nodes.size(); i++) {
 		if(m_nodes[i] == node)
 			return i;
 	}
@@ -27,10 +32,12 @@ int NodeGroup::getNodeIndex(std::shared_ptr<Node>& node)
 	return -1;
 }
 
-void NodeGroup::addNode(NodeTypes type, ImVec2 position) 
+std::shared_ptr<Node> NodeGroup::addNode(NodeTypes type, ImVec2 position)
 {
-	m_nodes.push_back(std::make_shared<Node>(m_nodesIds, position, type));
+	std::shared_ptr<Node> node = std::make_shared<Node>(m_nodesIds, position, type);
+	m_nodes.push_back(node);
 	m_nodesIds++;
+	return node;
 }
 
 void NodeGroup::sortNodes() 

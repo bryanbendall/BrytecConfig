@@ -22,9 +22,16 @@ void Config::addModule(std::shared_ptr<Module>& module)
 	m_modules.push_back(module);
 }
 
-std::shared_ptr<NodeGroup> Config::addNodeGroup(UUID uuid)
+std::shared_ptr<NodeGroup> Config::addNodeGroup()
 {
-	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>(uuid);
+	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
+	m_nodeGroups.push_back(nodeGroup);
+	return nodeGroup;
+}
+
+std::shared_ptr<NodeGroup> Config::addEmptyNodeGroup(UUID uuid)
+{
+	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>(UUID());
 	m_nodeGroups.push_back(nodeGroup);
 	return nodeGroup;
 }

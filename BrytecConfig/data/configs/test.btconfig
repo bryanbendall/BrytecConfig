@@ -1,38 +1,44 @@
 Config: test
 Node Groups:
   - Name: Unnamed
-    Id: 16391544558090513929
+    Id: 5488144470171212619
     Type: 0  # Undefined
     Enabled: true
     Nodes:
       - Name: Initial Value
         Type: 0  # Initial Value
-        Position: [50, 50]
+        Position: [76, 267]
         Inputs:
           []
         Values: [0]
       - Name: Or
         Type: 4  # Or
-        Position: [258, 43]
+        Position: [243, 43]
         Inputs:
-          - [-1, -1]
-          - [-1, -1]
           - [0, 0]
           - [-1, -1]
           - [-1, -1]
+          - [-1, -1]
+          - [-1, -1]
         Values: []
+      - Name: Toggle
+        Type: 10  # Toggle
+        Position: [304, 309]
+        Inputs:
+          - [1, 0]
+        Values: [0]
       - Name: On/Off
         Type: 8  # On/Off
         Position: [445, 141]
         Inputs:
           - [1, 0]
-          - [1, 0]
+          - [2, 0]
         Values: []
       - Name: Final Value
         Type: 1  # Final Value
-        Position: [479, 56]
+        Position: [718, 206]
         Inputs:
-          - [2, 0]
+          - [3, 0]
         Values: []
 Modules:
   []

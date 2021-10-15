@@ -12,6 +12,7 @@ class NodeGroup : public Selectable
 {
 
 public:
+	NodeGroup();
 	NodeGroup(UUID uuid);
 	
 	std::string& getName() { return m_name; }
@@ -33,7 +34,7 @@ public:
 	std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
 	std::shared_ptr<Node> getNode(int id);
 	int getNodeIndex(std::shared_ptr<Node>& node);
-	void addNode(NodeTypes type, ImVec2 position = {0.0f, 0.0f});
+	std::shared_ptr<Node> addNode(NodeTypes type, ImVec2 position = {0.0f, 0.0f});
 	void deleteNode(int nodeId);
 	void sortNodes();
 	void evaluateAllNodes();
