@@ -38,6 +38,14 @@ private:
 				float y = node["Position"][1].as<float>();
 
 				auto newNode = m_nodeGroup->addNode(type, {x, y});
+
+				if(auto values = node["Values"]) {
+					int valueIndex = 0;
+					for(auto value : values) {
+						newNode->setValue(valueIndex, value.as<float>());
+						valueIndex++;
+					}
+				}
 			}
 		}
 

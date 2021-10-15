@@ -31,7 +31,7 @@ std::shared_ptr<NodeGroup> Config::addNodeGroup()
 
 std::shared_ptr<NodeGroup> Config::addEmptyNodeGroup(UUID uuid)
 {
-	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>(UUID());
+	std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>(uuid);
 	m_nodeGroups.push_back(nodeGroup);
 	return nodeGroup;
 }

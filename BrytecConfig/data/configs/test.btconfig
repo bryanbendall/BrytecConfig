@@ -1,44 +1,93 @@
 Config: test
 Node Groups:
-  - Name: Unnamed
-    Id: 5488144470171212619
-    Type: 0  # Undefined
+  - Name: Breathing
+    Id: 8719217363710543395
+    Type: 1  # 12V High Current PWM Output
     Enabled: true
     Nodes:
       - Name: Initial Value
         Type: 0  # Initial Value
-        Position: [76, 267]
+        Position: [50, 50]
         Inputs:
           []
-        Values: [0]
-      - Name: Or
-        Type: 4  # Or
-        Position: [243, 43]
+        Values: [0.419999987]
+      - Name: Value
+        Type: 15  # Value
+        Position: [57, 137]
         Inputs:
-          - [0, 0]
-          - [-1, -1]
-          - [-1, -1]
-          - [-1, -1]
-          - [-1, -1]
-        Values: []
-      - Name: Toggle
-        Type: 10  # Toggle
-        Position: [304, 309]
+          []
+        Values: [30]
+      - Name: Value
+        Type: 15  # Value
+        Position: [56, 232]
         Inputs:
-          - [1, 0]
-        Values: [0]
-      - Name: On/Off
-        Type: 8  # On/Off
-        Position: [445, 141]
+          []
+        Values: [50]
+      - Name: Delay
+        Type: 11  # Delay
+        Position: [242, 241]
         Inputs:
-          - [1, 0]
           - [2, 0]
+        Values: [1, 1]
+      - Name: And
+        Type: 3  # And
+        Position: [444, 173]
+        Inputs:
+          - [1, 0]
+          - [3, 0]
+          - [-1, -1]
+          - [-1, -1]
+          - [-1, -1]
         Values: []
+      - Name: Curve
+        Type: 6  # Curve
+        Position: [597, 156]
+        Inputs:
+          - [4, 0]
+        Values: [3, 1, 0, 5, 1, 3.78101039]
       - Name: Final Value
         Type: 1  # Final Value
-        Position: [718, 206]
+        Position: [791, 200]
         Inputs:
-          - [3, 0]
+          - [5, 0]
         Values: []
 Modules:
-  []
+  - Name: Test Module
+    Address: 5
+    Enabled: true
+    Pins:
+      - Pinout Name: all outputs
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+          - 3  # 12V Low Current Output
+          - 4  # Ground Output
+      - Pinout Name: all inputs
+        Available Types:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
+          - 7  # 5V Switched Input
+          - 8  # 5V Variable Input
+      - Pinout Name: can
+        Available Types:
+          - 9  # Can Input
+  - Name: Test Module
+    Address: 5
+    Enabled: true
+    Pins:
+      - Pinout Name: all outputs
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+          - 3  # 12V Low Current Output
+          - 4  # Ground Output
+        Node Group Id: 8719217363710543395
+      - Pinout Name: all inputs
+        Available Types:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
+          - 7  # 5V Switched Input
+          - 8  # 5V Variable Input
+      - Pinout Name: can
+        Available Types:
+          - 9  # Can Input
