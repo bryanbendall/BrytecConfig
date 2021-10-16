@@ -1,0 +1,49 @@
+Name: Input Module
+Address: 5
+Enabled: true
+Pins:
+  - Pinout Name: A1
+    Available Types:
+      - 8  # 5V Variable Input
+      - 7  # 5V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: A2
+    Available Types:
+      - 8  # 5V Variable Input
+      - 7  # 5V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: A3
+    Available Types:
+      - 8  # 5V Variable Input
+      - 7  # 5V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: A4
+    Available Types:
+      - 8  # 5V Variable Input
+      - 7  # 5V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: A5
+    Available Types:
+      - 8  # 5V Variable Input
+      - 7  # 5V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: H1
+    Available Types:
+      - 5  # 12V Switched Input
+      - 6  # Ground Input
+  - Pinout Name: H2
+    Available Types:
+      - 6  # Ground Input
+      - 5  # 12V Switched Input
+  - Pinout Name: H3
+    Available Types:
+      []
+  - Pinout Name: H4
+    Available Types:
+      - 6  # Ground Input
+      - 6  # Ground Input
+      - 5  # 12V Switched Input
+  - Pinout Name: H5
+    Available Types:
+      - 5  # 12V Switched Input
+      - 6  # Ground Input

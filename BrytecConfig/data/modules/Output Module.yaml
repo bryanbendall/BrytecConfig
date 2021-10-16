@@ -1,0 +1,36 @@
+Name: Power Module
+Address: 10
+Enabled: true
+Pins:
+  - Pinout Name: Out1
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out2
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out3
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out4
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out5
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out6
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out7
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output
+  - Pinout Name: Out8
+    Available Types:
+      - 1  # 12V High Current PWM Output
+      - 2  # 12V High Current Output

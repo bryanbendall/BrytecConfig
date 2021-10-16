@@ -33,6 +33,11 @@ void NodeGroupWindow::drawMenubar()
         if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
             AppManager::get()->getConfig()->addNodeGroup();
 
+        ImGui::Text(ICON_FA_FILTER" Filter");
+        ImGui::SetNextItemWidth(110);
+        static const char* items[] = {"All", "Assigned", "Unassigned"};
+        ImGui::Combo("##Filter", (int*)&m_filter, items, 3);
+
         ImGui::EndMenuBar();
     }
 }
@@ -47,8 +52,22 @@ void NodeGroupWindow::drawNodeGroups()
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
 
     for(int i = 0; i < nodeGroupCount; i++) {
-        ImGui::PushID(i);
         auto& nodeGroup = nodeGroups[i];
+
+        switch(m_filter) {
+            case FilterType::All:
+                break;
+            case FilterType::Assigned:
+                if(!nodeGroup->getAssigned())
+                    continue;
+                break;
+            case FilterType::Unassigned:
+                if(nodeGroup->getAssigned())
+                    continue;
+                break;
+        }
+
+        ImGui::PushID(i);
 
         bool selected = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock()) == nodeGroup;
         

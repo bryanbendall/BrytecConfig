@@ -1,8 +1,8 @@
 Config: test
 Node Groups:
-  - Name: Breathing
-    Id: 8719217363710543395
-    Type: 1  # 12V High Current PWM Output
+  - Name: Left Turn Sw
+    Id: 12349705914566648048
+    Type: 6  # Ground Input
     Enabled: true
     Nodes:
       - Name: Initial Value
@@ -10,84 +10,191 @@ Node Groups:
         Position: [50, 50]
         Inputs:
           []
-        Values: [0.419999987]
-      - Name: Value
-        Type: 15  # Value
-        Position: [57, 137]
-        Inputs:
-          []
-        Values: [30]
-      - Name: Value
-        Type: 15  # Value
-        Position: [56, 232]
-        Inputs:
-          []
-        Values: [50]
-      - Name: Delay
-        Type: 11  # Delay
-        Position: [242, 241]
-        Inputs:
-          - [2, 0]
-        Values: [1, 1]
-      - Name: And
-        Type: 3  # And
-        Position: [444, 173]
-        Inputs:
-          - [1, 0]
-          - [3, 0]
-          - [-1, -1]
-          - [-1, -1]
-          - [-1, -1]
-        Values: []
-      - Name: Curve
-        Type: 6  # Curve
-        Position: [597, 156]
-        Inputs:
-          - [4, 0]
-        Values: [3, 1, 0, 5, 1, 3.78101039]
+        Values: [0]
       - Name: Final Value
         Type: 1  # Final Value
-        Position: [791, 200]
+        Position: [350, 50]
         Inputs:
-          - [5, 0]
+          - [0, 0]
+        Values: []
+  - Name: Right Turn Sw
+    Id: 3754145105528928043
+    Type: 6  # Ground Input
+    Enabled: true
+    Nodes:
+      - Name: Initial Value
+        Type: 0  # Initial Value
+        Position: [50, 50]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Final Value
+        Type: 1  # Final Value
+        Position: [350, 50]
+        Inputs:
+          - [0, 0]
+        Values: []
+  - Name: Horn Sw
+    Id: 5061436310797037924
+    Type: 6  # Ground Input
+    Enabled: true
+    Nodes:
+      - Name: Initial Value
+        Type: 0  # Initial Value
+        Position: [50, 50]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Final Value
+        Type: 1  # Final Value
+        Position: [350, 50]
+        Inputs:
+          - [0, 0]
+        Values: []
+  - Name: Ignition State
+    Id: 16492130524823002305
+    Type: 6  # Ground Input
+    Enabled: true
+    Nodes:
+      - Name: Initial Value
+        Type: 0  # Initial Value
+        Position: [50, 50]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Final Value
+        Type: 1  # Final Value
+        Position: [350, 50]
+        Inputs:
+          - [0, 0]
+        Values: []
+  - Name: Right Turn Front
+    Id: 10157447178678160678
+    Type: 2  # 12V High Current Output
+    Enabled: true
+    Nodes:
+      - Name: Initial Value
+        Type: 0  # Initial Value
+        Position: [50, 50]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Pin
+        Type: 2  # Pin
+        Position: [211, 53]
+        Inputs:
+          []
+        Values: [0]
+      - Name: Pin
+        Type: 2  # Pin
+        Position: [213, 153]
+        Inputs:
+          []
+        Values: [0]
+      - Name: And
+        Type: 3  # And
+        Position: [406, 53]
+        Inputs:
+          - [1, 0]
+          - [2, 0]
+          - [-1, -1]
+          - [-1, -1]
+          - [-1, -1]
+        Values: []
+      - Name: Final Value
+        Type: 1  # Final Value
+        Position: [639, 62]
+        Inputs:
+          - [3, 0]
         Values: []
 Modules:
-  - Name: Test Module
-    Address: 5
+  - Name: Power Module
+    Address: 10
     Enabled: true
     Pins:
-      - Pinout Name: all outputs
+      - Pinout Name: Out1
         Available Types:
           - 1  # 12V High Current PWM Output
           - 2  # 12V High Current Output
-          - 3  # 12V Low Current Output
-          - 4  # Ground Output
-      - Pinout Name: all inputs
-        Available Types:
-          - 5  # 12V Switched Input
-          - 6  # Ground Input
-          - 7  # 5V Switched Input
-          - 8  # 5V Variable Input
-      - Pinout Name: can
-        Available Types:
-          - 9  # Can Input
-  - Name: Test Module
-    Address: 5
-    Enabled: true
-    Pins:
-      - Pinout Name: all outputs
+        Node Group Id: 10157447178678160678
+      - Pinout Name: Out2
         Available Types:
           - 1  # 12V High Current PWM Output
           - 2  # 12V High Current Output
-          - 3  # 12V Low Current Output
-          - 4  # Ground Output
-        Node Group Id: 8719217363710543395
-      - Pinout Name: all inputs
+      - Pinout Name: Out3
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+      - Pinout Name: Out4
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+      - Pinout Name: Out5
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+      - Pinout Name: Out6
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+      - Pinout Name: Out7
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+      - Pinout Name: Out8
+        Available Types:
+          - 1  # 12V High Current PWM Output
+          - 2  # 12V High Current Output
+  - Name: Input Module
+    Address: 5
+    Enabled: true
+    Pins:
+      - Pinout Name: A1
+        Available Types:
+          - 8  # 5V Variable Input
+          - 7  # 5V Switched Input
+          - 6  # Ground Input
+        Node Group Id: 16492130524823002305
+      - Pinout Name: A2
+        Available Types:
+          - 8  # 5V Variable Input
+          - 7  # 5V Switched Input
+          - 6  # Ground Input
+      - Pinout Name: A3
+        Available Types:
+          - 8  # 5V Variable Input
+          - 7  # 5V Switched Input
+          - 6  # Ground Input
+        Node Group Id: 12349705914566648048
+      - Pinout Name: A4
+        Available Types:
+          - 8  # 5V Variable Input
+          - 7  # 5V Switched Input
+          - 6  # Ground Input
+        Node Group Id: 3754145105528928043
+      - Pinout Name: A5
+        Available Types:
+          - 8  # 5V Variable Input
+          - 7  # 5V Switched Input
+          - 6  # Ground Input
+      - Pinout Name: H1
         Available Types:
           - 5  # 12V Switched Input
           - 6  # Ground Input
-          - 7  # 5V Switched Input
-          - 8  # 5V Variable Input
-      - Pinout Name: can
+        Node Group Id: 5061436310797037924
+      - Pinout Name: H2
         Available Types:
-          - 9  # Can Input
+          - 6  # Ground Input
+          - 5  # 12V Switched Input
+      - Pinout Name: H3
+        Available Types:
+          []
+      - Pinout Name: H4
+        Available Types:
+          - 6  # Ground Input
+          - 6  # Ground Input
+          - 5  # 12V Switched Input
+      - Pinout Name: H5
+        Available Types:
+          - 5  # 12V Switched Input
+          - 6  # Ground Input
