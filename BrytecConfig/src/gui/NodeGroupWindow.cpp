@@ -4,6 +4,8 @@
 #include <IconsFontAwesome5.h>
 #include "../AppManager.h"
 #include <iostream>
+#include "../utils/NodeGroupSerializer.h"
+#include "../utils/FileDialogs.h"
 
 NodeGroupWindow::NodeGroupWindow() 
 {
@@ -30,13 +32,54 @@ void NodeGroupWindow::drawMenubar()
 {
     if(ImGui::BeginMenuBar()) {
 
+        std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock());
+        bool nodeGroupSelected = nodeGroup != nullptr;
+
+        // Add blank
         if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
             AppManager::get()->getConfig()->addNodeGroup();
 
+        // Open
+        if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
+            auto path = FileDialogs::OpenFile("btnodes");
+            if(path.empty())
+                return;
+
+            std::shared_ptr<NodeGroup> nodeGroup = AppManager::get()->getConfig()->addEmptyNodeGroup(UUID());
+            NodeGroupSerializer serializer(nodeGroup);
+            
+            if(!serializer.deserializeTemplateText(path))
+                std::cout << "Could not deserialize node group file" << std::endl;
+        }
+
+        // Save
+        if(ImGui::MenuItem(ICON_FA_SAVE, NULL, false, nodeGroupSelected)) {
+            if(nodeGroup) {
+                auto defaultPath = std::filesystem::absolute("data/node groups/");
+                auto path = FileDialogs::SaveFile("btnodes", defaultPath.string().c_str());
+
+                if(path.extension().empty())
+                    path.replace_extension("btnodes");
+
+                if(!path.empty()) {
+                    NodeGroupSerializer serializer(nodeGroup);
+                    serializer.serializeTemplateText(path);
+                }
+            }
+        }
+
+        if(ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
+            // Copy Constructor
+            AppManager::get()->getConfig()->addNodeGroup(std::make_shared<NodeGroup>(*nodeGroup.get()));
+        }
+
+        ImGui::TextDisabled("|");
+
+        // Filter
         ImGui::Text(ICON_FA_FILTER" Filter");
         ImGui::SetNextItemWidth(110);
         static const char* items[] = {"All", "Assigned", "Unassigned"};
-        ImGui::Combo("##Filter", (int*)&m_filter, items, 3);
+        ImGui::Combo("##Filter", (int*) &m_filter, items, 3);
 
         ImGui::EndMenuBar();
     }

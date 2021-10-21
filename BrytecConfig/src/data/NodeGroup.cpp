@@ -12,6 +12,35 @@ NodeGroup::NodeGroup(UUID uuid)
 {
 }
 
+NodeGroup::NodeGroup(const NodeGroup& other)
+	: m_uuid(UUID())
+{
+	m_name = other.m_name;
+	m_type = other.m_type;
+	m_enabled = other.m_enabled;
+
+	// Copy nodes
+	for(auto oldNode : other.m_nodes) {
+		addNode(oldNode->getType(), oldNode->getPosition());
+	}
+	
+	// Copy node connections
+	for(size_t i = 0; i < m_nodes.size(); i++) {
+		auto& newNode = m_nodes[i];
+		auto& oldNode = other.m_nodes[i];
+
+		for(auto input : oldNode->getInputs()) {
+			if(input.node.lock()) {
+				for(size_t index = 0; index < m_nodes.size(); index++) {
+					if(oldNode->getInputs()[i].node.lock() == input.node.lock())
+						newNode->setInput(i, {m_nodes[i], input.outputIndex});
+				}
+			}
+		}
+
+	}
+}
+
 std::shared_ptr<Node> NodeGroup::getNode(int id) 
 {
 	for(auto& n : m_nodes) {

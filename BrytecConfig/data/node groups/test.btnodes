@@ -1,0 +1,37 @@
+Name: test
+Id: 8139434358164480683
+Type: 0  # Undefined
+Enabled: true
+Nodes:
+  - Name: Initial Value
+    Type: 0  # Initial Value
+    Position: [50, 50]
+    Inputs:
+      []
+    Values: [0]
+  - Name: Or
+    Type: 4  # Or
+    Position: [227, 194]
+    Inputs:
+      - [0, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+    Values: []
+  - Name: And
+    Type: 3  # And
+    Position: [468, 209]
+    Inputs:
+      - [1, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+    Values: []
+  - Name: Final Value
+    Type: 1  # Final Value
+    Position: [679, 28]
+    Inputs:
+      - [2, 0]
+    Values: []

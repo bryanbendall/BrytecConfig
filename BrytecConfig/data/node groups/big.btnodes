@@ -1,0 +1,71 @@
+Name: Unnamed
+Id: 18425775631290725994
+Type: 0  # Undefined
+Enabled: true
+Nodes:
+  - Name: Initial Value
+    Type: 0  # Initial Value
+    Position: [50, 50]
+    Inputs:
+      []
+    Values: [0]
+  - Name: Value
+    Type: 15  # Value
+    Position: [53, 123]
+    Inputs:
+      []
+    Values: [0]
+  - Name: Value
+    Type: 15  # Value
+    Position: [56, 198]
+    Inputs:
+      []
+    Values: [0]
+  - Name: And
+    Type: 3  # And
+    Position: [219, 64]
+    Inputs:
+      - [0, 0]
+      - [1, 0]
+      - [2, 0]
+      - [-1, -1]
+      - [-1, -1]
+    Values: []
+  - Name: Compare
+    Type: 7  # Compare
+    Position: [408, 138]
+    Inputs:
+      - [3, 0]
+      - [2, 0]
+    Values: [3]
+  - Name: Value
+    Type: 15  # Value
+    Position: [265, 327]
+    Inputs:
+      []
+    Values: [0]
+  - Name: Toggle
+    Type: 10  # Toggle
+    Position: [430, 302]
+    Inputs:
+      - [5, 0]
+    Values: [0]
+  - Name: Math
+    Type: 14  # Math
+    Position: [590, 156]
+    Inputs:
+      - [4, 0]
+      - [6, 0]
+    Values: [2]
+  - Name: Curve
+    Type: 6  # Curve
+    Position: [735, 166]
+    Inputs:
+      - [7, 0]
+    Values: [3, 1, 1, 0.949999988, 0, 0]
+  - Name: Final Value
+    Type: 1  # Final Value
+    Position: [747, 382]
+    Inputs:
+      - [8, 0]
+    Values: []

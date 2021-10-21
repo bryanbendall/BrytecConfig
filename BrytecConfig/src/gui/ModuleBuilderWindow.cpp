@@ -38,6 +38,9 @@ void ModuleBuilderWindow::drawMenubar()
             auto defaultPath = std::filesystem::absolute("data/modules/");
             auto path = FileDialogs::SaveFile("yaml", defaultPath.string().c_str());
 
+            if(path.extension().empty())
+                path.replace_extension("btmodule");
+
             if(!path.empty()) {
                 ModuleSerializer serializer(m_module);
                 serializer.serializeTemplateText(path);

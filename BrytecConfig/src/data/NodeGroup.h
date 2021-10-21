@@ -14,6 +14,7 @@ class NodeGroup : public Selectable
 public:
 	NodeGroup();
 	NodeGroup(UUID uuid);
+	NodeGroup(const NodeGroup& other);
 	
 	std::string& getName() { return m_name; }
 	void setName(const std::string& name) { m_name = name; }

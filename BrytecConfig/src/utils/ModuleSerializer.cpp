@@ -64,7 +64,7 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
 		const auto& path = directoryEntry.path();
 
 		// Check extension
-		if(path.extension() != ".yaml")
+		if(path.extension() != ".btmodule")
 			continue;
 
 		// Ignore directories

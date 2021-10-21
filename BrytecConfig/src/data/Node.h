@@ -53,6 +53,17 @@ class Node;
 struct NodeConnection {
 	std::weak_ptr<Node> node;
 	int outputIndex;
+
+
+	bool operator== (const NodeConnection& other) const
+	{
+		if(!node.expired() && !other.node.expired()) {
+			if(node.lock() == other.node.lock() && outputIndex == other.outputIndex)
+				return true;
+		}
+
+		return false;
+	}
 };
 
 class Node
