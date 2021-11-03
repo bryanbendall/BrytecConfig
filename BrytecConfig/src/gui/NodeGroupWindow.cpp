@@ -37,7 +37,7 @@ void NodeGroupWindow::drawMenubar()
 
         // Add blank
         if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
-            AppManager::get()->getConfig()->addNodeGroup();
+            AppManager::get()->setSelected(AppManager::get()->getConfig()->addNodeGroup());
 
         // Open
         if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {

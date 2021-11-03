@@ -48,7 +48,7 @@ void Config::removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup)
 	m_nodeGroups.erase(it);
 }
 
-const std::shared_ptr<NodeGroup>& Config::findNodeGroup(UUID uuid)
+const std::shared_ptr<NodeGroup> Config::findNodeGroup(UUID uuid)
 {
 	for(auto& nodeGroup : m_nodeGroups) {
 		if(nodeGroup->getId() == uuid)

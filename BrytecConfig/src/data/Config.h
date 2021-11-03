@@ -22,7 +22,7 @@ public:
 	std::shared_ptr<NodeGroup> addEmptyNodeGroup(UUID uuid);
 	void removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup);
 	const std::vector<std::shared_ptr<NodeGroup>>& getNodeGroups() { return m_nodeGroups; }
-	const std::shared_ptr<NodeGroup>& findNodeGroup(UUID uuid);
+	const std::shared_ptr<NodeGroup> findNodeGroup(UUID uuid);
 
 	const std::filesystem::path& getFilepath() { return m_path; }
 	void setFilepath(const std::filesystem::path& path) { m_path = path; }

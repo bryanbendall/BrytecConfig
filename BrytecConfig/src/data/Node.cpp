@@ -1,6 +1,7 @@
 #include "Node.h"
 #include <iostream>
 
+
 const char* Node::s_nodeName[(int) NodeTypes::Count] = {
 	"Initial Value",
 	"Final Value",
@@ -20,21 +21,21 @@ const char* Node::s_nodeName[(int) NodeTypes::Count] = {
 	"Value",
 };
 
-const char* Node::s_compareNames[(int) CompareTypes::Count] = {
+const char* Node::s_compareNames[(int) Embedded::CompareNode::Types::Count] = {
 	"Greater Than",
 	"Greater Equal To",
 	"Less Than",
 	"Less Equal To"
 };
 
-const char* Node::s_mathNames[(int) MathTypes::Count] = {
+const char* Node::s_mathNames[(int) Embedded::MathNode::Types::Count] = {
 	"Add",
 	"Subtract",
 	"Multiply",
 	"Divide"
 };
 
-const char* Node::s_curveNames[(int) CurveTypes::Count] = {
+const char* Node::s_curveNames[(int) Embedded::CurveNode::Types::Count] = {
 	"Toggle",
 	"Linear",
 	"Expontial",
@@ -147,7 +148,7 @@ float Node::getOutputValue(size_t outputIndex) {
 
 void Node::setInput(int inputIndex, NodeConnection nodeConnection)
 {
-	assert(!(inputIndex > m_inputs.size()));
+	assert(!(inputIndex > (int) m_inputs.size()));
 	m_inputs[inputIndex] = nodeConnection;
 }
 
@@ -181,359 +182,275 @@ void Node::evaluate() {
 
 void Node::evaluateAnd() 
 {
-	for(size_t i = 0; i < m_inputs.size(); i++) {
-		if(hasConnection(i) && getInputValue(i) <= 0.0f) {
-			m_outputs[0] = 0.0f;
-			return;
-		}
-	}
-	m_outputs[0] = 1.0f;
+	Embedded::AndNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		(hasConnection(3) ? &getInputValue(3) : nullptr),
+		(hasConnection(4) ? &getInputValue(4) : nullptr)
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateOr() 
 {
-	for(size_t i = 0; i < m_inputs.size(); i++) {
-		if(hasConnection(i) && getInputValue(i) > 0.0f) {
-			m_outputs[0] = 1.0f;
-			return;
-		}
-	}
-	m_outputs[0] = 0.0f;
+	Embedded::OrNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		(hasConnection(3) ? &getInputValue(3) : nullptr),
+		(hasConnection(4) ? &getInputValue(4) : nullptr)
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateInvert() 
 {
-	if(hasConnection(0) && getInputValue(0) <= 0.0f) {
-		m_outputs[0] = 1.0f;
-		return;
-	}
-	m_outputs[0] = 0.0f;
+	Embedded::InvertNode node = {
+	(hasConnection(0) ? &getInputValue(0) : nullptr)
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateTwoStage() 
 {
-	if(hasConnection(1) && getInputValue(1) > 0.0f) {
-		m_outputs[0] = m_values[1];
-		return;
-	}
-	else if(hasConnection(0) && getInputValue(0) > 0.0f) {
-		m_outputs[0] = m_values[0];
-		return;
-	}
-	m_outputs[0] = 0.0f;
+	Embedded::TwoStageNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(uint8_t) m_values[0],
+		(uint8_t) m_values[1]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateOnOff() 
 {
-	if(hasConnection(1) && getInputValue(1) > 0.0f) {
-		m_outputs[0] = 0.0f;
-		return;
-	} else if(hasConnection(0) && getInputValue(0) > 0.0f) {
-		m_outputs[0] = 1.0f;
-		return;
-	}
-	m_outputs[0] = 0.0f;
+	Embedded::OnOffNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr)
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateToggle() 
 {
-	if(!hasConnection(0)) {
-		m_outputs[0] = 0.0f;
-		return;
-	}
-
-	if(getInputValue(0) > 0.0f) {
-		if(m_values[0] > 0.0f) {
-			return;
-		}
-		if(m_outputs[0] <= 0.0f)
-			m_outputs[0] = 1.0f;
-		else
-			m_outputs[0] = 0.0f;
-
-		m_values[0] = getInputValue(0);
-		return;
-	} else {
-		m_values[0] = 0.0f;
-	}
+	Embedded::ToggleNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(bool)m_values[0],
+		m_outputs[0]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_values[0] = node.lastValue;
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateDelay() 
 {
-	float& counter = m_values[1];
-
-	if(!hasConnection(0)) {
-		counter = 0.0f;
-		m_outputs[0] = 0.0f;
-		return;
-	}
-
-	if(getInputValue(0) > 0.0f) {
-		counter += ImGui::GetIO().DeltaTime;
-		if(counter >= m_values[0]) {
-			m_outputs[0] = getInputValue(0);
-			counter = m_values[0];
-			return;
-		}
-	} else {
-		counter = 0.0f;
-		m_outputs[0] = 0.0f;
-	}
+	Embedded::DelayNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		m_values[0],
+		m_values[1]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_values[1] = node.counter;
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateCompare() 
 {
-	if(!hasConnection(0) || !hasConnection(1)) {
-		m_outputs[0] = 0.0f;
-		return;
-	}
-
-	CompareTypes type = (CompareTypes) m_values[0];
-	switch(type) {
-		case CompareTypes::Greater:			
-			if(getInputValue(0) > getInputValue(1))
-				m_outputs[0] = 1.0f;
-			else
-				m_outputs[0] = 0.0f;
-			break;
-		case CompareTypes::GreaterEqual:	
-			if(getInputValue(0) >= getInputValue(1))
-				m_outputs[0] = 1.0f;
-			else
-				m_outputs[0] = 0.0f;
-			break;
-		case CompareTypes::Less:			
-			if(getInputValue(0) < getInputValue(1))
-				m_outputs[0] = 1.0f;
-			else
-				m_outputs[0] = 0.0f;
-			break;
-		case CompareTypes::LessEqual:		
-			if(getInputValue(0) <= getInputValue(1))
-				m_outputs[0] = 1.0f;
-			else
-				m_outputs[0] = 0.0f;
-			break;
-	}
+	Embedded::CompareNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(Embedded::CompareNode::Types)m_values[0]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateMath() 
 {
-	if(!hasConnection(0) || !hasConnection(1)) {
-		m_outputs[0] = 0.0f;
-		return;
-	}
-
-	MathTypes type = (MathTypes) m_values[0];
-	switch(type) {
-		case MathTypes::Add:
-			m_outputs[0] = getInputValue(0) + getInputValue(1);
-			break;
-		case MathTypes::Subtract:
-			m_outputs[0] = getInputValue(0) - getInputValue(1);
-			break;
-		case MathTypes::Multiply:
-			m_outputs[0] = getInputValue(0) * getInputValue(1);
-			break;
-		case MathTypes::Divide:
-			m_outputs[0] = getInputValue(0) / getInputValue(1);
-			break;
-	}
+	Embedded::MathNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(Embedded::MathNode::Types) m_values[0]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaluateMap() 
 {
-	if(!hasConnection(0)) {
-		m_outputs[0] = 0.0f;
-		return;
-	}
-
-	float& x =  m_values[0];
-	float& y =  m_values[1];
-	float& x1 = m_values[2];
-	float& y1 = m_values[3];
-	float sloap = (y - y1) / (x - x1);
-
-	m_outputs[0] = (sloap * (getInputValue(0) - x1)) + y1;
+	Embedded::MapValueNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		m_values[0],
+		m_values[1],
+		m_values[2],
+		m_values[3]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
 }
 
 void Node::evaulateCurve() 
 {
-	float& repeat = m_values[1];
-	float& onShutdown = m_values[2];
-	float& timeout = m_values[3];
-	float& lastIn = m_values[4];
-	float& timerCounter = m_values[5];
+	Embedded::CurveNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(Embedded::CurveNode::Types) m_values[0],
+		(bool) m_values[1],
+		(bool) m_values[2],
+		(bool) m_values[4],
+		m_values[3],
+		m_values[5],
+		m_outputs[0]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_values[1] = node.repeat;
+	m_values[2] = node.onShutdown;
+	m_values[4] = node.lastIn;
+	m_values[3] = node.timeout;
+	m_values[5] = node.timerCounter;
+	m_outputs[0] = node.out;
 
-	if(!hasConnection(0) || timeout <= 0.0f) {
-		m_outputs[0] = 0.0f;
-		return;
-	}
+	//float& repeat = m_values[1];
+	//float& onShutdown = m_values[2];
+	//float& timeout = m_values[3];
+	//float& lastIn = m_values[4];
+	//float& timerCounter = m_values[5];
 
-	CurveTypes type = (CurveTypes) m_values[0];
-	switch(type) {
+	//if(!hasConnection(0) || timeout <= 0.0f) {
+	//	m_outputs[0] = 0.0f;
+	//	return;
+	//}
 
-		case CurveTypes::Toggle:
-			if(getInputValue(0) > 0.0f) {
-				timerCounter += ImGui::GetIO().DeltaTime;
-			} else {
-				timerCounter = 0;
-				m_outputs[0] = 0.0f;
-				return;
-			}
-			if(timerCounter >= timeout)
-				timerCounter = timeout;
+	//CurveTypes type = (CurveTypes) m_values[0];
+	//switch(type) {
 
-			if(getInputValue(0) > 0.0f && lastIn <= 0.0f) {
-				m_outputs[0] = 100.0f;
-				break;
-			}
-			if(getInputValue(0) > 0.0f && repeat <= 0.0f && m_outputs[0] <= 0.0f) {
-				timerCounter = 0;
-				break;
-			}
-			if(getInputValue(0) > 0.0f) {
-				if(timerCounter >= timeout) {
-					if(m_outputs[0] <= 0.0f)
-						m_outputs[0] = 100.0f;
-					else
-						m_outputs[0] = 0.0f;
-					timerCounter = 0;
-				}
-			}
-			break;
+	//	case CurveTypes::Toggle:
+	//		if(getInputValue(0) > 0.0f) {
+	//			timerCounter += ImGui::GetIO().DeltaTime;
+	//		} else {
+	//			timerCounter = 0;
+	//			m_outputs[0] = 0.0f;
+	//			return;
+	//		}
+	//		if(timerCounter >= timeout)
+	//			timerCounter = timeout;
 
-		case CurveTypes::Linear:
-			if(getInputValue(0) > 0.0f) {
-				timerCounter += ImGui::GetIO().DeltaTime;
-				if(repeat > 0.0f && m_outputs[0] >= 100.0f) 
-					timerCounter = 0;
-				
-				if(timerCounter >= timeout) 
-					timerCounter = timeout;
-				
-				m_outputs[0] = timerCounter / timeout * 100.0f;
-				break;
-			}
+	//		if(getInputValue(0) > 0.0f && lastIn <= 0.0f) {
+	//			m_outputs[0] = 100.0f;
+	//			break;
+	//		}
+	//		if(getInputValue(0) > 0.0f && repeat <= 0.0f && m_outputs[0] <= 0.0f) {
+	//			timerCounter = 0;
+	//			break;
+	//		}
+	//		if(getInputValue(0) > 0.0f) {
+	//			if(timerCounter >= timeout) {
+	//				if(m_outputs[0] <= 0.0f)
+	//					m_outputs[0] = 100.0f;
+	//				else
+	//					m_outputs[0] = 0.0f;
+	//				timerCounter = 0;
+	//			}
+	//		}
+	//		break;
 
-			if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.0f) {
-				timerCounter -= ImGui::GetIO().DeltaTime;
-				m_outputs[0] = timerCounter / timeout * 100.0f;
+	//	case CurveTypes::Linear:
+	//		if(getInputValue(0) > 0.0f) {
+	//			timerCounter += ImGui::GetIO().DeltaTime;
+	//			if(repeat > 0.0f && m_outputs[0] >= 100.0f) 
+	//				timerCounter = 0;
+	//			
+	//			if(timerCounter >= timeout) 
+	//				timerCounter = timeout;
+	//			
+	//			m_outputs[0] = timerCounter / timeout * 100.0f;
+	//			break;
+	//		}
 
-			} else {
-				m_outputs[0] = 0.0f;
-				timerCounter = 0;
-			}
-			break;
+	//		if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.0f) {
+	//			timerCounter -= ImGui::GetIO().DeltaTime;
+	//			m_outputs[0] = timerCounter / timeout * 100.0f;
 
-		case CurveTypes::Exponential:
+	//		} else {
+	//			m_outputs[0] = 0.0f;
+	//			timerCounter = 0;
+	//		}
+	//		break;
 
-			if(getInputValue(0) > 0.0f) {
-				float steps = 100.0f / (timeout * timeout);
-				timerCounter += ImGui::GetIO().DeltaTime;
-				if(repeat > 0.0f && m_outputs[0] >= 100.0f) {
-					timerCounter = 0;
-				}
-				if(timerCounter >= timeout) {
-					timerCounter = timeout;
-				}
-				
-				m_outputs[0] = steps * timerCounter * timerCounter;
-				break;
-			} 
+	//	case CurveTypes::Exponential:
 
-			if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.1f) {
-				float steps = 100.0f / (timeout * timeout);
-				timerCounter -= ImGui::GetIO().DeltaTime;
-				m_outputs[0] = steps * timerCounter * timerCounter;
+	//		if(getInputValue(0) > 0.0f) {
+	//			float steps = 100.0f / (timeout * timeout);
+	//			timerCounter += ImGui::GetIO().DeltaTime;
+	//			if(repeat > 0.0f && m_outputs[0] >= 100.0f) {
+	//				timerCounter = 0;
+	//			}
+	//			if(timerCounter >= timeout) {
+	//				timerCounter = timeout;
+	//			}
+	//			
+	//			m_outputs[0] = steps * timerCounter * timerCounter;
+	//			break;
+	//		} 
 
-			} else {
-				m_outputs[0] = 0.0f;
-				timerCounter = 0;
-			}
-			break;
+	//		if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.1f) {
+	//			float steps = 100.0f / (timeout * timeout);
+	//			timerCounter -= ImGui::GetIO().DeltaTime;
+	//			m_outputs[0] = steps * timerCounter * timerCounter;
 
-		case CurveTypes::Breathing:
-			if(getInputValue(0) > 0.0f) {
-				timerCounter += ImGui::GetIO().DeltaTime;
+	//		} else {
+	//			m_outputs[0] = 0.0f;
+	//			timerCounter = 0;
+	//		}
+	//		break;
 
-				if(repeat > 0.0f && timerCounter >= timeout) {
-					timerCounter = 0;
-				} else if(timerCounter >= timeout) {
-					timerCounter = timeout;
-					m_outputs[0] = 0.0f;
-					return;
-				}
+	//	case CurveTypes::Breathing:
+	//		if(getInputValue(0) > 0.0f) {
+	//			timerCounter += ImGui::GetIO().DeltaTime;
 
-				float gamma = 0.20f; // affects the width of peak (more or less darkness)
-				float beta = 0.5f;
-				m_outputs[0] = 100.0f * (exp(-(pow(((timerCounter / timeout) - beta) / gamma, 2.0f)) / 2.0f));
+	//			if(repeat > 0.0f && timerCounter >= timeout) {
+	//				timerCounter = 0;
+	//			} else if(timerCounter >= timeout) {
+	//				timerCounter = timeout;
+	//				m_outputs[0] = 0.0f;
+	//				return;
+	//			}
 
-			} else {
-				m_outputs[0] = 0.0f;
-				timerCounter = 0;
-			}
-			break;
-	}
+	//			float gamma = 0.20f; // affects the width of peak (more or less darkness)
+	//			float beta = 0.5f;
+	//			m_outputs[0] = 100.0f * (exp(-(pow(((timerCounter / timeout) - beta) / gamma, 2.0f)) / 2.0f));
 
-	if(getInputValue(0))
-		lastIn = getInputValue(0);
+	//		} else {
+	//			m_outputs[0] = 0.0f;
+	//			timerCounter = 0;
+	//		}
+	//		break;
+	//}
+
+	//if(getInputValue(0))
+	//	lastIn = getInputValue(0);
 }
 
 void Node::evaluatePushButton() 
 {
-	float& ignitionOut = m_outputs[0];
-	float& starterOut = m_outputs[1];
-	float& lastEngineRunning = m_values[0];
-
-	if(!hasConnection(0) || !hasConnection(1) || !hasConnection(2)) {
-		ignitionOut = 0.0f;
-		starterOut = 0.0f;
-		return;
-	}
-
-	float& pushButtonIn = getInputValue(0);
-	float& brakeIn = getInputValue(1);
-	float& engineRunningIn = getInputValue(2);
-
-	float lastEngingRunning = 0.0f;
-	if(lastEngingRunning <= 0.0f && engineRunningIn > 0.0f && starterOut > 0.0f) {
-		starterOut = 0.0f;
-		return;
-	}
-	lastEngingRunning = engineRunningIn;
-
-	static float lastPushButton = 0.0f;
-	if(lastPushButton > 0.0f && pushButtonIn > 0.0f) {
-		return;
-	}
-	lastPushButton = pushButtonIn;
-
-	if(ignitionOut <= 0.0f && pushButtonIn > 0.0f) {
-		ignitionOut = 1.0f;
-		starterOut = 0.0f;
-		return;
-	}
-
-	if(pushButtonIn > 0.0f && engineRunningIn <= 0.0f && brakeIn <= 0.0f) {
-		ignitionOut = 0.0f;
-		starterOut = 0.0f;
-		return;
-	}
-
-	if(pushButtonIn > 0.0f && engineRunningIn > 0.0f) {
-		ignitionOut = 0.0f;
-		starterOut = 0.0f;
-		return;
-	}
-
-
-	if(pushButtonIn > 0.0f && engineRunningIn <= 0.0f && brakeIn > 0.0f) {
-		starterOut = 1.0f;
-		return;
-	}
-
-	starterOut = 0.0f;
+	Embedded::PushButtonNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		(bool) m_values[0],
+		m_outputs[0],
+		m_outputs[1]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_values[0] = node.lastButtonState;
+	m_outputs[0] = node.ignitionOut;
+	m_outputs[1] = node.starterOut;
 }
 
 float& Node::getInputValue(int inputIndex) {

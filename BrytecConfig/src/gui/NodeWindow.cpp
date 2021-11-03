@@ -7,6 +7,7 @@
 #include <iostream>
 #include <bitset>
 #include <IconsFontAwesome5.h>
+#include "../embedded/Nodes.h"
 
 NodeWindow::NodeWindow() {
 	imnodes::Initialize();
@@ -592,7 +593,7 @@ void NodeWindow::drawCurve(std::shared_ptr<Node>& node) {
     ImGui::PopStyleVar(2);
 
     int type = (int) node->getValue(0);
-    if(ImGui::Combo("###Combo", &type, Node::s_curveNames, (int) CurveTypes::Count))
+    if(ImGui::Combo("###Combo", &type, Node::s_curveNames, (int) Embedded::CurveNode::Types::Count))
         node->setValue(0, (float) type);
 
     // End fix padding on combo box
@@ -628,7 +629,7 @@ void NodeWindow::drawCompare(std::shared_ptr<Node>& node)
     ImGui::PopStyleVar(2);
 
     int type = (int)node->getValue(0);
-    if(ImGui::Combo("###Combo", &type, Node::s_compareNames, (int)CompareTypes::Count))
+    if(ImGui::Combo("###Combo", &type, Node::s_compareNames, (int) Embedded::CompareNode::Types::Count))
         node->setValue(0, (float)type);
 
     // End fix padding on combo box
@@ -755,7 +756,7 @@ void NodeWindow::drawMath(std::shared_ptr<Node>& node) {
     imnodes::BeginStaticAttribute(node->getValueId(0));
 
     int type = (int)node->getValue(0);
-    if(ImGui::Combo("###Combo", &type, Node::s_mathNames, (int)MathTypes::Count))
+    if(ImGui::Combo("###Combo", &type, Node::s_mathNames, (int) Embedded::MathNode::Types::Count))
         node->setValue(0, (float) type);
 
     // End fix padding on combo box

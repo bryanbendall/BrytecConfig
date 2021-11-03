@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include "../embedded/Nodes.h"
 
 enum class NodeTypes {
 	Initial_Value,
@@ -22,30 +23,6 @@ enum class NodeTypes {
 	Map_Value,
 	Math,
 	Value,
-	Count
-};
-
-enum class CompareTypes {
-	Greater,
-	GreaterEqual,
-	Less,
-	LessEqual,
-	Count
-};
-
-enum class MathTypes {
-	Add,
-	Subtract,
-	Multiply,
-	Divide,
-	Count
-};
-
-enum class CurveTypes {
-	Toggle,
-	Linear,
-	Exponential,
-	Breathing,
 	Count
 };
 
@@ -121,9 +98,9 @@ private:
 public:
 	static const char* s_nodeName[(int) NodeTypes::Count];
 	static const char* getTypeName(NodeTypes type) { return s_nodeName[(int)type]; }
-	static const char* s_compareNames[(int) CompareTypes::Count];
-	static const char* s_mathNames[(int) MathTypes::Count];
-	static const char* s_curveNames[(int) CurveTypes::Count];
+	static const char* s_compareNames[(int) Embedded::CompareNode::Types::Count];
+	static const char* s_mathNames[(int) Embedded::MathNode::Types::Count];
+	static const char* s_curveNames[(int) Embedded::CurveNode::Types::Count];
 
 private:
 	std::string m_name;
