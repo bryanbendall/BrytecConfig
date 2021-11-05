@@ -22,6 +22,11 @@ class NodeWindow
 	std::weak_ptr<NodeGroup> m_nodeGroup;
 	std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;
 
+	static unsigned int const boolColor =		IM_COL32(99,  99,  200, 255); // blue
+	static unsigned int const zeroToOneColor =	IM_COL32(200, 200, 36,  255); // yellow
+	static unsigned int const anyValueColor =	IM_COL32(99,  200, 99,  255); // green
+	static unsigned int const grayColor =		IM_COL32(162, 163, 162, 255); // gray
+
 public:
 	NodeWindow();
 	~NodeWindow();
@@ -60,6 +65,7 @@ private:
 	void drawMapValue		(std::shared_ptr<Node>& node);
 	void drawMath			(std::shared_ptr<Node>& node);
 	void drawValue			(std::shared_ptr<Node>& node);
+	void drawSelect			(std::shared_ptr<Node>& node);
 
 };
 

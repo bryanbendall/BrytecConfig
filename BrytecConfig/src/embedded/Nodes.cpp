@@ -1,5 +1,7 @@
 #include "Nodes.h"
 
+#include <cmath>
+
 namespace Embedded
 {
 
@@ -51,60 +53,47 @@ namespace Embedded
 
 	void Evaluate(CurveNode& node, float timestep)
 	{
-		node.out = 0.0f;
-		// TODO
-#if 0
+
 		if(!node.in) {
 			node.out = 0.0f;
 			return;
 		}
 
-		switch(node.curveType) {
-			case CurveNode::Types::Toggle:
-				if(ToBool(node.in)) {
-					node.timerCounter += timestep;
-				} else {
-					node.timerCounter = 0.0f;
-					node.out = 0.0f;
-					return;
-				}
-				if(node.timerCounter >= node.timeout)
-					node.timerCounter = node.timeout;
-
-				if(ToBool(node.in) && !node.lastIn) {
-					node.out = 100.0f;
-					break;
-				}
-				if(ToBool(node.in) && !node.repeat && !ToBool(&node.out)) {
-					node.timerCounter = 0;
-					break;
-				}
-				if(ToBool(node.in)) {
-					if(node.timerCounter >= node.timeout) {
-						if(!ToBool(&node.out))
-							node.out = 100.0f;
-						else
-							node.out = 0.0f;
-						node.timerCounter = 0;
-					}
-				}
-				break;
-
-			case CurveNode::Types::Linear:
-
-				break;
-			case CurveNode::Types::Exponential:
-
-				break;
-			case CurveNode::Types::Breathing:
-
-				break;
-
+		if(!ToBool(node.in)) {
+			node.timerCounter = 0.0f;
+			node.out = 0.0f;
+			return;
 		}
 
-		if(ToBool(node.in))
-			node.lastIn = ToBool(node.in);
-#endif
+		node.timerCounter += timestep;
+		if(node.timerCounter > node.timeout) {
+			if(node.repeat)
+				node.timerCounter = 0.0f;
+			else
+				node.timerCounter = node.timeout;
+		}
+		float curveProgress = node.timerCounter / node.timeout;
+
+		switch(node.curveType) {
+			case CurveNode::Types::Toggle:
+				if(curveProgress > 0.5f)
+					node.out = 1.0f;
+				else
+					node.out = 0.0f;
+				break;
+			case CurveNode::Types::Linear:
+				node.out = curveProgress;
+				break;
+			case CurveNode::Types::Exponential:
+				node.out = curveProgress * curveProgress;
+				break;
+			case CurveNode::Types::Breathing:
+				float gamma = 0.20f; // affects the width of peak (more or less darkness)
+				float beta = 0.5f;
+				node.out = (exp(-(pow((curveProgress - beta) / gamma, 2.0f)) / 2.0f)); //(exp ^ exp) / 2.0f;
+				break;
+		}
+
 	}
 
 	void Evaluate(CompareNode& node, float timestep)
@@ -254,8 +243,8 @@ namespace Embedded
 		}
 
 		float x = node.fromMin;
-		float y = node.fromMax;
-		float x1 = node.toMin;
+		float y = node.toMin;
+		float x1 = node.fromMax;
 		float y1 = node.toMax;
 		float sloap = (y - y1) / (x - x1);
 
@@ -288,6 +277,19 @@ namespace Embedded
 	void Evaluate(ValueNode& node, float timestep)
 	{
 		// Nothing to do because its a static value
+	}
+
+	void Evaluate(SelectNode& node, float timestep)
+	{
+		if(!node.selection || !node.input1 || !node.input2) {
+			node.out = 0.0f;
+			return;
+		}
+
+		if(ToBool(node.selection))
+			node.out = *node.input1;
+		else
+			node.out = *node.input2;
 	}
 
 }

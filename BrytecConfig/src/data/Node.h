@@ -23,6 +23,7 @@ enum class NodeTypes {
 	Map_Value,
 	Math,
 	Value,
+	Select,
 	Count
 };
 
@@ -91,6 +92,7 @@ private:
 	void evaluateMap();
 	void evaulateCurve();
 	void evaluatePushButton();
+	void evaluateSelect();
 
 	float& getInputValue(int inputIndex);
 	bool hasConnection(int inputIndex);

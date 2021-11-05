@@ -19,6 +19,7 @@ const char* Node::s_nodeName[(int) NodeTypes::Count] = {
 	"Map Value",
 	"Math",
 	"Value",
+	"Select"
 };
 
 const char* Node::s_compareNames[(int) Embedded::CompareNode::Types::Count] = {
@@ -122,6 +123,10 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 		outputs = 1;
 		values = 1;
 		break;
+	case NodeTypes::Select:
+		inputs = 3;
+		outputs = 1;
+		break;
 	case NodeTypes::Count:
 		break;
 	default:
@@ -175,6 +180,7 @@ void Node::evaluate() {
 		case NodeTypes::Map_Value:			evaluateMap();				break;
 		case NodeTypes::Math:				evaluateMath();				break;
 		case NodeTypes::Value:				m_outputs[0] = m_values[0];	break;
+		case NodeTypes::Select:				evaluateSelect();			break;
 		case NodeTypes::Count:											break;
 		default:							assert(false);				break;
 	}
@@ -302,139 +308,19 @@ void Node::evaulateCurve()
 		(hasConnection(0) ? &getInputValue(0) : nullptr),
 		(Embedded::CurveNode::Types) m_values[0],
 		(bool) m_values[1],
-		(bool) m_values[2],
-		(bool) m_values[4],
+		//(bool) m_values[2],
+		//(bool) m_values[4],
 		m_values[3],
 		m_values[5],
 		m_outputs[0]
 	};
 	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
 	m_values[1] = node.repeat;
-	m_values[2] = node.onShutdown;
-	m_values[4] = node.lastIn;
+	//m_values[2] = node.onShutdown;
+	//m_values[4] = node.lastIn;
 	m_values[3] = node.timeout;
 	m_values[5] = node.timerCounter;
 	m_outputs[0] = node.out;
-
-	//float& repeat = m_values[1];
-	//float& onShutdown = m_values[2];
-	//float& timeout = m_values[3];
-	//float& lastIn = m_values[4];
-	//float& timerCounter = m_values[5];
-
-	//if(!hasConnection(0) || timeout <= 0.0f) {
-	//	m_outputs[0] = 0.0f;
-	//	return;
-	//}
-
-	//CurveTypes type = (CurveTypes) m_values[0];
-	//switch(type) {
-
-	//	case CurveTypes::Toggle:
-	//		if(getInputValue(0) > 0.0f) {
-	//			timerCounter += ImGui::GetIO().DeltaTime;
-	//		} else {
-	//			timerCounter = 0;
-	//			m_outputs[0] = 0.0f;
-	//			return;
-	//		}
-	//		if(timerCounter >= timeout)
-	//			timerCounter = timeout;
-
-	//		if(getInputValue(0) > 0.0f && lastIn <= 0.0f) {
-	//			m_outputs[0] = 100.0f;
-	//			break;
-	//		}
-	//		if(getInputValue(0) > 0.0f && repeat <= 0.0f && m_outputs[0] <= 0.0f) {
-	//			timerCounter = 0;
-	//			break;
-	//		}
-	//		if(getInputValue(0) > 0.0f) {
-	//			if(timerCounter >= timeout) {
-	//				if(m_outputs[0] <= 0.0f)
-	//					m_outputs[0] = 100.0f;
-	//				else
-	//					m_outputs[0] = 0.0f;
-	//				timerCounter = 0;
-	//			}
-	//		}
-	//		break;
-
-	//	case CurveTypes::Linear:
-	//		if(getInputValue(0) > 0.0f) {
-	//			timerCounter += ImGui::GetIO().DeltaTime;
-	//			if(repeat > 0.0f && m_outputs[0] >= 100.0f) 
-	//				timerCounter = 0;
-	//			
-	//			if(timerCounter >= timeout) 
-	//				timerCounter = timeout;
-	//			
-	//			m_outputs[0] = timerCounter / timeout * 100.0f;
-	//			break;
-	//		}
-
-	//		if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.0f) {
-	//			timerCounter -= ImGui::GetIO().DeltaTime;
-	//			m_outputs[0] = timerCounter / timeout * 100.0f;
-
-	//		} else {
-	//			m_outputs[0] = 0.0f;
-	//			timerCounter = 0;
-	//		}
-	//		break;
-
-	//	case CurveTypes::Exponential:
-
-	//		if(getInputValue(0) > 0.0f) {
-	//			float steps = 100.0f / (timeout * timeout);
-	//			timerCounter += ImGui::GetIO().DeltaTime;
-	//			if(repeat > 0.0f && m_outputs[0] >= 100.0f) {
-	//				timerCounter = 0;
-	//			}
-	//			if(timerCounter >= timeout) {
-	//				timerCounter = timeout;
-	//			}
-	//			
-	//			m_outputs[0] = steps * timerCounter * timerCounter;
-	//			break;
-	//		} 
-
-	//		if(getInputValue(0) <= 0.0f && onShutdown > 0.0f && m_outputs[0] > 0.1f) {
-	//			float steps = 100.0f / (timeout * timeout);
-	//			timerCounter -= ImGui::GetIO().DeltaTime;
-	//			m_outputs[0] = steps * timerCounter * timerCounter;
-
-	//		} else {
-	//			m_outputs[0] = 0.0f;
-	//			timerCounter = 0;
-	//		}
-	//		break;
-
-	//	case CurveTypes::Breathing:
-	//		if(getInputValue(0) > 0.0f) {
-	//			timerCounter += ImGui::GetIO().DeltaTime;
-
-	//			if(repeat > 0.0f && timerCounter >= timeout) {
-	//				timerCounter = 0;
-	//			} else if(timerCounter >= timeout) {
-	//				timerCounter = timeout;
-	//				m_outputs[0] = 0.0f;
-	//				return;
-	//			}
-
-	//			float gamma = 0.20f; // affects the width of peak (more or less darkness)
-	//			float beta = 0.5f;
-	//			m_outputs[0] = 100.0f * (exp(-(pow(((timerCounter / timeout) - beta) / gamma, 2.0f)) / 2.0f));
-
-	//		} else {
-	//			m_outputs[0] = 0.0f;
-	//			timerCounter = 0;
-	//		}
-	//		break;
-	//}
-
-	//if(getInputValue(0))
-	//	lastIn = getInputValue(0);
 }
 
 void Node::evaluatePushButton() 
@@ -451,6 +337,19 @@ void Node::evaluatePushButton()
 	m_values[0] = node.lastButtonState;
 	m_outputs[0] = node.ignitionOut;
 	m_outputs[1] = node.starterOut;
+}
+
+void Node::evaluateSelect()
+{
+	Embedded::SelectNode node = {
+		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		m_outputs[0]
+	};
+	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.out;
+
 }
 
 float& Node::getInputValue(int inputIndex) {

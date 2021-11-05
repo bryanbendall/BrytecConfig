@@ -47,8 +47,8 @@ namespace Embedded
 		float* in = nullptr;
 		Types curveType = Types::Toggle;
 		bool repeat = false;
-		bool onShutdown = false;
-		bool lastIn = false;
+		//bool onShutdown = false;
+		//bool lastIn = false;
 		float timeout = 0.0f;
 		float timerCounter = 0.0f;
 		float out;
@@ -112,8 +112,8 @@ namespace Embedded
 	{
 		float* in = nullptr;
 		float fromMin = 0.0f;
-		float toMin = 0.0f;
 		float fromMax = 0.0f;
+		float toMin = 0.0f;
 		float toMax = 0.0f;
 		float out;
 	};
@@ -139,6 +139,13 @@ namespace Embedded
 		float out;
 	};
 
+	struct SelectNode
+	{
+		float* selection = nullptr;
+		float* input1 = nullptr;
+		float* input2 = nullptr;
+		float out;
+	};
 
 	void Evaluate(AndNode& node, float timestep);
 	void Evaluate(OrNode& node, float timestep);
@@ -153,5 +160,6 @@ namespace Embedded
 	void Evaluate(MapValueNode& node, float timestep);
 	void Evaluate(MathNode& node, float timestep);
 	void Evaluate(ValueNode& node, float timestep);
+	void Evaluate(SelectNode& node, float timestep);
 
 }
