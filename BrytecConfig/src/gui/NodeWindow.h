@@ -20,6 +20,7 @@ class NodeWindow
 	Mode m_mode = Mode::Build;
 	// TODO remove node groups when deleted
 	std::weak_ptr<NodeGroup> m_nodeGroup;
+	imnodes::EditorContext* defaultContext;
 	std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;
 
 	static unsigned int const boolColor =		IM_COL32(99,  99,  200, 255); // blue
@@ -35,6 +36,7 @@ public:
 	void setOpenedState(bool state) { m_opened = state; }
 	bool getOpenedState() { return m_opened; }
 	bool getIsWindowFocused() { return m_isFocused; }
+	void removeContext(std::shared_ptr<NodeGroup> nodeGroup);
 
 private:
 	void drawMenubar();

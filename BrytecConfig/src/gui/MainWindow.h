@@ -25,6 +25,7 @@ public:
 	void loadLayout();
 	void drawWindow();
 	bool isNodeWindowFocused() { return m_nodeWindow.getIsWindowFocused(); }
+	void removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup);
 
 private:
 	void drawMenu();

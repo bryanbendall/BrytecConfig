@@ -113,6 +113,11 @@ void MainWindow::drawWindow()
 
 }
 
+void MainWindow::removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup)
+{
+    m_nodeWindow.removeContext(nodeGroup);
+}
+
 void MainWindow::drawMenu() 
 {
     AppManager* app = AppManager::get();

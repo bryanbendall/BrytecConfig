@@ -138,6 +138,7 @@ void AppManager::handleKeyEvents()
 			if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
 				clearSelected();
 				m_config->removeNodeGroup(nodeGroup);
+				m_mainWindow.removeNodeGroupContext(nodeGroup);
 			}
 
 		}

@@ -12,6 +12,8 @@
 NodeWindow::NodeWindow() {
 	imnodes::Initialize();
 	imnodes::StyleColorsDark();
+    defaultContext = imnodes::EditorContextCreate();
+    imnodes::EditorContextSet(defaultContext);
 
     imnodes::SetNodeGridSpacePos(1, ImVec2(10.0f, 10.0f));
 
@@ -28,6 +30,8 @@ NodeWindow::NodeWindow() {
 
 NodeWindow::~NodeWindow() 
 {
+    imnodes::EditorContextFree(defaultContext);
+
     for(auto c : m_contexts)
         imnodes::EditorContextFree(c.second);
 }
@@ -36,6 +40,8 @@ void NodeWindow::drawWindow() {
 
     if (!m_opened)
         return;
+
+    imnodes::EditorContextSet(defaultContext);
 
     m_nodeGroup.reset();
 
@@ -96,6 +102,12 @@ void NodeWindow::drawWindow() {
     
     m_lastSelected = AppManager::get()->getSelectedItem();
 
+}
+
+void NodeWindow::removeContext(std::shared_ptr<NodeGroup> nodeGroup)
+{
+    imnodes::EditorContextFree(m_contexts[nodeGroup]);
+    m_contexts.erase(nodeGroup);
 }
 
 void NodeWindow::drawMenubar()
