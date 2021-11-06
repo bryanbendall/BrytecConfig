@@ -36,7 +36,7 @@ public:
 	void setOpenedState(bool state) { m_opened = state; }
 	bool getOpenedState() { return m_opened; }
 	bool getIsWindowFocused() { return m_isFocused; }
-	void removeContext(std::shared_ptr<NodeGroup> nodeGroup);
+	void removeContext(std::shared_ptr<NodeGroup>& nodeGroup);
 
 private:
 	void drawMenubar();
@@ -47,7 +47,7 @@ private:
 	void isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup);
 	void isNodeDeleted(std::shared_ptr<NodeGroup>& nodeGroup);
 	void saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup);
-	void doValuePopup();
+	void doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup);
 	imnodes::EditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
 
 	//Node Types

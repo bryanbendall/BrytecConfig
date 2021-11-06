@@ -41,6 +41,7 @@ void NodeWindow::drawWindow() {
     if (!m_opened)
         return;
 
+    // Reset context in case it has been deleted
     imnodes::EditorContextSet(defaultContext);
 
     m_nodeGroup.reset();
@@ -93,7 +94,7 @@ void NodeWindow::drawWindow() {
         isLinkDeleted(nodeGroup);
         isNodeDeleted(nodeGroup);
 
-        doValuePopup();
+        doValuePopup(nodeGroup);
     }
     ImGui::End();
 
@@ -104,7 +105,7 @@ void NodeWindow::drawWindow() {
 
 }
 
-void NodeWindow::removeContext(std::shared_ptr<NodeGroup> nodeGroup)
+void NodeWindow::removeContext(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     imnodes::EditorContextFree(m_contexts[nodeGroup]);
     m_contexts.erase(nodeGroup);
@@ -270,7 +271,7 @@ void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup) {
                         imnodes::PushColorStyle(imnodes::ColorStyle_Link, IM_COL32(20, 200, 20, 255));
                     } else {
                         //imnodes::PushColorStyle(imnodes::ColorStyle_Link, IM_COL32(200, 20, 20, 255));
-                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, anyValueColor);
+                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, grayColor);
                     }
                 }
 
@@ -370,17 +371,11 @@ void NodeWindow::saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup)
     
 }
 
-void NodeWindow::doValuePopup() 
+void NodeWindow::doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup)
 {
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock());
-    if(!pin)
-        return;
-
     int hovered;
-    if(m_mode == Mode::Simulation && imnodes::IsPinHovered(&hovered)) {
-        ImGui::SetTooltip("%.2f", pin->getNodeGroup()->getValue(hovered));
-
-    }
+    if(m_mode == Mode::Simulation && imnodes::IsPinHovered(&hovered))
+        ImGui::SetTooltip("%.2f", nodeGroup->getValue(hovered));
 }
 
 imnodes::EditorContext* NodeWindow::getContext(std::shared_ptr<NodeGroup>& nodeGroup) {
