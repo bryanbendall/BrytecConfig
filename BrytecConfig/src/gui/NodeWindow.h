@@ -18,7 +18,6 @@ class NodeWindow
 	bool m_isFocused = false;
 	std::weak_ptr<Selectable> m_lastSelected;
 	Mode m_mode = Mode::Build;
-	// TODO remove node groups when deleted
 	std::weak_ptr<NodeGroup> m_nodeGroup;
 	imnodes::EditorContext* defaultContext;
 	std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;

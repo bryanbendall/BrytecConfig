@@ -329,12 +329,14 @@ void NodeWindow::isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     const int num_selected = imnodes::NumSelectedLinks();
     if(num_selected > 0 && ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
-        std::cout << "delete link\n";
         static std::vector<int> selected_links;
         selected_links.resize(static_cast<size_t>(num_selected));
         imnodes::GetSelectedLinks(selected_links.data());
         for(const int link_id : selected_links) {
-            // TODO
+            int nodeId = (link_id >> 16) & 0xFF;
+            int linkAttribute = link_id & 0xFF;
+
+            nodeGroup->getNode(nodeId)->getInput(linkAttribute).node.reset();
         }
 
         if(nodeGroup)
@@ -409,9 +411,9 @@ void NodeWindow::drawFinalValue(std::shared_ptr<Node>& node) {
                 case IOTypes::Types::Output_Ground:
                 case IOTypes::Types::Input_12V:
                 case IOTypes::Types::Input_Ground:
+                case IOTypes::Types::Input_5V:
                     onOff = true;
                     break;
-                case IOTypes::Types::Input_5V:
                 case IOTypes::Types::Input_5V_Variable:
                 case IOTypes::Types::Input_Can:
                     floatValue = true;
@@ -458,6 +460,27 @@ void NodeWindow::drawInitialValue(std::shared_ptr<Node>& node) {
         imnodes::BeginStaticAttribute(node->getValueId(0));
         ImGui::DragFloat("###float1", &node->getValue(0), 0.01f, 0.0f, 5.0f, "%.2f");
         imnodes::EndStaticAttribute();
+
+        const char* text;
+        ImU32 color;
+        ImU32 hoverColor;
+        if(node->getValue(0) > 0.0f) {
+            text = "On";
+            color = IM_COL32(20, 200, 20, 255);
+            hoverColor = IM_COL32(20, 220, 20, 255);
+        } else {
+            text = "Off";
+            color = IM_COL32(200, 20, 20, 255);
+            hoverColor = IM_COL32(220, 20, 20, 255);
+        }
+        ImGui::PushStyleColor(ImGuiCol_Button, color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+        if(ImGui::Button(text, ImVec2(100.0f, 0.0f)))
+            node->getValue(0) > 0.0f ? node->getValue(0) = 0.0f : node->getValue(0) = 1.0f;
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(3);
     }
 
     imnodes::BeginOutputAttribute(node->getOutputId(0));
