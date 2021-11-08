@@ -52,7 +52,7 @@ private:
 	//Node Types
 	void drawInitialValue	(std::shared_ptr<Node>& node);
 	void drawFinalValue		(std::shared_ptr<Node>& node);
-	void drawPin			(std::shared_ptr<Node>& node);
+	void drawNodeGroup		(std::shared_ptr<Node>& node);
 	void drawAnd			(std::shared_ptr<Node>& node);
 	void drawOr				(std::shared_ptr<Node>& node);
 	void drawTwoStage		(std::shared_ptr<Node>& node);

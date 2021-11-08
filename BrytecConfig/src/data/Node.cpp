@@ -1,11 +1,11 @@
 #include "Node.h"
 #include <iostream>
-
+#include "NodeGroup.h"
 
 const char* Node::s_nodeName[(int) NodeTypes::Count] = {
 	"Initial Value",
 	"Final Value",
-	"Pin",
+	"Node Group",
 	"And",
 	"Or",
 	"Two Stage",
@@ -59,7 +59,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 	case NodeTypes::Final_Value:
 		inputs = 1;
 		break;
-	case NodeTypes::Pin:
+	case NodeTypes::Node_Group:
 		outputs = 1;
 		values =  1;
 		break;
@@ -166,7 +166,7 @@ void Node::evaluate() {
 	switch(m_type) {
 		case NodeTypes::Initial_Value:		m_outputs[0] = m_values[0];	break;
 		case NodeTypes::Final_Value:									break;
-		case NodeTypes::Pin:				m_outputs[0] = m_values[0]; break;
+		case NodeTypes::Node_Group:			m_outputs[0] = m_values[0]; break;
 		case NodeTypes::And:				evaluateAnd();				break;
 		case NodeTypes::Or:					evaluateOr();				break;
 		case NodeTypes::Two_Stage:			evaluateTwoStage();			break;

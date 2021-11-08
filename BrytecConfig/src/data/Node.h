@@ -6,10 +6,12 @@
 #include <memory>
 #include "../embedded/Nodes.h"
 
+class NodeGroup;
+
 enum class NodeTypes {
 	Initial_Value,
 	Final_Value,
-	Pin,
+	Node_Group,
 	And,
 	Or,
 	Two_Stage,
@@ -77,6 +79,8 @@ public:
 	const bool& getLoopFound() { return m_loopFound; }
 	void setLoopFound(bool state) { m_loopFound = state; }
 
+	std::weak_ptr<NodeGroup>& getNodeGroup() { return m_nodeGroup; }
+
 	unsigned int getBytesSize();
 
 private:
@@ -113,6 +117,7 @@ private:
 	std::vector<NodeConnection> m_inputs;
 	std::vector<float> m_values;
 	bool m_loopFound = false;
+	std::weak_ptr<NodeGroup> m_nodeGroup;
 
 };
 

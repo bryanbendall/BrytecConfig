@@ -148,7 +148,7 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup) {
     {
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-        for(int i = (int)NodeTypes::Pin; i < (int)NodeTypes::Count; i++) {
+        for(int i = (int)NodeTypes::Node_Group; i < (int)NodeTypes::Count; i++) {
             if(ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) { 
                 nodeGroup->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }
@@ -192,8 +192,8 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node) {
         case NodeTypes::Final_Value:
             drawFinalValue(node);
             break;
-        case NodeTypes::Pin:
-            drawPin(node);
+        case NodeTypes::Node_Group:
+            drawNodeGroup(node);
             break;
         case NodeTypes::And:
             drawAnd(node);
@@ -489,71 +489,65 @@ void NodeWindow::drawInitialValue(std::shared_ptr<Node>& node) {
     imnodes::EndOutputAttribute();
 }
 
-void NodeWindow::drawPin(std::shared_ptr<Node>& node) {
+void NodeWindow::drawNodeGroup(std::shared_ptr<Node>& node) {
     imnodes::BeginStaticAttribute(node->getValueId(0));
 
     // Fix padding on combo box
     ImGui::PopStyleVar(2);
 
-    /*
-    if(ImGui::BeginCombo("###pinsCombo", node->getPinSelection().expired() ? "" : node->getPinSelection().lock()->getName().c_str())) {
-        for(auto& module : AppManager::getConfig().getModules()) {
-            for(auto& pin : module->getPins()) {
-                if(!pin->getEnabled())
-                    continue;
-                ImGui::PushID(&pin);
-                bool isSelected = pin == node->getPinSelection().lock();
-                if(ImGui::Selectable(pin->getName().c_str(), isSelected))
-                    node->getPinSelection() = pin;
-                if(ImGui::IsItemHovered()) {
-                    ImGui::SetTooltip("Module: %s\nPinout: %s\nType: %s", module->getName().c_str(),
-                        pin->getPinoutName().c_str(), (size_t)pin->getType() > -1 ? pin->typeNames[(size_t)pin->getType()] : "Not Selected");
-                }
-                ImGui::PopID();
+    std::shared_ptr<NodeGroup> thisNodeGroup;
+    if(!m_nodeGroup.expired())
+        thisNodeGroup = m_nodeGroup.lock();
 
-                if(isSelected)
-                    ImGui::SetItemDefaultFocus();
-            }
+    if(ImGui::BeginCombo("###pinsCombo", node->getNodeGroup().expired() ? "" : node->getNodeGroup().lock()->getName().c_str())) {
+
+        for(auto& nodeGroup : AppManager::get()->getConfig()->getNodeGroups()) {
+
+            // Skip if it is this node group
+            if(thisNodeGroup && thisNodeGroup == nodeGroup)
+                continue;
+
+            ImGui::PushID(nodeGroup.get());
+            bool isSelected = nodeGroup == node->getNodeGroup().lock();
+            if(ImGui::Selectable(nodeGroup->getName().c_str(), isSelected))
+                node->getNodeGroup() = nodeGroup;
+            ImGui::PopID();
+
+            if(isSelected)
+                ImGui::SetItemDefaultFocus();
         }
         ImGui::EndCombo();
     }
-    */
 
     // End fix padding on combo box
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.f, 1.f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
 
     if(m_mode == Mode::Simulation) {
-        /*
-        if(!node->getPinSelection().expired() && node->getPinSelection().lock()->getType() == PinTypes::Input_5V_Variable)
-            ImGui::DragFloat("###float1", &node->getValue(0), 0.01f, 0.0f, 5.0f, "%.2f");
 
-        else if(!node->getPinSelection().expired() && node->getPinSelection().lock()->getType() == PinTypes::Output_12V_Pwm)
-            ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 100.0f, "%.0f");
-        */
-        if(false){}
-        else {
-            const char* text;
-            ImU32 color;
-            ImU32 hoverColor;
-            if(node->getValue(0) > 0.0f) {
-                text = "On";
-                color = IM_COL32(20, 200, 20, 255);
-                hoverColor = IM_COL32(20, 220, 20, 255);
-            } else {
-                text = "Off";
-                color = IM_COL32(200, 20, 20, 255);
-                hoverColor = IM_COL32(220, 20, 20, 255);
-            }
-            ImGui::PushStyleColor(ImGuiCol_Button, color);
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
-            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-            if(ImGui::Button(text, ImVec2(100.0f, 0.0f)))
-                node->getValue(0) > 0.0f ? node->getValue(0) = 0.0f : node->getValue(0) = 1.0f;
-            ImGui::PopStyleVar();
-            ImGui::PopStyleColor(3);
+        ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 10000.0f, "%.2f");
+
+        const char* text;
+        ImU32 color;
+        ImU32 hoverColor;
+        if(node->getValue(0) > 0.0f) {
+            text = "On";
+            color = IM_COL32(20, 200, 20, 255);
+            hoverColor = IM_COL32(20, 220, 20, 255);
+        } else {
+            text = "Off";
+            color = IM_COL32(200, 20, 20, 255);
+            hoverColor = IM_COL32(220, 20, 20, 255);
         }
+        ImGui::PushStyleColor(ImGuiCol_Button, color);
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+        if(ImGui::Button(text, ImVec2(100.0f, 0.0f)))
+            node->getValue(0) > 0.0f ? node->getValue(0) = 0.0f : node->getValue(0) = 1.0f;
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor(3);
+        
     }
 
     imnodes::EndStaticAttribute();
@@ -848,11 +842,10 @@ void NodeWindow::drawMath(std::shared_ptr<Node>& node) {
 }
 
 void NodeWindow::drawValue(std::shared_ptr<Node>& node) {
-    if(m_mode == Mode::Simulation) {
-        imnodes::BeginStaticAttribute(node->getValueId(0));
-        ImGui::DragFloat("###float1", &node->getValue(0), 5.0f, 0.0f, 10000.0f, "%.2f");
-        imnodes::EndStaticAttribute();
-    }
+    imnodes::BeginStaticAttribute(node->getValueId(0));
+    ImGui::DragFloat("###float1", &node->getValue(0), 5.0f, 0.0f, 10000.0f, "%.2f");
+    imnodes::EndStaticAttribute();
+
 
     imnodes::BeginOutputAttribute(node->getOutputId(0));
     ImGui::Indent(100.0f - ImGui::CalcTextSize("Output").x);
