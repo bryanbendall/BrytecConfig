@@ -42,14 +42,13 @@ void NodeGroupWindow::drawMenubar()
         // Open
         if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
             auto path = FileDialogs::OpenFile("btnodes");
-            if(path.empty())
-                return;
+            if(!path.empty()) {
+                std::shared_ptr<NodeGroup> nodeGroup = AppManager::get()->getConfig()->addEmptyNodeGroup(UUID());
+                NodeGroupSerializer serializer(nodeGroup);
 
-            std::shared_ptr<NodeGroup> nodeGroup = AppManager::get()->getConfig()->addEmptyNodeGroup(UUID());
-            NodeGroupSerializer serializer(nodeGroup);
-            
-            if(!serializer.deserializeTemplateText(path))
-                std::cout << "Could not deserialize node group file" << std::endl;
+                if(!serializer.deserializeTemplateText(path))
+                    std::cout << "Could not deserialize node group file" << std::endl;
+            }
         }
 
         // Save

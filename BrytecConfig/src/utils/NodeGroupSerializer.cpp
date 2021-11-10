@@ -57,9 +57,9 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 		out << YAML::Key << "Type" << YAML::Value << (unsigned int) node->getType() << YAML::Comment(Node::getTypeName(node->getType()));
 		out << YAML::Key << "Position" << YAML::Flow << YAML::BeginSeq << node->getPosition().x << node->getPosition().y << YAML::EndSeq;
 		
-		//outputs - dont need to serialize because they are calculated
+		// Outputs - dont need to serialize because they are calculated
 		
-		//inputs
+		// Inputs
 		out << YAML::Key << "Inputs" << YAML::BeginSeq;
 		for(auto input : node->getInputs()) {
 			out << YAML::Flow << YAML::BeginSeq;
@@ -72,11 +72,16 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 		}
 		out << YAML::EndSeq;
 
-		//values
+		// Values
 		out << YAML::Key << "Values" << YAML::Flow << YAML::BeginSeq;
 		for(float value : node->getValues())
 			out << value;
 		out << YAML::EndSeq;
+
+		// Node Group reference (special case for NodeGroup Node)
+		std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::get()->getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+		if(selectedNodeGroup)
+			out << YAML::Key << "Node Group ID" << selectedNodeGroup->getId();
 
 		out << YAML::EndMap;
 	}

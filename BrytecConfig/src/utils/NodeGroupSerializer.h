@@ -4,6 +4,7 @@
 #include <memory>
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
+#include "../AppManager.h"
 
 class NodeGroupSerializer
 {
@@ -64,6 +65,10 @@ private:
 							m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
 						}
 						inputIndex++;
+					}
+
+					if(auto nodeGroupId = node["Node Group ID"]) {
+						m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
 					}
 				}
 				nodeIndex++;

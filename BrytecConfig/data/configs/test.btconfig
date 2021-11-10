@@ -17,6 +17,13 @@ Node Groups:
         Inputs:
           - [0, 0]
         Values: []
+      - Name: Node Group
+        Type: 2  # Node Group
+        Position: [214, 160]
+        Inputs:
+          []
+        Values: [0]
+        Node Group ID: 5061436310797037924
   - Name: Right Turn Sw
     Id: 3754145105528928043
     Type: 6  # Ground Input
@@ -79,14 +86,14 @@ Node Groups:
         Inputs:
           []
         Values: [0]
-      - Name: Pin
-        Type: 2  # Pin
+      - Name: Node Group
+        Type: 2  # Node Group
         Position: [211, 53]
         Inputs:
           []
         Values: [0]
-      - Name: Pin
-        Type: 2  # Pin
+      - Name: Node Group
+        Type: 2  # Node Group
         Position: [213, 153]
         Inputs:
           []

@@ -499,7 +499,9 @@ void NodeWindow::drawNodeGroup(std::shared_ptr<Node>& node) {
     if(!m_nodeGroup.expired())
         thisNodeGroup = m_nodeGroup.lock();
 
-    if(ImGui::BeginCombo("###pinsCombo", node->getNodeGroup().expired() ? "" : node->getNodeGroup().lock()->getName().c_str())) {
+    std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::get()->getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+
+    if(ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str())) {
 
         for(auto& nodeGroup : AppManager::get()->getConfig()->getNodeGroups()) {
 
@@ -508,9 +510,10 @@ void NodeWindow::drawNodeGroup(std::shared_ptr<Node>& node) {
                 continue;
 
             ImGui::PushID(nodeGroup.get());
-            bool isSelected = nodeGroup == node->getNodeGroup().lock();
-            if(ImGui::Selectable(nodeGroup->getName().c_str(), isSelected))
-                node->getNodeGroup() = nodeGroup;
+            bool isSelected = nodeGroup == selectedNodeGroup;
+            if(ImGui::Selectable(nodeGroup->getName().c_str(), isSelected)) {
+                node->setSelectedNodeGroup(nodeGroup->getId());
+            }
             ImGui::PopID();
 
             if(isSelected)

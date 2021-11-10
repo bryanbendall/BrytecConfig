@@ -5,8 +5,7 @@
 #include <string>
 #include <memory>
 #include "../embedded/Nodes.h"
-
-class NodeGroup;
+#include "../utils/UUID.h"
 
 enum class NodeTypes {
 	Initial_Value,
@@ -79,7 +78,8 @@ public:
 	const bool& getLoopFound() { return m_loopFound; }
 	void setLoopFound(bool state) { m_loopFound = state; }
 
-	std::weak_ptr<NodeGroup>& getNodeGroup() { return m_nodeGroup; }
+	UUID getSelectedNodeGroup() { return m_selectedNodeGroup; }
+	void setSelectedNodeGroup(UUID nodeGroup) { m_selectedNodeGroup = nodeGroup; }
 
 	unsigned int getBytesSize();
 
@@ -117,7 +117,7 @@ private:
 	std::vector<NodeConnection> m_inputs;
 	std::vector<float> m_values;
 	bool m_loopFound = false;
-	std::weak_ptr<NodeGroup> m_nodeGroup;
+	UUID m_selectedNodeGroup;
 
 };
 
