@@ -53,30 +53,33 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 	for(auto node : m_nodeGroup->getNodes()) {
 		out << YAML::BeginMap;
 
-		out << YAML::Key << "Name" << YAML::Value << node->getName();
 		out << YAML::Key << "Type" << YAML::Value << (unsigned int) node->getType() << YAML::Comment(Node::getTypeName(node->getType()));
 		out << YAML::Key << "Position" << YAML::Flow << YAML::BeginSeq << node->getPosition().x << node->getPosition().y << YAML::EndSeq;
 		
 		// Outputs - dont need to serialize because they are calculated
 		
 		// Inputs
-		out << YAML::Key << "Inputs" << YAML::BeginSeq;
-		for(auto input : node->getInputs()) {
-			out << YAML::Flow << YAML::BeginSeq;
-			if(!input.node.expired()) {
-				out << m_nodeGroup->getNodeIndex(input.node.lock()) << input.outputIndex;
-			} else {
-				out << -1 << -1;
+		if(node->getInputs().size() > 0) {
+			out << YAML::Key << "Inputs" << YAML::BeginSeq;
+			for(auto input : node->getInputs()) {
+				out << YAML::Flow << YAML::BeginSeq;
+				if(!input.node.expired()) {
+					out << m_nodeGroup->getNodeIndex(input.node.lock()) << input.outputIndex;
+				} else {
+					out << -1 << -1;
+				}
+				out << YAML::EndSeq;
 			}
 			out << YAML::EndSeq;
 		}
-		out << YAML::EndSeq;
 
 		// Values
-		out << YAML::Key << "Values" << YAML::Flow << YAML::BeginSeq;
-		for(float value : node->getValues())
-			out << value;
-		out << YAML::EndSeq;
+		if(node->getValues().size() > 0) {
+			out << YAML::Key << "Values" << YAML::Flow << YAML::BeginSeq;
+			for(float value : node->getValues())
+				out << value;
+			out << YAML::EndSeq;
+		}
 
 		// Node Group reference (special case for NodeGroup Node)
 		std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::get()->getConfig()->findNodeGroup(node->getSelectedNodeGroup());

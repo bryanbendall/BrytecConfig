@@ -33,7 +33,6 @@ private:
 		// Add Nodes
 		if(auto nodes = data["Nodes"]) {
 			for(auto node : nodes) {
-				node["Name"].as<std::string>();
 				NodeTypes type = (NodeTypes)node["Type"].as<unsigned int>();
 				float x = node["Position"][0].as<float>();
 				float y = node["Position"][1].as<float>();
@@ -66,10 +65,9 @@ private:
 						}
 						inputIndex++;
 					}
-
-					if(auto nodeGroupId = node["Node Group ID"]) {
-						m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
-					}
+				}
+				if(auto nodeGroupId = node["Node Group ID"]) {
+					m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
 				}
 				nodeIndex++;
 			}
