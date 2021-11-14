@@ -47,7 +47,7 @@ int main(int, char**) {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    AppManager appManager(window);
+    AppManager::init(window);
 
 // Main loop
     while(!glfwWindowShouldClose(window)) {
@@ -60,7 +60,7 @@ int main(int, char**) {
         ImGui::NewFrame();
 
 
-        appManager.update();
+        AppManager::update();
 
 
         // Rendering

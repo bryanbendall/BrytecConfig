@@ -46,13 +46,13 @@ void NodeWindow::drawWindow() {
 
     m_nodeGroup.reset();
 
-    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock());
+    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
     if(nodeGroup) {
         imnodes::EditorContextSet(getContext(nodeGroup));
         m_nodeGroup = nodeGroup;
     }
 
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::get()->getSelectedItem().lock());
+    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
     if(pin && pin->getNodeGroup()) {
         nodeGroup = pin->getNodeGroup();
         imnodes::EditorContextSet(getContext(nodeGroup));
@@ -101,7 +101,7 @@ void NodeWindow::drawWindow() {
     if(nodeGroup && m_mode == Mode::Simulation)
         nodeGroup->evaluateAllNodes();
     
-    m_lastSelected = AppManager::get()->getSelectedItem();
+    m_lastSelected = AppManager::getSelectedItem();
 
 }
 
@@ -164,7 +164,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node) {
     if(!node)
         return;
 
-    if (m_lastSelected.lock() != AppManager::get()->getSelectedItem().lock())
+    if (m_lastSelected.lock() != AppManager::getSelectedItem().lock())
         imnodes::SetNodeGridSpacePos(node->getId(), node->getPosition());
 
     // Style for nodes
@@ -499,11 +499,11 @@ void NodeWindow::drawNodeGroup(std::shared_ptr<Node>& node) {
     if(!m_nodeGroup.expired())
         thisNodeGroup = m_nodeGroup.lock();
 
-    std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::get()->getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+    std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
 
     if(ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str())) {
 
-        for(auto& nodeGroup : AppManager::get()->getConfig()->getNodeGroups()) {
+        for(auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
 
             // Skip if it is this node group
             if(thisNodeGroup && thisNodeGroup == nodeGroup)

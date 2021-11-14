@@ -82,7 +82,7 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 		}
 
 		// Node Group reference (special case for NodeGroup Node)
-		std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::get()->getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+		std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
 		if(selectedNodeGroup)
 			out << YAML::Key << "Node Group ID" << selectedNodeGroup->getId();
 

@@ -26,7 +26,7 @@ void MainWindow::setupFonts()
 
     ImFontConfig icons_config2;
     icons_config2.PixelSnapH = true;
-    AppManager::get()->setBigIconFont(io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
+    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
 
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
@@ -120,22 +120,20 @@ void MainWindow::removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup)
 
 void MainWindow::drawMenu() 
 {
-    AppManager* app = AppManager::get();
-
     if(ImGui::BeginMenuBar()) {
         if(ImGui::BeginMenu("File")) {
             if(ImGui::MenuItem("New", "Ctrl+N"))
-                app->newConfig();
+                AppManager::newConfig();
             if(ImGui::MenuItem("Open", "Ctrl+O"))
-                app->openConfig();
+                AppManager::openConfig();
             ImGui::Separator();
             if(ImGui::MenuItem("Save", "Ctrl+S"))
-                app->saveConfig();
+                AppManager::saveConfig();
             if(ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
-                app->saveAsConfig();
+                AppManager::saveAsConfig();
             ImGui::Separator();
             if(ImGui::MenuItem("Exit", "Alt+F4"))
-                app->exit();
+                AppManager::exit();
             ImGui::EndMenu();
         }
 
@@ -219,16 +217,14 @@ static void ToolbarButton(const char* icon, const char* tooltip, std::function<v
         if(hoveredTime > 40)
             ImGui::SetTooltip(tooltip);
     }
-    ImGui::PushFont(AppManager::get()->getBigIconFont());
+    ImGui::PushFont(AppManager::getBigIconFont());
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 }
 
 void MainWindow::drawMenuBar()
 {
-    AppManager* app = AppManager::get();
-
-    ImGui::PushFont(app->getBigIconFont());
+    ImGui::PushFont(AppManager::getBigIconFont());
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
@@ -238,9 +234,9 @@ void MainWindow::drawMenuBar()
 
     ImGui::Begin("##Menu Bar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    ToolbarButton(ICON_FA_FILE,         "New",  std::bind(&AppManager::newConfig, app));
-    ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", std::bind(&AppManager::openConfig, app));
-    ToolbarButton(ICON_FA_SAVE,         "Save", std::bind(&AppManager::saveConfig, app));
+    ToolbarButton(ICON_FA_FILE,         "New",  &AppManager::newConfig);
+    ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", &AppManager::openConfig);
+    ToolbarButton(ICON_FA_SAVE,         "Save", &AppManager::saveConfig);
 
     if(anyItemHovered) {
         anyItemHovered = false;

@@ -19,7 +19,7 @@ void NodeGroupWindow::drawWindow()
     ImGui::Begin(ICON_FA_DICE_D6" Node Group", &m_opened, ImGuiWindowFlags_MenuBar);
 
     if(ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
-        AppManager::get()->setSelected(std::weak_ptr<Selectable>());
+        AppManager::setSelected(std::weak_ptr<Selectable>());
 
     drawMenubar();
 
@@ -32,18 +32,18 @@ void NodeGroupWindow::drawMenubar()
 {
     if(ImGui::BeginMenuBar()) {
 
-        std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock());
+        std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
         bool nodeGroupSelected = nodeGroup != nullptr;
 
         // Add blank
         if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
-            AppManager::get()->setSelected(AppManager::get()->getConfig()->addNodeGroup());
+            AppManager::setSelected(AppManager::getConfig()->addNodeGroup());
 
         // Open
         if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
             auto path = FileDialogs::OpenFile("btnodes");
             if(!path.empty()) {
-                std::shared_ptr<NodeGroup> nodeGroup = AppManager::get()->getConfig()->addEmptyNodeGroup(UUID());
+                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
 
                 if(!serializer.deserializeTemplateText(path))
@@ -69,7 +69,7 @@ void NodeGroupWindow::drawMenubar()
 
         if(ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
             // Copy Constructor
-            AppManager::get()->getConfig()->addNodeGroup(std::make_shared<NodeGroup>(*nodeGroup.get()));
+            AppManager::getConfig()->addNodeGroup(std::make_shared<NodeGroup>(*nodeGroup.get()));
         }
 
         ImGui::TextDisabled("|");
@@ -86,7 +86,7 @@ void NodeGroupWindow::drawMenubar()
 
 void NodeGroupWindow::drawNodeGroups()
 {
-    auto& nodeGroups = AppManager::get()->getConfig()->getNodeGroups();
+    auto& nodeGroups = AppManager::getConfig()->getNodeGroups();
     int nodeGroupCount = nodeGroups.size();
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
     float buttonWidth = 150;
@@ -111,7 +111,7 @@ void NodeGroupWindow::drawNodeGroups()
 
         ImGui::PushID(i);
 
-        bool selected = std::dynamic_pointer_cast<NodeGroup>(AppManager::get()->getSelectedItem().lock()) == nodeGroup;
+        bool selected = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock()) == nodeGroup;
         
         if(selected) {
             ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 255));
@@ -120,7 +120,7 @@ void NodeGroupWindow::drawNodeGroups()
 
 
         if(ImGui::Button(nodeGroup->getName().c_str(), {buttonWidth, 0})) {
-            AppManager::get()->setSelected(nodeGroup);
+            AppManager::setSelected(nodeGroup);
         }
 
         if(!nodeGroup->getAssigned()) {

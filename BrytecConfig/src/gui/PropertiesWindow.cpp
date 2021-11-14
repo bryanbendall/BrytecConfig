@@ -14,7 +14,7 @@ void PropertiesWindow::drawWindow() {
 
 	ImGui::Begin(ICON_FA_COG" Properties", &m_opened);
 
-	std::shared_ptr<Selectable> selected = AppManager::get()->getSelectedItem().lock();
+	std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
 	if (selected) {
 		
 		if (auto module = std::dynamic_pointer_cast<Module>(selected))
@@ -287,7 +287,7 @@ void PropertiesWindow::drawStatsWindow()
 	// Numer of modules
 	ImGui::TextUnformatted("Total Modules");
 	ImGui::NextColumn();
-	ImGui::Text("%i", AppManager::get()->getConfig()->getModules().size());
+	ImGui::Text("%i", AppManager::getConfig()->getModules().size());
 	ImGui::NextColumn();
 
 	/*
@@ -334,7 +334,7 @@ void PropertiesWindow::drawStatsWindow()
 	ImGui::Separator();
 	ImGui::Columns(2, "###Column", true);
 
-	std::shared_ptr<Selectable> selected = AppManager::get()->getSelectedItem().lock();
+	std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
 	if(selected) {
 
 		auto module = std::dynamic_pointer_cast<Module>(selected);
