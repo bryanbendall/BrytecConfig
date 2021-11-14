@@ -25,15 +25,15 @@ NodeGroup::NodeGroup(const NodeGroup& other)
 	}
 	
 	// Copy node connections
-	for(size_t i = 0; i < m_nodes.size(); i++) {
-		auto& newNode = m_nodes[i];
-		auto& oldNode = other.m_nodes[i];
+	for(size_t nodeIndex = 0; nodeIndex < m_nodes.size(); nodeIndex++) {
+		auto& newNode = m_nodes[nodeIndex];
+		auto& oldNode = other.m_nodes[nodeIndex];
 
-		for(auto input : oldNode->getInputs()) {
-			if(input.node.lock()) {
-				for(size_t index = 0; index < m_nodes.size(); index++) {
-					if(oldNode->getInputs()[i].node.lock() == input.node.lock())
-						newNode->setInput(i, {m_nodes[i], input.outputIndex});
+		for(size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
+			if(auto& oldConnectedNode = oldNode->getInputs()[inputIndex].node.lock()) {
+				for(size_t oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
+					if(other.m_nodes[oldConnectedNodeIndex] == oldConnectedNode)
+						newNode->setInput(inputIndex, {m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].outputIndex});
 				}
 			}
 		}
