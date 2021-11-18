@@ -5,6 +5,28 @@
 namespace Embedded
 {
 
+	enum class NodeTypes : uint8_t
+	{
+		Initial_Value = 0,
+		Final_Value,
+		Node_Group,
+		And,
+		Or,
+		Two_Stage,
+		Curve,
+		Compare,
+		On_Off,
+		Invert,
+		Toggle,
+		Delay,
+		Push_Button,
+		Map_Value,
+		Math,
+		Value,
+		Select,
+		Count
+	};
+
 	struct AndNode
 	{
 		float* in1 = nullptr;
@@ -112,9 +134,9 @@ namespace Embedded
 	{
 		float* in = nullptr;
 		float fromMin = 0.0f;
-		float fromMax = 0.0f;
+		float fromMax = 1.0f;
 		float toMin = 0.0f;
-		float toMax = 0.0f;
+		float toMax = 100.0f;
 		float out;
 	};
 

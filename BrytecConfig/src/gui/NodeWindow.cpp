@@ -148,9 +148,9 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup) {
     {
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-        for(int i = (int)NodeTypes::Node_Group; i < (int)NodeTypes::Count; i++) {
+        for(int i = (int) Embedded::NodeTypes::Node_Group; i < (int) Embedded::NodeTypes::Count; i++) {
             if(ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) { 
-                nodeGroup->addNode((NodeTypes)i); imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
+                nodeGroup->addNode((Embedded::NodeTypes)i); imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }
         }
 
@@ -186,55 +186,55 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node) {
     imnodes::EndNodeTitleBar();
 
     switch (node->getType()) {
-        case NodeTypes::Initial_Value:
+        case Embedded::NodeTypes::Initial_Value:
             drawInitialValue(node);
             break;
-        case NodeTypes::Final_Value:
+        case Embedded::NodeTypes::Final_Value:
             drawFinalValue(node);
             break;
-        case NodeTypes::Node_Group:
+        case Embedded::NodeTypes::Node_Group:
             drawNodeGroup(node);
             break;
-        case NodeTypes::And:
+        case Embedded::NodeTypes::And:
             drawAnd(node);
             break;
-        case NodeTypes::Or:
+        case Embedded::NodeTypes::Or:
             drawOr(node);
             break;
-        case NodeTypes::Two_Stage:
+        case Embedded::NodeTypes::Two_Stage:
             drawTwoStage(node);
             break;
-        case NodeTypes::Curve:
+        case Embedded::NodeTypes::Curve:
             drawCurve(node);
             break;
-        case NodeTypes::Compare:
+        case Embedded::NodeTypes::Compare:
             drawCompare(node);
             break;
-        case NodeTypes::On_Off:
+        case Embedded::NodeTypes::On_Off:
             drawOnOff(node);
             break;
-        case NodeTypes::Invert:
+        case Embedded::NodeTypes::Invert:
             drawInvert(node);
             break;
-        case NodeTypes::Toggle:
+        case Embedded::NodeTypes::Toggle:
             drawToggle(node);
             break;
-        case NodeTypes::Delay:
+        case Embedded::NodeTypes::Delay:
             drawDelay(node);
             break;
-        case NodeTypes::Push_Button:
+        case Embedded::NodeTypes::Push_Button:
             drawPushButton(node);
             break;
-        case NodeTypes::Map_Value:
+        case Embedded::NodeTypes::Map_Value:
             drawMapValue(node);
             break;
-        case NodeTypes::Math:
+        case Embedded::NodeTypes::Math:
             drawMath(node);
             break;
-        case NodeTypes::Value:
+        case Embedded::NodeTypes::Value:
             drawValue(node);
             break;
-        case NodeTypes::Select:
+        case Embedded::NodeTypes::Select:
             drawSelect(node);
             break;
     }

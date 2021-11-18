@@ -2,7 +2,7 @@
 #include <iostream>
 #include "NodeGroup.h"
 
-const char* Node::s_nodeName[(int) NodeTypes::Count] = {
+const char* Node::s_nodeName[(int) Embedded::NodeTypes::Count] = {
 	"Initial Value",
 	"Final Value",
 	"Node Group",
@@ -43,7 +43,7 @@ const char* Node::s_curveNames[(int) Embedded::CurveNode::Types::Count] = {
 	"Breathing"
 };
 
-Node::Node(int id, ImVec2 position, NodeTypes type) 
+Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 	: m_id(id), m_position(position), m_type(type), m_name(Node::s_nodeName[(int)type])
 {
 	int inputs = 0;
@@ -52,84 +52,85 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 
 	switch (type)
 	{
-	case NodeTypes::Initial_Value:
+	case Embedded::NodeTypes::Initial_Value:
 		outputs = 1;
 		values = 1;
 		break;
-	case NodeTypes::Final_Value:
+	case Embedded::NodeTypes::Final_Value:
 		inputs = 1;
 		break;
-	case NodeTypes::Node_Group:
+	case Embedded::NodeTypes::Node_Group:
 		outputs = 1;
 		values =  1;
 		break;
-	case NodeTypes::And:
+	case Embedded::NodeTypes::And:
 		inputs =  5;
 		outputs = 1;
 		break;
-	case NodeTypes::Or:
+	case Embedded::NodeTypes::Or:
 		inputs =  5;
 		outputs = 1;
 		break;
-	case NodeTypes::Two_Stage:
+	case Embedded::NodeTypes::Two_Stage:
 		inputs =  2;
 		outputs = 1;
 		values =  2;
 		break;
-	case NodeTypes::Curve:
+	case Embedded::NodeTypes::Curve:
 		inputs = 1;
 		outputs = 1;
 		values = 6;
 		break;
-	case NodeTypes::Compare:
+	case Embedded::NodeTypes::Compare:
 		inputs = 2;
 		outputs = 1;
 		values = 1;
 		break;
-	case NodeTypes::On_Off:
+	case Embedded::NodeTypes::On_Off:
 		inputs = 2;
 		outputs = 1;
 		break;
-	case NodeTypes::Invert:
+	case Embedded::NodeTypes::Invert:
 		inputs = 1;
 		outputs = 1;
 		break;
-	case NodeTypes::Toggle:
+	case Embedded::NodeTypes::Toggle:
 		inputs = 1;
 		outputs = 1;
 		values = 1;
 		break;
-	case NodeTypes::Delay:
+	case Embedded::NodeTypes::Delay:
 		inputs = 1;
 		outputs = 1;
 		values = 2;
 		break;
-	case NodeTypes::Push_Button:
+	case Embedded::NodeTypes::Push_Button:
 		inputs = 3;
 		outputs = 2;
 		values = 1;
 		break;
-	case NodeTypes::Map_Value:
+	case Embedded::NodeTypes::Map_Value:
 		inputs =  1;
 		outputs = 1;
 		values =  4;
 		break;
-	case NodeTypes::Math:
+	case Embedded::NodeTypes::Math:
 		inputs = 2;
 		outputs = 1;
 		values = 1;
 		break;
-	case NodeTypes::Value:
+	case Embedded::NodeTypes::Value:
 		outputs = 1;
 		values = 1;
 		break;
-	case NodeTypes::Select:
+	case Embedded::NodeTypes::Select:
 		inputs = 3;
 		outputs = 1;
 		break;
-	case NodeTypes::Count:
+	case Embedded::NodeTypes::Count:
 		break;
 	default:
+		assert(false);
 		break;
 	}
 
@@ -164,25 +165,25 @@ unsigned int Node::getBytesSize()
 
 void Node::evaluate() {
 	switch(m_type) {
-		case NodeTypes::Initial_Value:		m_outputs[0] = m_values[0];	break;
-		case NodeTypes::Final_Value:									break;
-		case NodeTypes::Node_Group:			m_outputs[0] = m_values[0]; break;
-		case NodeTypes::And:				evaluateAnd();				break;
-		case NodeTypes::Or:					evaluateOr();				break;
-		case NodeTypes::Two_Stage:			evaluateTwoStage();			break;
-		case NodeTypes::Curve:				evaulateCurve();			break;
-		case NodeTypes::Compare:			evaluateCompare();			break;
-		case NodeTypes::On_Off:				evaluateOnOff();			break;
-		case NodeTypes::Invert:				evaluateInvert();			break;
-		case NodeTypes::Toggle:				evaluateToggle();			break;
-		case NodeTypes::Delay:				evaluateDelay();			break;
-		case NodeTypes::Push_Button:		evaluatePushButton();		break;
-		case NodeTypes::Map_Value:			evaluateMap();				break;
-		case NodeTypes::Math:				evaluateMath();				break;
-		case NodeTypes::Value:				m_outputs[0] = m_values[0];	break;
-		case NodeTypes::Select:				evaluateSelect();			break;
-		case NodeTypes::Count:											break;
-		default:							assert(false);				break;
+		case Embedded::NodeTypes::Initial_Value:		m_outputs[0] = m_values[0];	break;
+		case Embedded::NodeTypes::Final_Value:										break;
+		case Embedded::NodeTypes::Node_Group:			m_outputs[0] = m_values[0]; break;
+		case Embedded::NodeTypes::And:					evaluateAnd();				break;
+		case Embedded::NodeTypes::Or:					evaluateOr();				break;
+		case Embedded::NodeTypes::Two_Stage:			evaluateTwoStage();			break;
+		case Embedded::NodeTypes::Curve:				evaulateCurve();			break;
+		case Embedded::NodeTypes::Compare:				evaluateCompare();			break;
+		case Embedded::NodeTypes::On_Off:				evaluateOnOff();			break;
+		case Embedded::NodeTypes::Invert:				evaluateInvert();			break;
+		case Embedded::NodeTypes::Toggle:				evaluateToggle();			break;
+		case Embedded::NodeTypes::Delay:				evaluateDelay();			break;
+		case Embedded::NodeTypes::Push_Button:			evaluatePushButton();		break;
+		case Embedded::NodeTypes::Map_Value:			evaluateMap();				break;
+		case Embedded::NodeTypes::Math:					evaluateMath();				break;
+		case Embedded::NodeTypes::Value:				m_outputs[0] = m_values[0];	break;
+		case Embedded::NodeTypes::Select:				evaluateSelect();			break;
+		case Embedded::NodeTypes::Count:											break;
+		default:										assert(false);				break;
 	}
 }
 

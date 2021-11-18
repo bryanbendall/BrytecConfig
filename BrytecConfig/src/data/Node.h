@@ -7,27 +7,6 @@
 #include "../embedded/Nodes.h"
 #include "../utils/UUID.h"
 
-enum class NodeTypes {
-	Initial_Value,
-	Final_Value,
-	Node_Group,
-	And,
-	Or,
-	Two_Stage,
-	Curve,
-	Compare,
-	On_Off,
-	Invert,
-	Toggle,
-	Delay,
-	Push_Button,
-	Map_Value,
-	Math,
-	Value,
-	Select,
-	Count
-};
-
 class Node;
 struct NodeConnection {
 	std::weak_ptr<Node> node;
@@ -49,14 +28,14 @@ class Node
 {
 
 public:
-	Node(int id, ImVec2 position, NodeTypes type);
+	Node(int id, ImVec2 position, Embedded::NodeTypes type);
 
 	void evaluate();
 
 	std::string& getName() { return m_name; }
 	ImVec2& getPosition() { return m_position; }
 	
-	NodeTypes& getType() { return m_type; }
+	Embedded::NodeTypes& getType() { return m_type; }
 
 	int getId() { return m_id; }
 	int getOutputId(int index) { return (m_id << 8) + index; }
@@ -102,15 +81,15 @@ private:
 	bool hasConnection(int inputIndex);
 
 public:
-	static const char* s_nodeName[(int) NodeTypes::Count];
-	static const char* getTypeName(NodeTypes type) { return s_nodeName[(int)type]; }
+	static const char* s_nodeName[(int) Embedded::NodeTypes::Count];
+	static const char* getTypeName(Embedded::NodeTypes type) { return s_nodeName[(int)type]; }
 	static const char* s_compareNames[(int) Embedded::CompareNode::Types::Count];
 	static const char* s_mathNames[(int) Embedded::MathNode::Types::Count];
 	static const char* s_curveNames[(int) Embedded::CurveNode::Types::Count];
 
 private:
 	std::string m_name;
-	NodeTypes m_type;
+	Embedded::NodeTypes m_type;
 	int m_id;
 	ImVec2 m_position;
 	std::vector<float> m_outputs;

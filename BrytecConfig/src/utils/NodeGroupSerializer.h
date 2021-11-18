@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
 #include "../AppManager.h"
+#include "../embedded/Nodes.h"
 
 class NodeGroupSerializer
 {
@@ -33,7 +34,7 @@ private:
 		// Add Nodes
 		if(auto nodes = data["Nodes"]) {
 			for(auto node : nodes) {
-				NodeTypes type = (NodeTypes)node["Type"].as<unsigned int>();
+				Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].as<unsigned int>();
 				float x = node["Position"][0].as<float>();
 				float y = node["Position"][1].as<float>();
 
