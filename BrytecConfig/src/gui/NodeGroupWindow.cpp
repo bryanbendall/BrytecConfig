@@ -69,7 +69,9 @@ void NodeGroupWindow::drawMenubar()
 
         if(ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
             // Copy Constructor
-            AppManager::getConfig()->addNodeGroup(std::make_shared<NodeGroup>(*nodeGroup.get()));
+            auto newNodeGroup = std::make_shared<NodeGroup>(*nodeGroup.get());
+            AppManager::getConfig()->addNodeGroup(newNodeGroup);
+            AppManager::setSelected(newNodeGroup);
         }
 
         ImGui::TextDisabled("|");

@@ -128,6 +128,7 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 		outputs = 1;
 		break;
 	case Embedded::NodeTypes::Count:
+		assert(false);
 		break;
 	default:
 		assert(false);

@@ -24,11 +24,12 @@ NodeGroup::NodeGroup(const NodeGroup& other)
 		addNode(oldNode->getType(), oldNode->getPosition());
 	}
 	
-	// Copy node connections
+	// Copy node data
 	for(size_t nodeIndex = 0; nodeIndex < m_nodes.size(); nodeIndex++) {
 		auto& newNode = m_nodes[nodeIndex];
 		auto& oldNode = other.m_nodes[nodeIndex];
 
+		// Copy node connections
 		for(size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
 			if(auto& oldConnectedNode = oldNode->getInputs()[inputIndex].node.lock()) {
 				for(size_t oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
@@ -37,6 +38,10 @@ NodeGroup::NodeGroup(const NodeGroup& other)
 				}
 			}
 		}
+
+		// Copy node values
+		for(size_t valueIndex = 0; valueIndex < oldNode->getValues().size(); valueIndex++)
+			newNode->getValue(valueIndex) = oldNode->getValue(valueIndex);
 
 	}
 }
@@ -47,7 +52,7 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 		if(n->getId() == id)
 			return n;
 	}
-	assert(false);
+
 	return nullptr;
 }
 
@@ -103,6 +108,9 @@ float NodeGroup::getValue(int attributeIndex)
 	uint8_t ioIndex = attributeIndex;
 
 	auto& node = getNode(nodeIndex);
+	if(!node)
+		return 0.0f;
+
 	if(ioIndex >= node->getOutputs().size()) {
 		int inputIndex = ioIndex - node->getOutputs().size();
 		if(node->getInput(inputIndex).node.expired())

@@ -1,0 +1,67 @@
+Name: tail light
+Id: 14047224786772048179
+Type: 1  # 12V High Current PWM Output
+Enabled: true
+Nodes:
+  - Type: 0  # Initial Value
+    Position: [-357, -96]
+    Values: [0]
+  - Type: 2  # Node Group
+    Position: [54, 162]
+    Values: [1]
+  - Type: 2  # Node Group
+    Position: [51, 295]
+    Values: [0]
+  - Type: 3  # And
+    Position: [237, 241]
+    Inputs:
+      - [1, 0]
+      - [2, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+  - Type: 6  # Curve
+    Position: [412, 241]
+    Inputs:
+      - [3, 0]
+    Values: [0, 1, 0, 1, 0, 0]
+  - Type: 2  # Node Group
+    Position: [49, 430]
+    Values: [0]
+  - Type: 16  # Select
+    Position: [409, 407]
+    Inputs:
+      - [3, 0]
+      - [4, 0]
+      - [5, 0]
+  - Type: 2  # Node Group
+    Position: [50, 590]
+    Values: [0]
+  - Type: 3  # And
+    Position: [234, 591]
+    Inputs:
+      - [1, 0]
+      - [7, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+  - Type: 13  # Map Value
+    Position: [407, 549]
+    Inputs:
+      - [8, 0]
+    Values: [0, 1, 0, 0.5]
+  - Type: 14  # Math
+    Position: [597, 398]
+    Inputs:
+      - [6, 0]
+      - [9, 0]
+    Values: [0]
+  - Type: 13  # Map Value
+    Position: [607, 541]
+    Inputs:
+      - [10, 0]
+    Values: [0, 1, 0, 100]
+  - Type: 1  # Final Value
+    Position: [778, 528]
+    Inputs:
+      - [11, 0]
