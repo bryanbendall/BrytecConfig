@@ -3,8 +3,9 @@
 NodeGroup::NodeGroup()
 	: m_uuid(UUID())
 {
-	addNode(Embedded::NodeTypes::Initial_Value, {50.0f, 50.0f});
-	addNode(Embedded::NodeTypes::Final_Value, {350.0f, 50.0f});
+	auto initalNode = addNode(Embedded::NodeTypes::Initial_Value, {50.0f, 50.0f});
+	auto finalNode = addNode(Embedded::NodeTypes::Final_Value, {350.0f, 50.0f});
+	finalNode->setInput(0, {initalNode, 0});
 }
 
 NodeGroup::NodeGroup(UUID uuid)

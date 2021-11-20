@@ -48,6 +48,8 @@ void NodeGroupWindow::drawMenubar()
 
                 if(!serializer.deserializeTemplateText(path))
                     std::cout << "Could not deserialize node group file" << std::endl;
+                else
+                    AppManager::setSelected(nodeGroup);
             }
         }
 

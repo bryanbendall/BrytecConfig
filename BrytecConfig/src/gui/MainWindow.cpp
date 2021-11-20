@@ -40,6 +40,10 @@ void MainWindow::setupStyle()
     ImGuiStyle* style = &ImGui::GetStyle();
     style->Colors[ImGuiCol_TitleBgActive] = style->Colors[ImGuiCol_TitleBg];
 
+    // Combo boxes
+    style->Colors[ImGuiCol_Button] = style->Colors[ImGuiCol_FrameBg];
+    style->Colors[ImGuiCol_ButtonHovered] = style->Colors[ImGuiCol_FrameBgHovered];
+
     //setDarkThemeColors();
 }
 
