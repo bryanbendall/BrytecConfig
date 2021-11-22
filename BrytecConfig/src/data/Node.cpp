@@ -74,12 +74,16 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 	case Embedded::NodeTypes::Two_Stage:
 		inputs =  2;
 		outputs = 1;
-		values =  2;
+		m_values.push_back(50.0f);
+		m_values.push_back(100.0f);
 		break;
 	case Embedded::NodeTypes::Curve:
 		inputs = 1;
 		outputs = 1;
-		values = 6;
+		m_values.push_back(0.0f);
+		m_values.push_back(0.0f);
+		m_values.push_back(1.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Compare:
 		inputs = 2;
@@ -102,7 +106,8 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 	case Embedded::NodeTypes::Delay:
 		inputs = 1;
 		outputs = 1;
-		values = 2;
+		m_values.push_back(1.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Push_Button:
 		inputs = 3;
@@ -112,7 +117,10 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 	case Embedded::NodeTypes::Map_Value:
 		inputs =  1;
 		outputs = 1;
-		values =  4;
+		m_values.push_back(0.0f);
+		m_values.push_back(1.0f);
+		m_values.push_back(0.0f);
+		m_values.push_back(100.0f);
 		break;
 	case Embedded::NodeTypes::Math:
 		inputs = 2;
@@ -310,18 +318,12 @@ void Node::evaulateCurve()
 		(hasConnection(0) ? &getInputValue(0) : nullptr),
 		(Embedded::CurveNode::Types) m_values[0],
 		(bool) m_values[1],
-		//(bool) m_values[2],
-		//(bool) m_values[4],
+		m_values[2],
 		m_values[3],
-		m_values[5],
 		m_outputs[0]
 	};
 	Embedded::Evaluate(node, ImGui::GetIO().DeltaTime);
-	m_values[1] = node.repeat;
-	//m_values[2] = node.onShutdown;
-	//m_values[4] = node.lastIn;
-	m_values[3] = node.timeout;
-	m_values[5] = node.timerCounter;
+	m_values[3] = node.timerCounter;
 	m_outputs[0] = node.out;
 }
 

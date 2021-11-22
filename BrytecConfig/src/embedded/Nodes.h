@@ -51,8 +51,8 @@ namespace Embedded
 	{
 		float* stage1Trigger = nullptr;
 		float* stage2Trigger = nullptr;
-		uint8_t stage1Percent = 0;
-		uint8_t stage2Percent = 50;
+		uint8_t stage1Percent = 50;
+		uint8_t stage2Percent = 100;
 		float out;
 	};
 
@@ -69,9 +69,7 @@ namespace Embedded
 		float* in = nullptr;
 		Types curveType = Types::Toggle;
 		bool repeat = false;
-		//bool onShutdown = false;
-		//bool lastIn = false;
-		float timeout = 0.0f;
+		float timeout = 1.0f;
 		float timerCounter = 0.0f;
 		float out;
 	};
@@ -115,7 +113,7 @@ namespace Embedded
 	struct DelayNode
 	{
 		float* in = nullptr;
-		float delayTime = 0.0f;
+		float delayTime = 1.0f;
 		float counter = 0.0f;
 		float out;
 	};

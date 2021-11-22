@@ -662,11 +662,7 @@ void NodeWindow::drawCurve(std::shared_ptr<Node>& node)
     if(ImGui::Checkbox("Repeat", &repeat))
         node->setValue(1, repeat);
 
-    //bool onShutdown = node->getValue(2);
-    //if(ImGui::Checkbox("On Shutdown", &onShutdown))
-    //    node->setValue(2, onShutdown);
-
-    ImGui::DragFloat("###float1", &node->getValue(3), 0.05f, 0.0f, 10.0f, "%.2f sec");
+    ImGui::DragFloat("###float1", &node->getValue(2), 0.05f, 0.0f, 10.0f, "%.2f sec");
 
     imnodes::EndStaticAttribute();
 
