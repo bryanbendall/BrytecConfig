@@ -24,7 +24,7 @@ Nodes:
     Position: [412, 241]
     Inputs:
       - [3, 0]
-    Values: [0, 1, 0, 1, 0, 0]
+    Values: [0, 1, 1, 0]
   - Type: 2  # Node Group
     Position: [49, 430]
     Values: [0]

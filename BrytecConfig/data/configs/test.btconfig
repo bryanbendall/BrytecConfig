@@ -20,7 +20,7 @@ Node Groups:
         Position: [436, 160]
         Inputs:
           - [-1, -1]
-        Values: [3, 1, 0, 1.04999995, 0, 0]
+        Values: [3, 1, 0, 1.04999995]
   - Name: Right Turn Sw
     Id: 3754145105528928043
     Type: 6  # Ground Input
