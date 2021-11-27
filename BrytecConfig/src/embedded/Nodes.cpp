@@ -13,283 +13,516 @@ namespace Embedded
 			return false;
 	}
 
-	void Evaluate(AndNode& node, float timestep)
+	void AndNode::SetInput(uint8_t index, float* output)
 	{
-		node.out = 0.0f;
-
-		if(node.in1 && !ToBool(node.in1)) return;
-		if(node.in2 && !ToBool(node.in2)) return;
-		if(node.in3 && !ToBool(node.in3)) return;
-		if(node.in4 && !ToBool(node.in4)) return;
-		if(node.in5 && !ToBool(node.in5)) return;
-
-		node.out = 1.0f;
+		switch(index) {
+			case 0: in1 = output; break;
+			case 1: in2 = output; break;
+			case 2: in3 = output; break;
+			case 3: in4 = output; break;
+			case 4: in5 = output; break;
+		}
 	}
 
-	void Evaluate(OrNode& node, float timestep)
+	float* AndNode::GetOutput(uint8_t index)
 	{
-		node.out = 1.0f;
-
-		if(node.in1 && ToBool(node.in1)) return;
-		if(node.in2 && ToBool(node.in2)) return;
-		if(node.in3 && ToBool(node.in3)) return;
-		if(node.in4 && ToBool(node.in4)) return;
-		if(node.in5 && ToBool(node.in5)) return;
-
-		node.out = 0.0f;
+		return index == 0 ? &out : nullptr;
 	}
 
-	void Evaluate(TwoStageNode& node, float timestep)
+	void AndNode::Evaluate(float timestep)
 	{
-		if(node.stage2Trigger && ToBool(node.stage2Trigger)) {
-			node.out = node.stage2Percent;
+		out = 0.0f;
+
+		// All inputs are empty
+		if(!in1 && !in2 && !in3 && !in4 && !in5)
 			return;
-		} else if(node.stage1Trigger && ToBool(node.stage1Trigger)) {
-			node.out = node.stage1Percent;
-			return;
-		}
-		node.out = 0.0f;
+
+		if(in1 && !ToBool(in1)) return;
+		if(in2 && !ToBool(in2)) return;
+		if(in3 && !ToBool(in3)) return;
+		if(in4 && !ToBool(in4)) return;
+		if(in5 && !ToBool(in5)) return;
+
+		out = 1.0f;
 	}
 
-	void Evaluate(CurveNode& node, float timestep)
+
+	void OrNode::SetInput(uint8_t index, float* output)
 	{
+		switch(index) {
+			case 0: in1 = output; break;
+			case 1: in2 = output; break;
+			case 2: in3 = output; break;
+			case 3: in4 = output; break;
+			case 4: in5 = output; break;
+		}
+	}
 
-		if(!node.in) {
-			node.out = 0.0f;
+	float* OrNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void OrNode::Evaluate(float timestep)
+	{
+		out = 1.0f;
+
+		if(in1 && ToBool(in1)) return;
+		if(in2 && ToBool(in2)) return;
+		if(in3 && ToBool(in3)) return;
+		if(in4 && ToBool(in4)) return;
+		if(in5 && ToBool(in5)) return;
+
+		out = 0.0f;
+	}
+
+	void TwoStageNode::SetInput(uint8_t index, float* output)
+	{
+		switch(index) {
+			case 0: stage1Trigger = output; break;
+			case 1: stage2Trigger = output; break;
+		}
+	}
+
+	float* TwoStageNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void TwoStageNode::Evaluate(float timestep)
+	{
+		if(stage2Trigger && ToBool(stage2Trigger)) {
+			out = stage2Percent;
+			return;
+		} else if(stage1Trigger && ToBool(stage1Trigger)) {
+			out = stage1Percent;
+			return;
+		}
+		out = 0.0f;
+	}
+
+	void CurveNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0) 
+			in = output;
+	}
+
+	float* CurveNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void CurveNode::Evaluate(float timestep)
+	{
+		if(!in) {
+			out = 0.0f;
 			return;
 		}
 
-		if(!ToBool(node.in)) {
-			node.timerCounter = 0.0f;
-			node.out = 0.0f;
+		if(!ToBool(in)) {
+			timerCounter = 0.0f;
+			out = 0.0f;
 			return;
 		}
 
-		node.timerCounter += timestep;
-		if(node.timerCounter > node.timeout) {
-			if(node.repeat)
-				node.timerCounter = 0.0f;
+		timerCounter += timestep;
+		if(timerCounter > timeout) {
+			if(repeat)
+				timerCounter = 0.0f;
 			else
-				node.timerCounter = node.timeout;
+				timerCounter = timeout;
 		}
-		float curveProgress = node.timerCounter / node.timeout;
+		float curveProgress = timerCounter / timeout;
 
-		switch(node.curveType) {
+		switch(curveType) {
 			case CurveNode::Types::Toggle:
 				if(curveProgress > 0.5f)
-					node.out = 1.0f;
+					out = 1.0f;
 				else
-					node.out = 0.0f;
+					out = 0.0f;
 				break;
 			case CurveNode::Types::Linear:
-				node.out = curveProgress;
+				out = curveProgress;
 				break;
 			case CurveNode::Types::Exponential:
-				node.out = curveProgress * curveProgress;
+				out = curveProgress * curveProgress;
 				break;
 			case CurveNode::Types::Breathing:
 				float gamma = 0.20f; // affects the width of peak (more or less darkness)
 				float beta = 0.5f;
-				node.out = (exp(-(pow((curveProgress - beta) / gamma, 2.0f)) / 2.0f)); //(exp ^ exp) / 2.0f;
+				out = (exp(-(pow((curveProgress - beta) / gamma, 2.0f)) / 2.0f)); //(exp ^ exp) / 2.0f;
 				break;
 		}
-
 	}
 
-	void Evaluate(CompareNode& node, float timestep)
+	void CompareNode::SetInput(uint8_t index, float* output)
 	{
-		if(!node.input1 || !node.input2) {
-			node.out = 0.0f;
+		switch(index) {
+			case 0: input1 = output; break;
+			case 1: input2 = output; break;
+		}
+	}
+
+	float* CompareNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void CompareNode::Evaluate(float timestep)
+	{
+		if(!input1 || !input2) {
+			out = 0.0f;
 			return;
 		}
-		node.out = 0.0f;
-		switch(node.compareType) {
+		out = 0.0f;
+		switch(compareType) {
 			case CompareNode::Types::Greater:
-				if(*node.input1 > *node.input2)
-					node.out = 1.0f;
+				if(*input1 > *input2)
+					out = 1.0f;
 				break;
 			case CompareNode::Types::GreaterEqual:
-				if(*node.input1 >= *node.input2)
-					node.out = 1.0f;
+				if(*input1 >= *input2)
+					out = 1.0f;
 				break;
 			case CompareNode::Types::Less:
-				if(*node.input1 < *node.input2)
-					node.out = 1.0f;
+				if(*input1 < *input2)
+					out = 1.0f;
 				break;
 			case CompareNode::Types::LessEqual:
-				if(*node.input1 <= *node.input2)
-					node.out = 1.0f;
+				if(*input1 <= *input2)
+					out = 1.0f;
 				break;
 		}
 	}
 
-	void Evaluate(OnOffNode& node, float timestep)
+	void OnOffNode::SetInput(uint8_t index, float* output)
 	{
-		if(node.off && ToBool(node.off)) {
-			node.out = 0.0f;
-			return;
-		} else if(node.on && ToBool(node.on)) {
-			node.out = 1.0f;
-			return;
+		switch(index) {
+			case 0: on = output; break;
+			case 1: off = output; break;
 		}
-		node.out = 0.0f;
 	}
 
-	void Evaluate(InvertNode& node, float timestep)
+	float* OnOffNode::GetOutput(uint8_t index)
 	{
-		if(node.in && !ToBool(node.in)) {
-			node.out = 1.0f;
-			return;
-		}
-		node.out = 0.0f;
+		return index == 0 ? &out : nullptr;
 	}
 
-	void Evaluate(ToggleNode& node, float timestep)
+	void OnOffNode::Evaluate(float timestep)
 	{
-		if(!node.in) {
-			node.out = 0.0f;
+		if(off && ToBool(off)) {
+			out = 0.0f;
+			return;
+		} else if(on && ToBool(on)) {
+			out = 1.0f;
 			return;
 		}
-		if(ToBool(node.in)) {
-			if(node.lastValue) {
+		out = 0.0f;
+	}
+
+	void InvertNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0)
+			in = output;
+	}
+
+	float* InvertNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void InvertNode::Evaluate(float timestep)
+	{
+		if(in && !ToBool(in)) {
+			out = 1.0f;
+			return;
+		}
+		out = 0.0f;
+	}
+
+	void ToggleNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0)
+			in = output;
+	}
+
+	float* ToggleNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void ToggleNode::Evaluate(float timestep)
+	{
+		if(!in) {
+			out = 0.0f;
+			return;
+		}
+		if(ToBool(in)) {
+			if(lastValue) {
 				return;
 			} else {
-				node.lastValue = true;
-				if(ToBool(&node.out))
-					node.out = 0.0f;
+				lastValue = true;
+				if(ToBool(&out))
+					out = 0.0f;
 				else
-					node.out = 1.0f;
+					out = 1.0f;
 			}
 		} else {
-			node.lastValue = false;
+			lastValue = false;
 		}
 	}
 
-	void Evaluate(DelayNode& node, float timestep)
+	void DelayNode::SetInput(uint8_t index, float* output)
 	{
-		if(!node.in) {
-			node.counter = 0.0f;
-			node.out = 0.0f;
-			return;
-		}
-
-		if(ToBool(node.in)) {
-			node.counter += timestep;
-			if(node.counter >= node.delayTime) {
-				node.out = *node.in;
-				node.counter = node.delayTime;
-			}
-		} else {
-			node.counter = 0.0f;
-			node.out = 0.0f;
-		}
-
+		if(index == 0)
+			in = output;
 	}
 
-	void Evaluate(PushButtonNode& node, float timestep)
+	float* DelayNode::GetOutput(uint8_t index)
 	{
-		if(!node.button || !node.neutralSafety || !node.engineRunning) {
-			node.ignitionOut = 0.0f;
-			node.starterOut = 0.0f;
+		return index == 0 ? &out : nullptr;
+	}
+
+	void DelayNode::Evaluate(float timestep)
+	{
+		if(!in) {
+			counter = 0.0f;
+			out = 0.0f;
 			return;
 		}
 
-		bool pushButton = ToBool(node.button);
-		bool engineRunning = ToBool(node.engineRunning);
-		bool neutralSafety = ToBool(node.neutralSafety);
+		if(ToBool(in)) {
+			counter += timestep;
+			if(counter >= delayTime) {
+				out = *in;
+				counter = delayTime;
+			}
+		} else {
+			counter = 0.0f;
+			out = 0.0f;
+		}
+	}
 
-		if(engineRunning && ToBool(&node.starterOut)) {
-			node.starterOut = 0.0f;
+	void PushButtonNode::SetInput(uint8_t index, float* output)
+	{
+		switch(index) {
+			case 0: button = output; break;
+			case 1: neutralSafety = output; break;
+			case 2: engineRunning = output; break;
+		}
+	}
+
+	float* PushButtonNode::GetOutput(uint8_t index)
+	{
+		switch(index) {
+			case 0: return &ignitionOut;
+			case 1: return &starterOut;
+		}
+		return nullptr;
+	}
+
+	void PushButtonNode::Evaluate(float timestep)
+	{
+		if(!button || !neutralSafety || !engineRunning) {
+			ignitionOut = 0.0f;
+			starterOut = 0.0f;
 			return;
 		}
 
-		if(node.lastButtonState == pushButton) {
+		bool pushButton = ToBool(button);
+
+		if(engineRunning && ToBool(&starterOut)) {
+			starterOut = 0.0f;
 			return;
 		}
-		node.lastButtonState = pushButton;
 
-		if(pushButton && !ToBool(&node.ignitionOut)) {
-			node.ignitionOut = 1.0f;
-			node.starterOut = 0.0f;
+		if(lastButtonState == pushButton) {
+			return;
+		}
+		lastButtonState = pushButton;
+
+		if(pushButton && !ToBool(&ignitionOut)) {
+			ignitionOut = 1.0f;
+			starterOut = 0.0f;
 			return;
 		}
 
 		if(pushButton && !engineRunning && !neutralSafety) {
-			node.ignitionOut = 0.0f;
-			node.starterOut = 0.0f;
+			ignitionOut = 0.0f;
+			starterOut = 0.0f;
 			return;
 		}
 
 		if(pushButton && engineRunning) {
-			node.ignitionOut = 0.0f;
-			node.starterOut = 0.0f;
+			ignitionOut = 0.0f;
+			starterOut = 0.0f;
 			return;
 		}
 
 
 		if(pushButton && !engineRunning && neutralSafety) {
-			node.starterOut = 1.0f;
+			starterOut = 1.0f;
 			return;
 		}
 
-		node.starterOut = 0.0f;
+		starterOut = 0.0f;
 	}
 
-	void Evaluate(MapValueNode& node, float timestep)
+	void MapValueNode::SetInput(uint8_t index, float* output)
 	{
-		if(!node.in) {
-			node.out = 0.0f;
+		if(index == 0)
+			in = output;
+	}
+
+	float* MapValueNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void MapValueNode::Evaluate(float timestep)
+	{
+		if(!in) {
+			out = 0.0f;
 			return;
 		}
 
-		float x = node.fromMin;
-		float y = node.toMin;
-		float x1 = node.fromMax;
-		float y1 = node.toMax;
+		float x = fromMin;
+		float y = toMin;
+		float x1 = fromMax;
+		float y1 = toMax;
 		float sloap = (y - y1) / (x - x1);
 
-		node.out = (sloap * (*node.in - x1)) + y1;
+		out = (sloap * (*in - x1)) + y1;
 	}
 
-	void Evaluate(MathNode& node, float timestep)
+	void MathNode::SetInput(uint8_t index, float* output)
 	{
-		if(!node.input1 || !node.input2) {
-			node.out = 0.0f;
+		switch(index) {
+			case 0: input1 = output; break;
+			case 1: input2 = output; break;
+		}
+	}
+
+	float* MathNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void MathNode::Evaluate(float timestep)
+	{
+		if(!input1 || !input2) {
+			out = 0.0f;
 			return;
 		}
 
-		switch(node.mathType) {
+		switch(mathType) {
 			case MathNode::Types::Add:
-				node.out = *node.input1 + *node.input2;
+				out = *input1 + *input2;
 				break;
 			case MathNode::Types::Subtract:
-				node.out = *node.input1 - *node.input2;
+				out = *input1 - *input2;
 				break;
 			case MathNode::Types::Multiply:
-				node.out = *node.input1 * *node.input2;
+				out = *input1 * *input2;
 				break;
 			case MathNode::Types::Divide:
-				node.out = *node.input1 / *node.input2;
+				out = *input1 / *input2;
 				break;
 		}
 	}
 
-	void Evaluate(ValueNode& node, float timestep)
+	void ValueNode::SetInput(uint8_t index, float* output)
+	{
+		// None
+	}
+
+	float* ValueNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void ValueNode::Evaluate(float timestep)
 	{
 		// Nothing to do because its a static value
 	}
 
-	void Evaluate(SelectNode& node, float timestep)
+	void SelectNode::SetInput(uint8_t index, float* output)
 	{
-		if(!node.selection || !node.input1 || !node.input2) {
-			node.out = 0.0f;
+		if(index == 0)
+			selection = output;
+	}
+
+	float* SelectNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void SelectNode::Evaluate(float timestep)
+	{
+		if(!selection || !input1 || !input2) {
+			out = 0.0f;
 			return;
 		}
 
-		if(ToBool(node.selection))
-			node.out = *node.input1;
+		if(ToBool(selection))
+			out = *input1;
 		else
-			node.out = *node.input2;
+			out = *input2;
+	}
+
+	void InitalValueNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0)
+			rawData = output;
+	}
+
+	float* InitalValueNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void InitalValueNode::Evaluate(float timestep)
+	{
+		if(rawData)
+			out = *rawData;
+		else
+			out = 0.0f;
+	}
+
+	void FinalValueNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0)
+			in = output;
+	}
+
+	float* FinalValueNode::GetOutput(uint8_t index)
+	{
+		// No outputs
+		return nullptr;
+	}
+
+	void FinalValueNode::Evaluate(float timestep)
+	{
+		// Nothing to do
+	}
+
+	void NodeGroupNode::SetInput(uint8_t index, float* output)
+	{
+		if(index == 0)
+			rawData = output;
+	}
+
+	float* NodeGroupNode::GetOutput(uint8_t index)
+	{
+		return index == 0 ? &out : nullptr;
+	}
+
+	void NodeGroupNode::Evaluate(float timestep)
+	{
+		if(rawData)
+			out = *rawData;
+		else
+			out = 0.0f;
 	}
 
 }

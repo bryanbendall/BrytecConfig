@@ -9,7 +9,7 @@ namespace Embedded
 	{
 		Initial_Value = 0,
 		Final_Value,
-		Node_Group,
+		Node_Group, // TODO
 		And,
 		Or,
 		Two_Stage,
@@ -27,6 +27,35 @@ namespace Embedded
 		Count
 	};
 
+	struct InitalValueNode
+	{
+		float* rawData = nullptr;
+		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
+	};
+
+	struct FinalValueNode
+	{
+		float* in = nullptr;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
+	};
+
+	struct NodeGroupNode
+	{
+		float* rawData = nullptr;
+		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
+	};
+
 	struct AndNode
 	{
 		float* in1 = nullptr;
@@ -35,6 +64,10 @@ namespace Embedded
 		float* in4 = nullptr;
 		float* in5 = nullptr;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct OrNode
@@ -45,6 +78,10 @@ namespace Embedded
 		float* in4 = nullptr;
 		float* in5 = nullptr;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct TwoStageNode
@@ -54,6 +91,10 @@ namespace Embedded
 		uint8_t stage1Percent = 50;
 		uint8_t stage2Percent = 100;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct CurveNode
@@ -72,6 +113,10 @@ namespace Embedded
 		float timeout = 1.0f;
 		float timerCounter = 0.0f;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct CompareNode
@@ -88,6 +133,10 @@ namespace Embedded
 		float* input2 = nullptr;
 		Types compareType;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct OnOffNode
@@ -95,12 +144,20 @@ namespace Embedded
 		float* on = nullptr;
 		float* off = nullptr;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct InvertNode
 	{
 		float* in = nullptr;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct ToggleNode
@@ -108,6 +165,10 @@ namespace Embedded
 		float* in = nullptr;
 		bool lastValue;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct DelayNode
@@ -116,6 +177,10 @@ namespace Embedded
 		float delayTime = 1.0f;
 		float counter = 0.0f;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct PushButtonNode
@@ -126,6 +191,10 @@ namespace Embedded
 		bool lastButtonState = false;
 		float ignitionOut;
 		float starterOut;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct MapValueNode
@@ -136,6 +205,10 @@ namespace Embedded
 		float toMin = 0.0f;
 		float toMax = 100.0f;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct MathNode
@@ -152,11 +225,19 @@ namespace Embedded
 		float* input2 = nullptr;
 		Types mathType;
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct ValueNode
 	{
 		float out;
+
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
 	};
 
 	struct SelectNode
@@ -165,21 +246,10 @@ namespace Embedded
 		float* input1 = nullptr;
 		float* input2 = nullptr;
 		float out;
-	};
 
-	void Evaluate(AndNode& node, float timestep);
-	void Evaluate(OrNode& node, float timestep);
-	void Evaluate(TwoStageNode& node, float timestep);
-	void Evaluate(CurveNode& node, float timestep);
-	void Evaluate(CompareNode& node, float timestep);
-	void Evaluate(OnOffNode& node, float timestep);
-	void Evaluate(InvertNode& node, float timestep);
-	void Evaluate(ToggleNode& node, float timestep);
-	void Evaluate(DelayNode& node, float timestep);
-	void Evaluate(PushButtonNode& node, float timestep);
-	void Evaluate(MapValueNode& node, float timestep);
-	void Evaluate(MathNode& node, float timestep);
-	void Evaluate(ValueNode& node, float timestep);
-	void Evaluate(SelectNode& node, float timestep);
+		void SetInput(uint8_t index, float* output);
+		float* GetOutput(uint8_t index);
+		void Evaluate(float timestep);
+	};
 
 }

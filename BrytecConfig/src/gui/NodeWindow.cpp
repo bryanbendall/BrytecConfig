@@ -8,6 +8,7 @@
 #include <bitset>
 #include <IconsFontAwesome5.h>
 #include "../embedded/Nodes.h"
+#include "../embedded/NodesVector.h"
 
 NodeWindow::NodeWindow() 
 {
@@ -27,6 +28,20 @@ NodeWindow::NodeWindow()
     style.colors[imnodes::ColorStyle_Pin] = anyValueColor;
     style.colors[imnodes::ColorStyle_PinHovered] = grayColor;
     style.colors[imnodes::ColorStyle_Link] = grayColor;
+
+
+    Embedded::NodesVector<1000> nv;
+    nv.add(Embedded::NodeTypes::And);
+    nv.add(Embedded::NodeTypes::And);
+
+    nv.evaluateAll(10.0f);
+
+    auto variant = nv.at(0);
+    variant.setInput(0, variant.getOutput());
+    auto output = variant.getOutput();
+
+
+
 }
 
 NodeWindow::~NodeWindow() 
