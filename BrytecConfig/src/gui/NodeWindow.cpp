@@ -30,17 +30,27 @@ NodeWindow::NodeWindow()
     style.colors[imnodes::ColorStyle_Link] = grayColor;
 
 
+
     Embedded::NodesVector<1000> nv;
+    nv.add(Embedded::NodeTypes::Value);
+    nv.add(Embedded::NodeTypes::Value);
+    nv.add(Embedded::NodeTypes::Value);
+    nv.add(Embedded::NodeTypes::Value);
+    nv.add(Embedded::NodeTypes::Value);
     nv.add(Embedded::NodeTypes::And);
-    nv.add(Embedded::NodeTypes::And);
+    nv.add(Embedded::NodeTypes::Final_Value);
+
+    nv.at(5).setInput(0, nv.at(0).getOutput());
+    nv.at(5).setInput(1, nv.at(1).getOutput());
+    nv.at(5).setInput(2, nv.at(2).getOutput());
+    nv.at(5).setInput(3, nv.at(3).getOutput());
+    nv.at(5).setInput(4, nv.at(4).getOutput());
+
+    nv.at(6).setInput(0, nv.at(5).getOutput());
 
     nv.evaluateAll(10.0f);
 
-    auto variant = nv.at(0);
-    variant.setInput(0, variant.getOutput());
-    auto output = variant.getOutput();
-
-
+    int i = 0;
 
 }
 

@@ -1,6 +1,6 @@
 #include "Nodes.h"
 
-#include <cmath>
+#include <math.h>
 
 namespace Embedded
 {
@@ -150,7 +150,7 @@ namespace Embedded
 			case CurveNode::Types::Breathing:
 				float gamma = 0.20f; // affects the width of peak (more or less darkness)
 				float beta = 0.5f;
-				out = (exp(-(pow((curveProgress - beta) / gamma, 2.0f)) / 2.0f)); //(exp ^ exp) / 2.0f;
+				out = (expf(-(powf((curveProgress - beta) / gamma, 2.0f)) / 2.0f)); //(exp ^ exp) / 2.0f;
 				break;
 		}
 	}
