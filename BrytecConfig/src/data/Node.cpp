@@ -3,8 +3,8 @@
 #include "NodeGroup.h"
 
 const char* Node::s_nodeName[(int) Embedded::NodeTypes::Count] = {
-	"Initial Value",
 	"Final Value",
+	"Initial Value",
 	"Node Group",
 	"And",
 	"Or",
@@ -44,7 +44,7 @@ const char* Node::s_curveNames[(int) Embedded::CurveNode::Types::Count] = {
 };
 
 Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
-	: m_id(id), m_position(position), m_type(type), m_name(Node::s_nodeName[(int)type])
+	: m_id(id), m_position(position), m_type(type), m_name("")
 {
 	int inputs = 0;
 	int outputs = 0;

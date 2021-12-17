@@ -8,7 +8,7 @@
 #include <bitset>
 #include <IconsFontAwesome5.h>
 #include "../embedded/Nodes.h"
-#include "../embedded/NodesVector.h"
+#include <misc/cpp/imgui_stdlib.h>
 
 NodeWindow::NodeWindow() 
 {
@@ -28,29 +28,6 @@ NodeWindow::NodeWindow()
     style.colors[imnodes::ColorStyle_Pin] = anyValueColor;
     style.colors[imnodes::ColorStyle_PinHovered] = grayColor;
     style.colors[imnodes::ColorStyle_Link] = grayColor;
-
-
-
-    Embedded::NodesVector<1000> nv;
-    nv.add(Embedded::NodeTypes::Value);
-    nv.add(Embedded::NodeTypes::Value);
-    nv.add(Embedded::NodeTypes::Value);
-    nv.add(Embedded::NodeTypes::Value);
-    nv.add(Embedded::NodeTypes::Value);
-    nv.add(Embedded::NodeTypes::And);
-    nv.add(Embedded::NodeTypes::Final_Value);
-
-    nv.at(5).setInput(0, nv.at(0).getOutput());
-    nv.at(5).setInput(1, nv.at(1).getOutput());
-    nv.at(5).setInput(2, nv.at(2).getOutput());
-    nv.at(5).setInput(3, nv.at(3).getOutput());
-    nv.at(5).setInput(4, nv.at(4).getOutput());
-
-    nv.at(6).setInput(0, nv.at(5).getOutput());
-
-    nv.evaluateAll(10.0f);
-
-    int i = 0;
 
 }
 
@@ -175,7 +152,7 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
     {
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-        for(int i = (int) Embedded::NodeTypes::Node_Group; i < (int) Embedded::NodeTypes::Count; i++) {
+        for(int i = (int) Embedded::NodeTypes::Initial_Value; i < (int) Embedded::NodeTypes::Count; i++) {
             if(ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) { 
                 nodeGroup->addNode((Embedded::NodeTypes)i); imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }
@@ -210,7 +187,39 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
     // Node title
     imnodes::BeginNodeTitleBar();
     ImGui::PushItemWidth(m_nodeWidth);
-    ImGui::LabelText("###Label", "%s%s%i", node->getName().c_str(), " - ", node->getId());
+
+    static int editingId = -1;
+    static bool setFocus = false;
+    ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
+    if(ImGui::Button(ICON_FA_EDIT)) {
+        editingId = node->getId();
+        setFocus = true;
+    }
+    ImGui::PopStyleColor();
+    ImGui::SameLine();
+
+    ImGui::PushItemWidth(m_nodeWidth - 30);
+    if(editingId == node->getId()) {
+        ImGui::InputText("###String", &node->getName(), ImGuiInputTextFlags_AutoSelectAll);
+
+        // Set focus
+        if(setFocus) {
+            ImGui::SetKeyboardFocusHere();
+            setFocus = false;
+        }
+
+        // End editing
+        if(ImGui::IsItemDeactivated())
+            editingId = -1;
+
+    } else {
+        if(node->getName().empty())
+            ImGui::LabelText("###Label", "%s", node->s_getTypeName(node->getType()));
+        else
+            ImGui::LabelText("###Label", "%s", node->getName().c_str());
+    }
+    ImGui::PopItemWidth();
+
     imnodes::EndNodeTitleBar();
 
     switch (node->getType()) {
@@ -517,8 +526,8 @@ void NodeWindow::drawInitialValue(std::shared_ptr<Node>& node)
     }
 
     imnodes::BeginOutputAttribute(node->getOutputId(0));
-    ImGui::Indent(m_nodeWidth - ImGui::CalcTextSize("Result").x);
-    ImGui::Text("Result");
+    ImGui::Indent(m_nodeWidth - ImGui::CalcTextSize("Value").x);
+    ImGui::Text("Value");
     imnodes::EndOutputAttribute();
 }
 

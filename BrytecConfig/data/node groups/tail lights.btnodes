@@ -3,7 +3,7 @@ Id: 14047224786772048179
 Type: 1  # 12V High Current PWM Output
 Enabled: true
 Nodes:
-  - Type: 0  # Initial Value
+  - Type: 1  # Initial Value
     Position: [-357, -96]
     Values: [0]
   - Type: 2  # Node Group
@@ -61,7 +61,7 @@ Nodes:
     Inputs:
       - [10, 0]
     Values: [0, 1, 0, 100]
-  - Type: 1  # Final Value
+  - Type: 0  # Final Value
     Position: [778, 528]
     Inputs:
       - [11, 0]

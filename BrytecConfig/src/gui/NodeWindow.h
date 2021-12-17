@@ -16,7 +16,7 @@ class NodeWindow
 
 	bool m_opened = true;
 	bool m_isFocused = false;
-	const float m_nodeWidth = 120.0f;
+	const float m_nodeWidth = 140.0f;
 	std::weak_ptr<Selectable> m_lastSelected;
 	Mode m_mode = Mode::Build;
 	std::weak_ptr<NodeGroup> m_nodeGroup;

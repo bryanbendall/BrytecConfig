@@ -32,6 +32,8 @@ public:
 	void evaluate();
 
 	std::string& getName() { return m_name; }
+	void setName(std::string& name) { m_name = name; }
+
 	ImVec2& getPosition() { return m_position; }
 	
 	Embedded::NodeTypes& getType() { return m_type; }
@@ -81,7 +83,7 @@ private:
 
 public:
 	static const char* s_nodeName[(int) Embedded::NodeTypes::Count];
-	static const char* getTypeName(Embedded::NodeTypes type) { return s_nodeName[(int)type]; }
+	static const char* s_getTypeName(Embedded::NodeTypes type) { return s_nodeName[(int)type]; }
 	static const char* s_compareNames[(int) Embedded::CompareNode::Types::Count];
 	static const char* s_mathNames[(int) Embedded::MathNode::Types::Count];
 	static const char* s_curveNames[(int) Embedded::CurveNode::Types::Count];

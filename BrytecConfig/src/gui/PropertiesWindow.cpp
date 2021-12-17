@@ -50,7 +50,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 		ImGui::Text("Name");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputText("###MouduleName", &module->getName());
+		ImGui::InputText("###MouduleName", &module->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
 		// Address
 		ImGui::TableNextRow();
@@ -173,7 +173,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::Text("Name");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::InputText("###pinName", &nodeGroup->getName());
+		ImGui::InputText("###pinName", &nodeGroup->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
 		// Id
 		ImGui::TableNextRow();

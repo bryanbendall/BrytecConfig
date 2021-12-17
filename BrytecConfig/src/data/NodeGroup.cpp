@@ -126,8 +126,7 @@ void NodeGroup::deleteNode(int nodeId)
 {
 	for(size_t i = 0; i < m_nodes.size(); i++) {
 		if(m_nodes[i]->getId() == nodeId) {
-			if(m_nodes[i]->getType() == Embedded::NodeTypes::Initial_Value ||
-				m_nodes[i]->getType() == Embedded::NodeTypes::Final_Value)
+			if(m_nodes[i]->getType() == Embedded::NodeTypes::Final_Value)
 				return;
 			m_nodes.erase(m_nodes.begin() + i);
 		}

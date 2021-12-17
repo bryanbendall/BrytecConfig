@@ -5,10 +5,10 @@ Node Groups:
     Type: 6  # Ground Input
     Enabled: true
     Nodes:
-      - Type: 0  # Initial Value
+      - Type: 1  # Initial Value
         Position: [50, 50]
         Values: [0]
-      - Type: 1  # Final Value
+      - Type: 0  # Final Value
         Position: [350, 50]
         Inputs:
           - [0, 0]
@@ -26,10 +26,10 @@ Node Groups:
     Type: 6  # Ground Input
     Enabled: true
     Nodes:
-      - Type: 0  # Initial Value
+      - Type: 1  # Initial Value
         Position: [50, 50]
         Values: [0]
-      - Type: 1  # Final Value
+      - Type: 0  # Final Value
         Position: [350, 50]
         Inputs:
           - [0, 0]
@@ -38,10 +38,10 @@ Node Groups:
     Type: 6  # Ground Input
     Enabled: true
     Nodes:
-      - Type: 0  # Initial Value
+      - Type: 1  # Initial Value
         Position: [50, 50]
         Values: [0]
-      - Type: 1  # Final Value
+      - Type: 0  # Final Value
         Position: [350, 50]
         Inputs:
           - [0, 0]
@@ -50,10 +50,10 @@ Node Groups:
     Type: 6  # Ground Input
     Enabled: true
     Nodes:
-      - Type: 0  # Initial Value
+      - Type: 1  # Initial Value
         Position: [50, 50]
         Values: [0]
-      - Type: 1  # Final Value
+      - Type: 0  # Final Value
         Position: [350, 50]
         Inputs:
           - [0, 0]
@@ -62,7 +62,7 @@ Node Groups:
     Type: 2  # 12V High Current Output
     Enabled: true
     Nodes:
-      - Type: 0  # Initial Value
+      - Type: 1  # Initial Value
         Position: [50, 50]
         Values: [0]
       - Type: 2  # Node Group
@@ -79,7 +79,7 @@ Node Groups:
           - [-1, -1]
           - [-1, -1]
           - [-1, -1]
-      - Type: 1  # Final Value
+      - Type: 0  # Final Value
         Position: [639, 62]
         Inputs:
           - [3, 0]

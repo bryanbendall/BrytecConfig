@@ -4,7 +4,7 @@ Type: 0  # Undefined
 Enabled: true
 Nodes:
   - Name: Initial Value
-    Type: 0  # Initial Value
+    Type: 1  # Initial Value
     Position: [50, 50]
     Inputs:
       []
@@ -64,7 +64,7 @@ Nodes:
       - [7, 0]
     Values: [3, 1, 1, 0.949999988]
   - Name: Final Value
-    Type: 1  # Final Value
+    Type: 0  # Final Value
     Position: [747, 382]
     Inputs:
       - [8, 0]

@@ -40,6 +40,11 @@ private:
 
 				auto newNode = m_nodeGroup->addNode(type, {x, y});
 
+				if(auto nodeName = node["Name"]) {
+					std::string name = node["Name"].as<std::string>();
+					newNode->setName(name);
+				}
+
 				if(auto values = node["Values"]) {
 					int valueIndex = 0;
 					for(auto value : values) {

@@ -7,8 +7,8 @@ namespace Embedded
 
 	enum class NodeTypes : uint8_t
 	{
-		Initial_Value = 0,
-		Final_Value,
+		Final_Value = 0,
+		Initial_Value,
 		Node_Group, // TODO
 		And,
 		Or,

@@ -53,7 +53,9 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 	for(auto node : m_nodeGroup->getNodes()) {
 		out << YAML::BeginMap;
 
-		out << YAML::Key << "Type" << YAML::Value << (unsigned int) node->getType() << YAML::Comment(Node::getTypeName(node->getType()));
+		if(!node->getName().empty())
+			out << YAML::Key << "Name" << YAML::Value << node->getName();
+		out << YAML::Key << "Type" << YAML::Value << (unsigned int) node->getType() << YAML::Comment(Node::s_getTypeName(node->getType()));
 		out << YAML::Key << "Position" << YAML::Flow << YAML::BeginSeq << node->getPosition().x << node->getPosition().y << YAML::EndSeq;
 		
 		// Outputs - dont need to serialize because they are calculated
