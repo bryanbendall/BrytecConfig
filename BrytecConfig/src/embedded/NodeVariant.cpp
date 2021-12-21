@@ -28,7 +28,7 @@ namespace Embedded
 			case Embedded::NodeTypes::Map_Value:		new(data) MapValueNode();		break;
 			case Embedded::NodeTypes::Math:				new(data) MathNode();			break;
 			case Embedded::NodeTypes::Value:			new(data) ValueNode();			break;
-			case Embedded::NodeTypes::Select:			new(data) SelectNode();			break;
+			case Embedded::NodeTypes::Switch:			new(data) SwitchNode();			break;
 			case Embedded::NodeTypes::Count:											break;
 			default:																	break;
 		}
@@ -53,7 +53,7 @@ namespace Embedded
 			case Embedded::NodeTypes::Map_Value:		return 1 + sizeof(MapValueNode);
 			case Embedded::NodeTypes::Math:				return 1 + sizeof(MathNode);
 			case Embedded::NodeTypes::Value:			return 1 + sizeof(float);
-			case Embedded::NodeTypes::Select:			return 1 + sizeof(SelectNode);
+			case Embedded::NodeTypes::Switch:			return 1 + sizeof(SwitchNode);
 			case Embedded::NodeTypes::Count:			return 0;
 			default:									return 0;
 		}
@@ -78,7 +78,7 @@ namespace Embedded
 			case Embedded::NodeTypes::Map_Value:		((MapValueNode*) data)->Evaluate(timestep);		break;
 			case Embedded::NodeTypes::Math:				((MathNode*) data)->Evaluate(timestep);			break;
 			case Embedded::NodeTypes::Value:			((ValueNode*) data)->Evaluate(timestep);		break;
-			case Embedded::NodeTypes::Select:			((SelectNode*) data)->Evaluate(timestep);		break;
+			case Embedded::NodeTypes::Switch:			((SwitchNode*) data)->Evaluate(timestep);		break;
 			case Embedded::NodeTypes::Count:															break;
 			default:																					break;
 		}
@@ -103,7 +103,7 @@ namespace Embedded
 			case Embedded::NodeTypes::Map_Value:		return ((MapValueNode*) data)->GetOutput(index);
 			case Embedded::NodeTypes::Math:				return ((MathNode*) data)->GetOutput(index);
 			case Embedded::NodeTypes::Value:			return ((ValueNode*) data)->GetOutput(index);
-			case Embedded::NodeTypes::Select:			return ((SelectNode*) data)->GetOutput(index);
+			case Embedded::NodeTypes::Switch:			return ((SwitchNode*) data)->GetOutput(index);
 			case Embedded::NodeTypes::Count:			return nullptr;
 			default:									return nullptr;
 		}
@@ -128,7 +128,7 @@ namespace Embedded
 			case Embedded::NodeTypes::Map_Value:		((MapValueNode*) data)->SetInput(index, output);	break;
 			case Embedded::NodeTypes::Math:				((MathNode*) data)->SetInput(index, output);		break;
 			case Embedded::NodeTypes::Value:			((ValueNode*) data)->SetInput(index, output);		break;
-			case Embedded::NodeTypes::Select:			((SelectNode*) data)->SetInput(index, output);		break;
+			case Embedded::NodeTypes::Switch:			((SwitchNode*) data)->SetInput(index, output);		break;
 			case Embedded::NodeTypes::Count:																break;
 			default:																						break;
 		}

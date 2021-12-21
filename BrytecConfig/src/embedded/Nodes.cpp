@@ -446,18 +446,18 @@ namespace Embedded
 		// Nothing to do because its a static value
 	}
 
-	void SelectNode::SetInput(uint8_t index, float* output)
+	void SwitchNode::SetInput(uint8_t index, float* output)
 	{
 		if(index == 0)
 			selection = output;
 	}
 
-	float* SelectNode::GetOutput(uint8_t index)
+	float* SwitchNode::GetOutput(uint8_t index)
 	{
 		return index == 0 ? &out : nullptr;
 	}
 
-	void SelectNode::Evaluate(float timestep)
+	void SwitchNode::Evaluate(float timestep)
 	{
 		if(!selection || !input1 || !input2) {
 			out = 0.0f;

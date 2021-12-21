@@ -271,8 +271,8 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
         case Embedded::NodeTypes::Value:
             drawValue(node);
             break;
-        case Embedded::NodeTypes::Select:
-            drawSelect(node);
+        case Embedded::NodeTypes::Switch:
+            drawSwitch(node);
             break;
     }
 
@@ -903,7 +903,7 @@ void NodeWindow::drawValue(std::shared_ptr<Node>& node)
     imnodes::EndOutputAttribute();
 }
 
-void NodeWindow::drawSelect(std::shared_ptr<Node>& node)
+void NodeWindow::drawSwitch(std::shared_ptr<Node>& node)
 {
     imnodes::PushColorStyle(imnodes::ColorStyle_Pin, boolColor);
     imnodes::BeginInputAttribute(node->getIntputId(0));

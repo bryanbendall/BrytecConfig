@@ -76,7 +76,7 @@ private:
 	void evaluateMap();
 	void evaulateCurve();
 	void evaluatePushButton();
-	void evaluateSelect();
+	void evaluateSwitch();
 
 	float& getInputValue(int inputIndex);
 	bool hasConnection(int inputIndex);

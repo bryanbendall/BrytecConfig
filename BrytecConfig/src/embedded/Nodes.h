@@ -23,7 +23,7 @@ namespace Embedded
 		Map_Value,
 		Math,
 		Value,
-		Select,
+		Switch,
 		Count
 	};
 
@@ -240,7 +240,7 @@ namespace Embedded
 		void Evaluate(float timestep);
 	};
 
-	struct SelectNode
+	struct SwitchNode
 	{
 		float* selection = nullptr;
 		float* input1 = nullptr;

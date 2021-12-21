@@ -19,7 +19,7 @@ const char* Node::s_nodeName[(int) Embedded::NodeTypes::Count] = {
 	"Map Value",
 	"Math",
 	"Value",
-	"Select"
+	"Switch"
 };
 
 const char* Node::s_compareNames[(int) Embedded::CompareNode::Types::Count] = {
@@ -131,7 +131,7 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 		outputs = 1;
 		values = 1;
 		break;
-	case Embedded::NodeTypes::Select:
+	case Embedded::NodeTypes::Switch:
 		inputs = 3;
 		outputs = 1;
 		break;
@@ -190,7 +190,7 @@ void Node::evaluate() {
 		case Embedded::NodeTypes::Map_Value:			evaluateMap();				break;
 		case Embedded::NodeTypes::Math:					evaluateMath();				break;
 		case Embedded::NodeTypes::Value:				m_outputs[0] = m_values[0];	break;
-		case Embedded::NodeTypes::Select:				evaluateSelect();			break;
+		case Embedded::NodeTypes::Switch:				evaluateSwitch();			break;
 		case Embedded::NodeTypes::Count:											break;
 		default:										assert(false);				break;
 	}
@@ -343,9 +343,9 @@ void Node::evaluatePushButton()
 	m_outputs[1] = node.starterOut;
 }
 
-void Node::evaluateSelect()
+void Node::evaluateSwitch()
 {
-	Embedded::SelectNode node = {
+	Embedded::SwitchNode node = {
 		(hasConnection(0) ? &getInputValue(0) : nullptr),
 		(hasConnection(1) ? &getInputValue(1) : nullptr),
 		(hasConnection(2) ? &getInputValue(2) : nullptr),

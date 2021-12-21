@@ -67,7 +67,7 @@ private:
 	void drawMapValue		(std::shared_ptr<Node>& node);
 	void drawMath			(std::shared_ptr<Node>& node);
 	void drawValue			(std::shared_ptr<Node>& node);
-	void drawSelect			(std::shared_ptr<Node>& node);
+	void drawSwitch			(std::shared_ptr<Node>& node);
 
 };
 
