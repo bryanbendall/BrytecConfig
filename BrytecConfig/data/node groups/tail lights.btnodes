@@ -1,67 +1,76 @@
-Name: tail light
-Id: 14047224786772048179
+Name: Unnamed
+Id: 12745628060929528076
 Type: 1  # 12V High Current PWM Output
 Enabled: true
 Nodes:
-  - Type: 1  # Initial Value
-    Position: [-357, -96]
+  - Name: Ignition
+    Type: 2  # Node Group
+    Position: [25, 16]
     Values: [0]
-  - Type: 2  # Node Group
-    Position: [54, 162]
+  - Name: Turn Signal
+    Type: 2  # Node Group
+    Position: [27, 153]
     Values: [1]
-  - Type: 2  # Node Group
-    Position: [51, 295]
-    Values: [0]
   - Type: 3  # And
-    Position: [237, 241]
+    Position: [248, 35]
     Inputs:
+      - [0, 0]
       - [1, 0]
-      - [2, 0]
       - [-1, -1]
       - [-1, -1]
       - [-1, -1]
   - Type: 6  # Curve
-    Position: [412, 241]
+    Position: [459, 40]
     Inputs:
-      - [3, 0]
-    Values: [0, 1, 1, 0]
-  - Type: 2  # Node Group
-    Position: [49, 430]
+      - [2, 0]
+      - [-1, -1]
+      - [-1, -1]
+    Values: [0, 0]
+  - Name: Brake
+    Type: 2  # Node Group
+    Position: [25, 293]
     Values: [0]
-  - Type: 16  # Select
-    Position: [409, 407]
+  - Type: 16  # Switch
+    Position: [463, 217]
     Inputs:
+      - [2, 0]
       - [3, 0]
       - [4, 0]
-      - [5, 0]
-  - Type: 2  # Node Group
-    Position: [50, 590]
-    Values: [0]
+  - Name: Tail Lights
+    Type: 2  # Node Group
+    Position: [24, 437]
+    Values: [1]
   - Type: 3  # And
-    Position: [234, 591]
+    Position: [258, 377]
     Inputs:
-      - [1, 0]
+      - [0, 0]
+      - [6, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+  - Type: 13  # Map Value
+    Position: [452, 373]
+    Inputs:
       - [7, 0]
       - [-1, -1]
       - [-1, -1]
       - [-1, -1]
-  - Type: 13  # Map Value
-    Position: [407, 549]
-    Inputs:
-      - [8, 0]
-    Values: [0, 1, 0, 0.5]
+      - [-1, -1]
   - Type: 14  # Math
-    Position: [597, 398]
+    Position: [660, 206]
     Inputs:
-      - [6, 0]
-      - [9, 0]
+      - [5, 0]
+      - [8, 0]
     Values: [0]
   - Type: 13  # Map Value
-    Position: [607, 541]
+    Position: [674, 363]
+    Inputs:
+      - [9, 0]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+      - [-1, -1]
+  - Type: 0  # Final Value
+    Position: [710, 53]
     Inputs:
       - [10, 0]
-    Values: [0, 1, 0, 100]
-  - Type: 0  # Final Value
-    Position: [778, 528]
-    Inputs:
-      - [11, 0]

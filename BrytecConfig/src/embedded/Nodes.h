@@ -87,9 +87,9 @@ namespace Embedded
 	struct TwoStageNode
 	{
 		float* stage1Trigger = nullptr;
+		float* stage1Percent = nullptr;
 		float* stage2Trigger = nullptr;
-		uint8_t stage1Percent = 50;
-		uint8_t stage2Percent = 100;
+		float* stage2Percent = nullptr;
 		float out;
 
 		void SetInput(uint8_t index, float* output);
@@ -108,9 +108,9 @@ namespace Embedded
 			Count
 		};
 		float* in = nullptr;
+		float* repeat = nullptr;
+		float* timeout = nullptr;
 		Types curveType = Types::Toggle;
-		bool repeat = false;
-		float timeout = 1.0f;
 		float timerCounter = 0.0f;
 		float out;
 
@@ -174,7 +174,7 @@ namespace Embedded
 	struct DelayNode
 	{
 		float* in = nullptr;
-		float delayTime = 1.0f;
+		float* delayTime = nullptr;
 		float counter = 0.0f;
 		float out;
 
@@ -200,10 +200,10 @@ namespace Embedded
 	struct MapValueNode
 	{
 		float* in = nullptr;
-		float fromMin = 0.0f;
-		float fromMax = 1.0f;
-		float toMin = 0.0f;
-		float toMax = 100.0f;
+		float* fromMin = nullptr;
+		float* fromMax = nullptr;
+		float* toMin = nullptr;
+		float* toMax = nullptr;
 		float out;
 
 		void SetInput(uint8_t index, float* output);

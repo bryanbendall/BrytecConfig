@@ -92,10 +92,10 @@ namespace Embedded
 	void TwoStageNode::Evaluate(float timestep)
 	{
 		if(stage2Trigger && ToBool(stage2Trigger)) {
-			out = stage2Percent;
+			out = *stage2Percent;
 			return;
 		} else if(stage1Trigger && ToBool(stage1Trigger)) {
-			out = stage1Percent;
+			out = *stage1Percent;
 			return;
 		}
 		out = 0.0f;
@@ -126,13 +126,13 @@ namespace Embedded
 		}
 
 		timerCounter += timestep;
-		if(timerCounter > timeout) {
+		if(timerCounter > *timeout) {
 			if(repeat)
 				timerCounter = 0.0f;
 			else
-				timerCounter = timeout;
+				timerCounter = *timeout;
 		}
-		float curveProgress = timerCounter / timeout;
+		float curveProgress = timerCounter / *timeout;
 
 		switch(curveType) {
 			case CurveNode::Types::Toggle:
@@ -293,9 +293,9 @@ namespace Embedded
 
 		if(ToBool(in)) {
 			counter += timestep;
-			if(counter >= delayTime) {
+			if(counter >= *delayTime) {
 				out = *in;
-				counter = delayTime;
+				counter = *delayTime;
 			}
 		} else {
 			counter = 0.0f;
@@ -386,10 +386,10 @@ namespace Embedded
 			return;
 		}
 
-		float x = fromMin;
-		float y = toMin;
-		float x1 = fromMax;
-		float y1 = toMax;
+		float x = *fromMin;
+		float y = *toMin;
+		float x1 = *fromMax;
+		float y1 = *toMax;
 		float sloap = (y - y1) / (x - x1);
 
 		out = (sloap * (*in - x1)) + y1;

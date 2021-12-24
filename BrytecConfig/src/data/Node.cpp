@@ -88,7 +88,7 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 		m_inputs.push_back(NodeConnection());		// Repeat
 		m_inputs.push_back(NodeConnection());		// Time
 		m_outputs.push_back(0.0f);					// Output
-		m_values.push_back(0.0f);					// Seconds
+		m_values.push_back(0.0f);					// Curve type
 		m_values.push_back(0.0f);					// Internet time counter
 		break;
 	case Embedded::NodeTypes::Compare:
@@ -249,8 +249,8 @@ void Node::evaluateTwoStage()
 	Embedded::TwoStageNode node = {
 		&getInputValue(0),
 		&getInputValue(1),
-		(uint8_t) m_values[0],
-		(uint8_t) m_values[1]
+		&getInputValue(2),
+		&getInputValue(3)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -282,8 +282,8 @@ void Node::evaluateDelay()
 {
 	Embedded::DelayNode node = {
 		&getInputValue(0),
-		m_values[0],
-		m_values[1]
+		&getInputValue(1),
+		m_values[0]
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_values[1] = node.counter;
@@ -316,10 +316,10 @@ void Node::evaluateMap()
 {
 	Embedded::MapValueNode node = {
 		&getInputValue(0),
-		m_values[0],
-		m_values[1],
-		m_values[2],
-		m_values[3]
+		&getInputValue(1),
+		&getInputValue(2),
+		&getInputValue(3),
+		&getInputValue(4)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -329,14 +329,14 @@ void Node::evaulateCurve()
 {
 	Embedded::CurveNode node = {
 		&getInputValue(0),
+		&getInputValue(1),
+		&getInputValue(2),
 		(Embedded::CurveNode::Types) m_values[0],
-		(bool) m_values[1],
-		m_values[2],
-		m_values[3],
+		m_values[1],
 		m_outputs[0]
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_values[3] = node.timerCounter;
+	m_values[1] = node.timerCounter;
 	m_outputs[0] = node.out;
 }
 
