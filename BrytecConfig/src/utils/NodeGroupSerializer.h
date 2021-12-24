@@ -64,10 +64,13 @@ private:
 					for(auto input : inputs) {
 						auto connectionNodeIndex = input[0].as<int>();
 						auto outputIndex = input[1].as<int>();
+						auto defaultValue = input[2].as<float>();
 						if(connectionNodeIndex > -1 && outputIndex > -1) {
 							// Has connection
-							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, 0.0f};
+							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue};
 							m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
+						} else {
+							m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
 						}
 						inputIndex++;
 					}

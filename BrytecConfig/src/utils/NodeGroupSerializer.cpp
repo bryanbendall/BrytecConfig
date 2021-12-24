@@ -66,9 +66,9 @@ void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 			for(auto input : node->getInputs()) {
 				out << YAML::Flow << YAML::BeginSeq;
 				if(!input.ConnectedNode.expired()) {
-					out << m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()) << input.OutputIndex;
+					out << m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()) << input.OutputIndex << input.DefaultValue;
 				} else {
-					out << -1 << -1;
+					out << -1 << -1 << input.DefaultValue;
 				}
 				out << YAML::EndSeq;
 			}

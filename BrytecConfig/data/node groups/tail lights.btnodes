@@ -1,76 +1,76 @@
 Name: Unnamed
-Id: 12745628060929528076
+Id: 6036273446695321655
 Type: 1  # 12V High Current PWM Output
 Enabled: true
 Nodes:
   - Name: Ignition
     Type: 2  # Node Group
-    Position: [25, 16]
+    Position: [23, 14]
     Values: [0]
   - Name: Turn Signal
     Type: 2  # Node Group
-    Position: [27, 153]
-    Values: [1]
+    Position: [26, 155]
+    Values: [0]
   - Type: 3  # And
-    Position: [248, 35]
+    Position: [235, 35]
     Inputs:
-      - [0, 0]
-      - [1, 0]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
+      - [0, 0, 1]
+      - [1, 0, 1]
+      - [-1, -1, 1]
+      - [-1, -1, 1]
+      - [-1, -1, 1]
   - Type: 6  # Curve
-    Position: [459, 40]
+    Position: [434, 35]
     Inputs:
-      - [2, 0]
-      - [-1, -1]
-      - [-1, -1]
+      - [2, 0, 0]
+      - [-1, -1, 1]
+      - [-1, -1, 1]
     Values: [0, 0]
-  - Name: Brake
+  - Name: Brake Switch
     Type: 2  # Node Group
-    Position: [25, 293]
+    Position: [25, 297]
     Values: [0]
   - Type: 16  # Switch
-    Position: [463, 217]
+    Position: [434, 211]
     Inputs:
-      - [2, 0]
-      - [3, 0]
-      - [4, 0]
+      - [2, 0, 0]
+      - [3, 0, 0]
+      - [4, 0, 0]
   - Name: Tail Lights
     Type: 2  # Node Group
-    Position: [24, 437]
-    Values: [1]
+    Position: [26, 443]
+    Values: [0]
   - Type: 3  # And
-    Position: [258, 377]
+    Position: [232, 400]
     Inputs:
-      - [0, 0]
-      - [6, 0]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
+      - [0, 0, 1]
+      - [6, 0, 1]
+      - [-1, -1, 1]
+      - [-1, -1, 1]
+      - [-1, -1, 1]
   - Type: 13  # Map Value
-    Position: [452, 373]
+    Position: [443, 393]
     Inputs:
-      - [7, 0]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
+      - [7, 0, 0]
+      - [-1, -1, 0]
+      - [-1, -1, 1]
+      - [-1, -1, 0]
+      - [-1, -1, 0.5]
   - Type: 14  # Math
-    Position: [660, 206]
+    Position: [669, 138]
     Inputs:
-      - [5, 0]
-      - [8, 0]
+      - [5, 0, 0]
+      - [8, 0, 0]
     Values: [0]
   - Type: 13  # Map Value
-    Position: [674, 363]
+    Position: [672, 293]
     Inputs:
-      - [9, 0]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
-      - [-1, -1]
+      - [9, 0, 0]
+      - [-1, -1, 0]
+      - [-1, -1, 1]
+      - [-1, -1, 0]
+      - [-1, -1, 100]
   - Type: 0  # Final Value
-    Position: [710, 53]
+    Position: [674, 495]
     Inputs:
-      - [10, 0]
+      - [10, 0, 0]
