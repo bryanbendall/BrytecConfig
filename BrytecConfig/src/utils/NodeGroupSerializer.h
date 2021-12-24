@@ -66,7 +66,7 @@ private:
 						auto outputIndex = input[1].as<int>();
 						if(connectionNodeIndex > -1 && outputIndex > -1) {
 							// Has connection
-							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex};
+							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, 0.0f};
 							m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
 						}
 						inputIndex++;

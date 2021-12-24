@@ -44,6 +44,9 @@ void MainWindow::setupStyle()
     style->Colors[ImGuiCol_Button] = style->Colors[ImGuiCol_FrameBg];
     style->Colors[ImGuiCol_ButtonHovered] = style->Colors[ImGuiCol_FrameBgHovered];
 
+    style->FrameRounding = 3.0f;
+    style->FramePadding = ImVec2(4.0f, 3.0f);
+
     //setDarkThemeColors();
 }
 
@@ -104,7 +107,7 @@ void MainWindow::drawWindow()
     drawMenu();
     drawMenuBar();
 
-    //ImGui::ShowDemoWindow();
+    //sImGui::ShowDemoWindow();
     ImGui::ShowMetricsWindow();
 
     m_nodeWindow.drawWindow();

@@ -46,94 +46,108 @@ const char* Node::s_curveNames[(int) Embedded::CurveNode::Types::Count] = {
 Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 	: m_id(id), m_position(position), m_type(type), m_name("")
 {
-	int inputs = 0;
-	int outputs = 0;
-	int values = 0;
 
 	switch (type)
 	{
 	case Embedded::NodeTypes::Initial_Value:
-		outputs = 1;
-		values = 1;
+		m_outputs.push_back(0.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Final_Value:
-		inputs = 1;
+		m_inputs.push_back(NodeConnection());
 		break;
 	case Embedded::NodeTypes::Node_Group:
-		outputs = 1;
-		values =  1;
+		m_outputs.push_back(0.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::And:
-		inputs =  5;
-		outputs = 1;
+		m_inputs.push_back(NodeConnection(1.0f));	// Input
+		m_inputs.push_back(NodeConnection(1.0f));	// Input
+		m_inputs.push_back(NodeConnection(1.0f));	// Input
+		m_inputs.push_back(NodeConnection(1.0f));	// Input
+		m_inputs.push_back(NodeConnection(1.0f));	// Input
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Or:
-		inputs =  5;
-		outputs = 1;
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection());		// Input
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Two_Stage:
-		inputs =  2;
-		outputs = 1;
-		m_values.push_back(50.0f);
-		m_values.push_back(100.0f);
+		m_inputs.push_back(NodeConnection());		// Stage 1 trig
+		m_inputs.push_back(NodeConnection(50.0f));	// Stage 1 value
+		m_inputs.push_back(NodeConnection());		// Stage 2 trig
+		m_inputs.push_back(NodeConnection(100.0f));	// Stage 2 value
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Curve:
-		inputs = 1;
-		outputs = 1;
-		m_values.push_back(0.0f);
-		m_values.push_back(0.0f);
-		m_values.push_back(1.0f);
-		m_values.push_back(0.0f);
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection());		// Repeat
+		m_inputs.push_back(NodeConnection());		// Time
+		m_outputs.push_back(0.0f);					// Output
+		m_values.push_back(0.0f);					// Seconds
+		m_values.push_back(0.0f);					// Internet time counter
 		break;
 	case Embedded::NodeTypes::Compare:
-		inputs = 2;
-		outputs = 1;
-		values = 1;
+		m_inputs.push_back(NodeConnection());		// Value 1
+		m_inputs.push_back(NodeConnection());		// Value 2
+		m_outputs.push_back(0.0f);					// Output
+		m_values.push_back(0.0f);					// Compare type
 		break;
 	case Embedded::NodeTypes::On_Off:
-		inputs = 2;
-		outputs = 1;
+		m_inputs.push_back(NodeConnection());		// On
+		m_inputs.push_back(NodeConnection());		// Off
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Invert:
-		inputs = 1;
-		outputs = 1;
+		m_inputs.push_back(NodeConnection());		// Input
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Toggle:
-		inputs = 1;
-		outputs = 1;
-		values = 1;
+		m_inputs.push_back(NodeConnection());		// Input
+		m_outputs.push_back(0.0f);					// Output
+		m_values.push_back(0.0f);					// Internal last value
 		break;
 	case Embedded::NodeTypes::Delay:
-		inputs = 1;
-		outputs = 1;
-		m_values.push_back(1.0f);
-		m_values.push_back(0.0f);
+		m_inputs.push_back(NodeConnection());		// Input
+		m_inputs.push_back(NodeConnection(1.0f));	// Delay time
+		m_outputs.push_back(0.0f);					// Output
+		m_values.push_back(0.0f);					// Internal timer
 		break;
 	case Embedded::NodeTypes::Push_Button:
-		inputs = 3;
-		outputs = 2;
-		values = 1;
+		m_inputs.push_back(NodeConnection());		// Button
+		m_inputs.push_back(NodeConnection());		// Neutral Safety
+		m_inputs.push_back(NodeConnection());		// Engine running
+		m_outputs.push_back(0.0f);					// Ignition output
+		m_outputs.push_back(0.0f);					// Starter output
+		m_values.push_back(0.0f);					// Internal state
 		break;
 	case Embedded::NodeTypes::Map_Value:
-		inputs =  1;
-		outputs = 1;
-		m_values.push_back(0.0f);
-		m_values.push_back(1.0f);
-		m_values.push_back(0.0f);
-		m_values.push_back(100.0f);
+		m_inputs.push_back(NodeConnection());		// Value
+		m_inputs.push_back(NodeConnection());		// From min
+		m_inputs.push_back(NodeConnection(1.0f));	// From max
+		m_inputs.push_back(NodeConnection());		// To min
+		m_inputs.push_back(NodeConnection(100.0f));	// To max
+		m_outputs.push_back(0.0f);					// Output
 		break;
 	case Embedded::NodeTypes::Math:
-		inputs = 2;
-		outputs = 1;
-		values = 1;
+		m_inputs.push_back(NodeConnection());
+		m_inputs.push_back(NodeConnection());
+		m_outputs.push_back(0.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Value:
-		outputs = 1;
-		values = 1;
+		m_outputs.push_back(0.0f);
+		m_values.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Switch:
-		inputs = 3;
-		outputs = 1;
+		m_inputs.push_back(NodeConnection());
+		m_inputs.push_back(NodeConnection());
+		m_inputs.push_back(NodeConnection());
+		m_outputs.push_back(0.0f);
 		break;
 	case Embedded::NodeTypes::Count:
 		assert(false);
@@ -142,15 +156,6 @@ Node::Node(int id, ImVec2 position, Embedded::NodeTypes type)
 		assert(false);
 		break;
 	}
-
-	for(int i = 0; i < inputs; i++)
-		m_inputs.push_back(NodeConnection());
-	
-	for(int j = 0; j < outputs; j++)
-		m_outputs.push_back(0.0f);
-
-	for(int k = 0; k < values; k++)
-		m_values.push_back(0.0f);
 
 }
 
@@ -165,6 +170,14 @@ void Node::setInput(int inputIndex, NodeConnection nodeConnection)
 {
 	assert(!(inputIndex > (int) m_inputs.size()));
 	m_inputs[inputIndex] = nodeConnection;
+}
+
+float& Node::getInputValue(int inputIndex)
+{
+	if(hasConnection(inputIndex))
+		return m_inputs[inputIndex].ConnectedNode.lock()->m_outputs[m_inputs[inputIndex].OutputIndex];
+	else
+		return m_inputs[inputIndex].DefaultValue;
 }
 
 unsigned int Node::getBytesSize()
@@ -199,11 +212,11 @@ void Node::evaluate() {
 void Node::evaluateAnd() 
 {
 	Embedded::AndNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
-		(hasConnection(2) ? &getInputValue(2) : nullptr),
-		(hasConnection(3) ? &getInputValue(3) : nullptr),
-		(hasConnection(4) ? &getInputValue(4) : nullptr)
+		&getInputValue(0),
+		&getInputValue(1),
+		&getInputValue(2),
+		&getInputValue(3),
+		&getInputValue(4)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -212,11 +225,11 @@ void Node::evaluateAnd()
 void Node::evaluateOr() 
 {
 	Embedded::OrNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
-		(hasConnection(2) ? &getInputValue(2) : nullptr),
-		(hasConnection(3) ? &getInputValue(3) : nullptr),
-		(hasConnection(4) ? &getInputValue(4) : nullptr)
+		&getInputValue(0),
+		&getInputValue(1),
+		&getInputValue(2),
+		&getInputValue(3),
+		&getInputValue(4)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -225,7 +238,7 @@ void Node::evaluateOr()
 void Node::evaluateInvert() 
 {
 	Embedded::InvertNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr)
+		&getInputValue(0)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -234,8 +247,8 @@ void Node::evaluateInvert()
 void Node::evaluateTwoStage() 
 {
 	Embedded::TwoStageNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		&getInputValue(0),
+		&getInputValue(1),
 		(uint8_t) m_values[0],
 		(uint8_t) m_values[1]
 	};
@@ -246,8 +259,8 @@ void Node::evaluateTwoStage()
 void Node::evaluateOnOff() 
 {
 	Embedded::OnOffNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr)
+		&getInputValue(0),
+		&getInputValue(1)
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
 	m_outputs[0] = node.out;
@@ -256,7 +269,7 @@ void Node::evaluateOnOff()
 void Node::evaluateToggle() 
 {
 	Embedded::ToggleNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		&getInputValue(0),
 		(bool)m_values[0],
 		m_outputs[0]
 	};
@@ -268,7 +281,7 @@ void Node::evaluateToggle()
 void Node::evaluateDelay() 
 {
 	Embedded::DelayNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		&getInputValue(0),
 		m_values[0],
 		m_values[1]
 	};
@@ -280,8 +293,8 @@ void Node::evaluateDelay()
 void Node::evaluateCompare() 
 {
 	Embedded::CompareNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		&getInputValue(0),
+		&getInputValue(1),
 		(Embedded::CompareNode::Types)m_values[0]
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
@@ -291,8 +304,8 @@ void Node::evaluateCompare()
 void Node::evaluateMath() 
 {
 	Embedded::MathNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
+		&getInputValue(0),
+		&getInputValue(1),
 		(Embedded::MathNode::Types) m_values[0]
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
@@ -302,7 +315,7 @@ void Node::evaluateMath()
 void Node::evaluateMap() 
 {
 	Embedded::MapValueNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		&getInputValue(0),
 		m_values[0],
 		m_values[1],
 		m_values[2],
@@ -315,7 +328,7 @@ void Node::evaluateMap()
 void Node::evaulateCurve() 
 {
 	Embedded::CurveNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
+		&getInputValue(0),
 		(Embedded::CurveNode::Types) m_values[0],
 		(bool) m_values[1],
 		m_values[2],
@@ -330,9 +343,9 @@ void Node::evaulateCurve()
 void Node::evaluatePushButton() 
 {
 	Embedded::PushButtonNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
-		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		&getInputValue(0),
+		&getInputValue(1),
+		&getInputValue(2),
 		(bool) m_values[0],
 		m_outputs[0],
 		m_outputs[1]
@@ -346,9 +359,9 @@ void Node::evaluatePushButton()
 void Node::evaluateSwitch()
 {
 	Embedded::SwitchNode node = {
-		(hasConnection(0) ? &getInputValue(0) : nullptr),
-		(hasConnection(1) ? &getInputValue(1) : nullptr),
-		(hasConnection(2) ? &getInputValue(2) : nullptr),
+		&getInputValue(0),
+		&getInputValue(1),
+		&getInputValue(2),
 		m_outputs[0]
 	};
 	node.Evaluate(ImGui::GetIO().DeltaTime);
@@ -356,10 +369,6 @@ void Node::evaluateSwitch()
 
 }
 
-float& Node::getInputValue(int inputIndex) {
-	return m_inputs[inputIndex].node.lock()->m_outputs[m_inputs[inputIndex].outputIndex];
-}
-
 bool Node::hasConnection(int inputIndex) {
-	return !m_inputs[inputIndex].node.expired();
+	return !m_inputs[inputIndex].ConnectedNode.expired();
 }

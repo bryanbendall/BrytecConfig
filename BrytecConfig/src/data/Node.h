@@ -9,13 +9,20 @@
 
 class Node;
 struct NodeConnection {
-	std::weak_ptr<Node> node;
-	int outputIndex;
+	std::weak_ptr<Node> ConnectedNode;
+	int OutputIndex = -1;
+	float DefaultValue;
+
+	NodeConnection(float defaultValue = 0.0f) 
+		: DefaultValue(defaultValue) {}
+
+	NodeConnection(std::weak_ptr<Node> node, int outputIndex, float defaultValue) 
+		: ConnectedNode(node), OutputIndex(outputIndex), DefaultValue(defaultValue) {}
 
 	bool operator== (const NodeConnection& other) const
 	{
-		if(!node.expired() && !other.node.expired()) {
-			if(node.lock() == other.node.lock() && outputIndex == other.outputIndex)
+		if(!ConnectedNode.expired() && !other.ConnectedNode.expired()) {
+			if(ConnectedNode.lock() == other.ConnectedNode.lock() && OutputIndex == other.OutputIndex)
 				return true;
 		}
 
@@ -51,6 +58,7 @@ public:
 	NodeConnection& getInput(int index) { return m_inputs[index]; }
 	std::vector<NodeConnection>& getInputs() { return m_inputs; }
 	void setInput(int inputIndex, NodeConnection nodeConnection);
+	float& getInputValue(int inputIndex);
 
 	float& getOutput(int index) { return m_outputs[index]; }
 	std::vector<float>& getOutputs() { return m_outputs; }
@@ -78,7 +86,6 @@ private:
 	void evaluatePushButton();
 	void evaluateSwitch();
 
-	float& getInputValue(int inputIndex);
 	bool hasConnection(int inputIndex);
 
 public:
@@ -96,6 +103,7 @@ private:
 	std::vector<float> m_outputs;
 	std::vector<NodeConnection> m_inputs;
 	std::vector<float> m_values;
+	std::vector<float> m_unconnectedValues;
 	bool m_loopFound = false;
 	UUID m_selectedNodeGroup;
 

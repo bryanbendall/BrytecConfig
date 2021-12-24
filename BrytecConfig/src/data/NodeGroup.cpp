@@ -5,7 +5,7 @@ NodeGroup::NodeGroup()
 {
 	auto initalNode = addNode(Embedded::NodeTypes::Initial_Value, {50.0f, 50.0f});
 	auto finalNode = addNode(Embedded::NodeTypes::Final_Value, {350.0f, 50.0f});
-	finalNode->setInput(0, {initalNode, 0});
+	finalNode->setInput(0, {initalNode, 0, 0.0f});
 }
 
 NodeGroup::NodeGroup(UUID uuid)
@@ -32,10 +32,10 @@ NodeGroup::NodeGroup(const NodeGroup& other)
 
 		// Copy node connections
 		for(size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
-			if(auto& oldConnectedNode = oldNode->getInputs()[inputIndex].node.lock()) {
+			if(auto& oldConnectedNode = oldNode->getInputs()[inputIndex].ConnectedNode.lock()) {
 				for(size_t oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
 					if(other.m_nodes[oldConnectedNodeIndex] == oldConnectedNode)
-						newNode->setInput(inputIndex, {m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].outputIndex});
+						newNode->setInput(inputIndex, {m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].OutputIndex, oldNode->getInputs()[inputIndex].DefaultValue});
 				}
 			}
 		}
@@ -114,9 +114,9 @@ float NodeGroup::getValue(int attributeIndex)
 
 	if(ioIndex >= node->getOutputs().size()) {
 		int inputIndex = ioIndex - node->getOutputs().size();
-		if(node->getInput(inputIndex).node.expired())
+		if(node->getInput(inputIndex).ConnectedNode.expired())
 			return 0.0f;
-		return node->getInput(inputIndex).node.lock()->getOutputValue(node->getInput(inputIndex).outputIndex);
+		return node->getInput(inputIndex).ConnectedNode.lock()->getOutputValue(node->getInput(inputIndex).OutputIndex);
 	} else {
 		return node->getOutputValue(ioIndex);
 	}
@@ -151,8 +151,8 @@ void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::
 	loopCheck.push_back(node);
 
 	for(auto& c : node->getInputs()) {
-		if(!c.node.expired())
-			traverseConnections(c.node.lock(), newDeque, loopCheck);
+		if(!c.ConnectedNode.expired())
+			traverseConnections(c.ConnectedNode.lock(), newDeque, loopCheck);
 	}
 
 	auto it = std::find(m_nodes.begin(), m_nodes.end(), node);
