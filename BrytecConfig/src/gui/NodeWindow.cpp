@@ -330,13 +330,14 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
 
     ImGui::PushItemWidth(nodeWidth - 30);
     if(editingId == node->getId()) {
-        ImGui::InputText("###String", &node->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
         // Set focus
         if(setFocus) {
             ImGui::SetKeyboardFocusHere();
             setFocus = false;
         }
+
+        ImGui::InputText("###String", &node->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
         // End editing
         if(ImGui::IsItemDeactivated())
