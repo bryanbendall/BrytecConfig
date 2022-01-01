@@ -4,18 +4,24 @@
 
 namespace Embedded
 {
-	struct NodeVariant
+	class NodeVariant
 	{
-		NodeVariant(uint8_t* ptr);
+	public:
+		NodeVariant(NodeTypes type, float* ptr);
 
 		void initalizeData();
 		uint32_t getSize();
-		void evaluate(float timestep);
+		
+		void setInput(uint8_t index, NodeInputMask& mask, float* output);
+		void setValue(uint8_t index, NodeInputMask& mask, float value);
+		
 		float* getOutput(uint8_t index = 0);
-		void setInput(uint8_t index, float* output);
+		
+		void evaluate(NodeInputMask& mask, float timestep);
 
-		uint8_t* pointer;
-		NodeTypes type;
-		void* data;
+	private:
+		NodeTypes m_type;
+		float* m_data;
 	};
+
 }

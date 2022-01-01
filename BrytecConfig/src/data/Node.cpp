@@ -211,161 +211,186 @@ void Node::evaluate() {
 
 void Node::evaluateAnd() 
 {
-	Embedded::AndNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		&getInputValue(3),
-		&getInputValue(4)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::AndNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getInputValue(3));
+	node.SetValue(4, mask, getInputValue(4));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateOr() 
 {
-	Embedded::OrNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		&getInputValue(3),
-		&getInputValue(4)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::OrNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getInputValue(3));
+	node.SetValue(4, mask, getInputValue(4));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateInvert() 
 {
-	Embedded::InvertNode node = {
-		&getInputValue(0)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::InvertNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateTwoStage() 
 {
-	Embedded::TwoStageNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		&getInputValue(3)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::TwoStageNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getInputValue(3));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateOnOff() 
 {
-	Embedded::OnOffNode node = {
-		&getInputValue(0),
-		&getInputValue(1)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::OnOffNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateToggle() 
 {
-	Embedded::ToggleNode node = {
-		&getInputValue(0),
-		(bool)m_values[0],
-		m_outputs[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_values[0] = node.lastValue;
-	m_outputs[0] = node.out;
+	Embedded::ToggleNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getValue(0));
+	node.m_out = m_outputs[0];
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_values[0] = node.m_lastValue.value;
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateDelay() 
 {
-	Embedded::DelayNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		m_values[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_values[1] = node.counter;
-	m_outputs[0] = node.out;
+	Embedded::DelayNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getValue(0));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_values[1] = node.m_counter.value;
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateCompare() 
 {
-	Embedded::CompareNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		(Embedded::CompareNode::Types)m_values[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::CompareNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getValue(0));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateMath() 
 {
-	Embedded::MathNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		(Embedded::MathNode::Types) m_values[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::MathNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getValue(0));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluateMap() 
 {
-	Embedded::MapValueNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		&getInputValue(3),
-		&getInputValue(4)
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::MapValueNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getInputValue(3));
+	node.SetValue(4, mask, getInputValue(4));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaulateCurve() 
 {
-	Embedded::CurveNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		(Embedded::CurveNode::Types) m_values[0],
-		m_values[1],
-		m_outputs[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_values[1] = node.timerCounter;
-	m_outputs[0] = node.out;
+	Embedded::CurveNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getValue(0));
+	node.SetValue(4, mask, getValue(1));
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_values[1] = node.m_timerCounter.value;
+	m_outputs[0] = node.m_out;
 }
 
 void Node::evaluatePushButton() 
 {
-	Embedded::PushButtonNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		(bool) m_values[0],
-		m_outputs[0],
-		m_outputs[1]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_values[0] = node.lastButtonState;
-	m_outputs[0] = node.ignitionOut;
-	m_outputs[1] = node.starterOut;
+	Embedded::PushButtonNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.SetValue(3, mask, getValue(0));
+	node.m_ignitionOut = m_outputs[0];
+	node.m_starterOut = m_outputs[1];
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_values[0] = node.m_lastButtonState.value;
+	m_outputs[0] = node.m_ignitionOut;
+	m_outputs[1] = node.m_starterOut;
 }
 
 void Node::evaluateSwitch()
 {
-	Embedded::SwitchNode node = {
-		&getInputValue(0),
-		&getInputValue(1),
-		&getInputValue(2),
-		m_outputs[0]
-	};
-	node.Evaluate(ImGui::GetIO().DeltaTime);
-	m_outputs[0] = node.out;
+	Embedded::SwitchNode node;
+	Embedded::NodeInputMask mask;
+
+	node.SetValue(0, mask, getInputValue(0));
+	node.SetValue(1, mask, getInputValue(1));
+	node.SetValue(2, mask, getInputValue(2));
+	node.m_out = m_outputs[0];
+
+	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
+	m_outputs[0] = node.m_out;
 
 }
 

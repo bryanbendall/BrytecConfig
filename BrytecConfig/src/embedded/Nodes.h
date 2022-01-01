@@ -5,6 +5,22 @@
 namespace Embedded
 {
 
+	class NodeInputMask
+	{
+		uint8_t m_mask;
+
+	public:
+		void setPointer(uint8_t index) { m_mask |= (1 << index); }
+		void setValue(uint8_t index) { m_mask &= ~(1 << index); }
+		bool isPointer(uint8_t index) { return m_mask & (1 << index); }
+	};
+
+	union InputOrValue
+	{
+		float value;
+		float* pointer;
+	};
+
 	enum class NodeTypes : uint8_t
 	{
 		Final_Value = 0,
@@ -29,72 +45,78 @@ namespace Embedded
 
 	struct InitalValueNode
 	{
-		float* rawData = nullptr;
-		float out;
+		InputOrValue m_rawData;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct FinalValueNode
 	{
-		float* in = nullptr;
+		InputOrValue m_in;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct NodeGroupNode
 	{
-		float* rawData = nullptr;
-		float out;
+		InputOrValue m_rawData;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct AndNode
 	{
-		float* in1 = nullptr;
-		float* in2 = nullptr;
-		float* in3 = nullptr;
-		float* in4 = nullptr;
-		float* in5 = nullptr;
-		float out;
+		InputOrValue m_in1 = {1.0f};
+		InputOrValue m_in2 = {1.0f};
+		InputOrValue m_in3 = {1.0f};
+		InputOrValue m_in4 = {1.0f};
+		InputOrValue m_in5 = {1.0f};
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct OrNode
 	{
-		float* in1 = nullptr;
-		float* in2 = nullptr;
-		float* in3 = nullptr;
-		float* in4 = nullptr;
-		float* in5 = nullptr;
-		float out;
+		InputOrValue m_in1;
+		InputOrValue m_in2;
+		InputOrValue m_in3;
+		InputOrValue m_in4;
+		InputOrValue m_in5;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct TwoStageNode
 	{
-		float* stage1Trigger = nullptr;
-		float* stage1Percent = nullptr;
-		float* stage2Trigger = nullptr;
-		float* stage2Percent = nullptr;
-		float out;
+		InputOrValue m_stage1Trigger;
+		InputOrValue m_stage1Percent;
+		InputOrValue m_stage2Trigger;
+		InputOrValue m_stage2Percent;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct CurveNode
@@ -107,16 +129,17 @@ namespace Embedded
 			Breathing,
 			Count
 		};
-		float* in = nullptr;
-		float* repeat = nullptr;
-		float* timeout = nullptr;
-		Types curveType = Types::Toggle;
-		float timerCounter = 0.0f;
-		float out;
+		InputOrValue m_in;
+		InputOrValue m_repeat;
+		InputOrValue m_timeout;
+		InputOrValue m_curveType;
+		InputOrValue m_timerCounter;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct CompareNode
@@ -129,86 +152,93 @@ namespace Embedded
 			LessEqual,
 			Count
 		};
-		float* input1 = nullptr;
-		float* input2 = nullptr;
-		Types compareType;
-		float out;
+		InputOrValue m_input1;
+		InputOrValue m_input2;
+		InputOrValue m_compareType;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct OnOffNode
 	{
-		float* on = nullptr;
-		float* off = nullptr;
-		float out;
+		InputOrValue m_on;
+		InputOrValue m_off;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct InvertNode
 	{
-		float* in = nullptr;
-		float out;
+		InputOrValue m_in;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct ToggleNode
 	{
-		float* in = nullptr;
-		bool lastValue;
-		float out;
+		InputOrValue m_in;
+		InputOrValue m_lastValue;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct DelayNode
 	{
-		float* in = nullptr;
-		float* delayTime = nullptr;
-		float counter = 0.0f;
-		float out;
+		InputOrValue m_in;
+		InputOrValue m_delayTime;
+		InputOrValue m_counter;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct PushButtonNode
 	{
-		float* button = nullptr;
-		float* neutralSafety = nullptr;
-		float* engineRunning = nullptr;
-		bool lastButtonState = false;
-		float ignitionOut;
-		float starterOut;
+		InputOrValue m_button;
+		InputOrValue m_neutralSafety;
+		InputOrValue m_engineRunning;
+		InputOrValue m_lastButtonState;
+		float m_ignitionOut;
+		float m_starterOut;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct MapValueNode
 	{
-		float* in = nullptr;
-		float* fromMin = nullptr;
-		float* fromMax = nullptr;
-		float* toMin = nullptr;
-		float* toMax = nullptr;
-		float out;
+		InputOrValue m_in;
+		InputOrValue m_fromMin;
+		InputOrValue m_fromMax;
+		InputOrValue m_toMin;
+		InputOrValue m_toMax;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct MathNode
@@ -221,35 +251,38 @@ namespace Embedded
 			Divide,
 			Count
 		};
-		float* input1 = nullptr;
-		float* input2 = nullptr;
-		Types mathType;
-		float out;
+		InputOrValue m_input1;
+		InputOrValue m_input2;
+		InputOrValue m_mathType;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct ValueNode
 	{
-		float out;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 	struct SwitchNode
 	{
-		float* selection = nullptr;
-		float* input1 = nullptr;
-		float* input2 = nullptr;
-		float out;
+		InputOrValue m_selection;
+		InputOrValue m_input1;
+		InputOrValue m_input2;
+		float m_out;
 
-		void SetInput(uint8_t index, float* output);
+		void SetInput(uint8_t index, NodeInputMask& mask, float* output);
+		void SetValue(uint8_t index, NodeInputMask& mask, float value);
 		float* GetOutput(uint8_t index);
-		void Evaluate(float timestep);
+		void Evaluate(NodeInputMask& mask, float timestep);
 	};
 
 }

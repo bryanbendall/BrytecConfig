@@ -14,57 +14,78 @@ namespace Embedded
 
 		bool add(NodeTypes type) 
 		{
-			if(m_nextIndex > SIZE)
+			if(m_size >= MAX_ELEMENTS)
 				return false;
 
-			m_data[m_nextIndex] = (uint8_t) type;
-			NodeVariant var(&m_data[m_nextIndex]);
+			m_nodeTypes[m_size] = type;
 
-			if(m_nextIndex + var.getSize() > SIZE)
+			float* nextData = &m_nodeData[m_dataNextIndex];
+			NodeVariant var(type, nextData);
+
+			if((m_dataNextIndex + var.getSize()) > MAX_DATA)
 				return false;
 
 			var.initalizeData();
-			m_nextIndex += var.getSize();
-			m_count++;
+			m_size++;
+			m_dataNextIndex += var.getSize();
 			return true;
 		}
 
 		NodeVariant at(uint32_t index) 
 		{ 
-			if(index >= m_count)
-				return NodeVariant(nullptr);
+			if(index >= m_size)
+				return NodeVariant(NodeTypes::Count, nullptr);
 
-			uint8_t* indexIterator = m_data;
-			NodeVariant var(indexIterator);
 
-			for(uint32_t indexCount = 0; indexCount != index; indexCount++) {
-				var = NodeVariant(indexIterator);
-				indexIterator += var.getSize();
+			uint32_t nodeDataIndex = 0;
+			for(uint32_t indexCount = 0; indexCount < index; indexCount++) {
+				NodeVariant var(m_nodeTypes[indexCount], &m_nodeData[nodeDataIndex]);
+				nodeDataIndex += var.getSize();
 			}
 
-			return var;
+			NodeVariant out(m_nodeTypes[index], &m_nodeData[nodeDataIndex]);
+
+			return out;
 		}
 
-		NodeVariant next(NodeVariant& var) 
+		NodeInputMask& getMask(uint32_t index)
 		{
-			return NodeVariant(var.pointer + var.getSize());
+			return m_masks[index];
+		}
+
+		void setValue(uint32_t nodeIndex, uint8_t inputIndex, float value)
+		{
+			at(nodeIndex).setValue(inputIndex, getMask(nodeIndex), value);
+		}
+
+		void setInput(uint32_t nodeIndex, uint8_t inputIndex, uint32_t connectedNodeIndex, uint8_t outputIndex = 0)
+		{
+			at(nodeIndex).setInput(inputIndex, getMask(nodeIndex), at(connectedNodeIndex).getOutput(outputIndex));
 		}
 
 		void evaluateAll(float timestep) 
 		{
-			NodeVariant v = at(0);
-			v.evaluate(timestep);
-			for(uint32_t i = 1; i < m_count; i++) {
-				v = next(v);
-				v.evaluate(timestep);
+			uint32_t nodeDataIndex = 0;
+			for(uint32_t indexCount = 0; indexCount < m_size; indexCount++) {
+				NodeVariant var(m_nodeTypes[indexCount], &m_nodeData[nodeDataIndex]);
+				var.evaluate(m_masks[indexCount], timestep);
+				nodeDataIndex += var.getSize();
 			}
 		}
 
 	private:
-		uint8_t m_data[SIZE] = {};
-		uint32_t m_nextIndex = 0;
-		uint32_t m_count = 0;
+		// Array max sizes
+		static constexpr size_t MAX_ELEMENTS = SIZE / 4;
+		static constexpr size_t MAX_DATA = SIZE - MAX_ELEMENTS;
 
+		// Data
+		NodeTypes m_nodeTypes[MAX_ELEMENTS] = {};
+		NodeInputMask m_masks[MAX_ELEMENTS] = {};
+		float m_nodeData[MAX_DATA] = {};
+
+		// Vector states
+		uint32_t m_size = 0;
+		uint32_t m_dataNextIndex = 0;
 	};
 
 }
