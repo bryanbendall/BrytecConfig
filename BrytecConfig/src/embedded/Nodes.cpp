@@ -228,7 +228,7 @@ namespace Embedded
 		Types curveType = (Types)(mask.isPointer(3) ? *m_curveType.pointer : m_curveType.value);
 		float& timerCounter = mask.isPointer(4) ? *m_timerCounter.pointer : m_timerCounter.value;
 
-		if(in) {
+		if(!in) {
 			timerCounter = 0.0f;
 			m_out = 0.0f;
 			return;
@@ -492,14 +492,14 @@ namespace Embedded
 		bool button = ToBool(mask.isPointer(0) ? *m_button.pointer : m_button.value);
 		bool neutralSafety = ToBool(mask.isPointer(1) ? *m_neutralSafety.pointer : m_neutralSafety.value);
 		bool engineRunning = ToBool(mask.isPointer(2) ? *m_engineRunning.pointer : m_engineRunning.value);
-		bool lastButtonState = ToBool(mask.isPointer(3) ? *m_lastButtonState.pointer : m_lastButtonState.value);
+		float& lastButtonState = mask.isPointer(3) ? *m_lastButtonState.pointer : m_lastButtonState.value;
 
 		if(engineRunning && ToBool(m_starterOut)) {
 			m_starterOut = 0.0f;
 			return;
 		}
 
-		if(lastButtonState == button) {
+		if(ToBool(lastButtonState) == button) {
 			return;
 		}
 		lastButtonState = button;

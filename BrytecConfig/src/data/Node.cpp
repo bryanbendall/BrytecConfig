@@ -300,7 +300,7 @@ void Node::evaluateDelay()
 	node.SetValue(2, mask, getValue(0));
 
 	node.Evaluate(mask, ImGui::GetIO().DeltaTime);
-	m_values[1] = node.m_counter.value;
+	m_values[0] = node.m_counter.value;
 	m_outputs[0] = node.m_out;
 }
 
