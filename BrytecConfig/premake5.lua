@@ -46,6 +46,19 @@ project "BrytecConfig"
 			"GLCORE_PLATFORM_WINDOWS"
 		}
 
+	filter "system:linux"
+		links
+		{
+			"Xrandr",
+			"Xi",
+			--"GLU",
+			"GL",
+			"X11",
+			"dl",
+			"pthread",
+			"stdc++fs",	--GCC versions 5.3 through 8.x need stdc++fs for std::filesystem
+		}
+
 	filter "configurations:Debug"
 		runtime "Debug"
 		symbols "on"
