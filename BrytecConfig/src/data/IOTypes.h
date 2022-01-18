@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 struct IOTypes
 {
 	enum class Types

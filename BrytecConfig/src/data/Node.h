@@ -56,7 +56,7 @@ public:
 	void setValue(int index, float value) { m_values[index] = value; }
 
 	NodeConnection& getInput(int index) { return m_inputs[index]; }
-	std::vector<NodeConnection>& getInputs() { return m_inputs; }
+	std::vector<NodeConnection> getInputs() { return m_inputs; }
 	void setInput(int inputIndex, NodeConnection nodeConnection);
 	float& getInputValue(int inputIndex);
 

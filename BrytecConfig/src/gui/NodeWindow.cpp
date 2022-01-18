@@ -194,14 +194,14 @@ void NodeWindow::drawWindow()
     ImGui::Begin(ICON_FA_PROJECT_DIAGRAM" Node Editor", &m_opened, ImGuiWindowFlags_MenuBar);
     ImGui::PopStyleVar();
 
-    bool windowFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
+    //bool windowFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
 
     drawMenubar();
 
     imnodes::BeginNodeEditor();
 
-    bool nodeGraphFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
-    m_isFocused = windowFocus || nodeGraphFocus;
+    //bool nodeGraphFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
+    //m_isFocused = windowFocus || nodeGraphFocus;
 
     imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingVertical, 4.0f);
 

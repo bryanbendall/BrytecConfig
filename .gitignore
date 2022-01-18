@@ -54,6 +54,6 @@
 *.recipe
 BrytecConfig.exe
 
-
+build/*
 
 

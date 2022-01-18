@@ -25,62 +25,62 @@ private:
 	template<typename T>
 	bool deserializeTemplate(T& data)
 	{
-		m_nodeGroup->setName(data["Name"].as<std::string>());
+		// m_nodeGroup->setName(data["Name"].as<std::string>());
 
-		m_nodeGroup->setType((IOTypes::Types) data["Type"].as<unsigned int>());
+		// m_nodeGroup->setType((IOTypes::Types) data["Type"].as<unsigned int>());
 
-		m_nodeGroup->setEnabled(data["Enabled"].as<bool>());
+		// m_nodeGroup->setEnabled(data["Enabled"].as<bool>());
 
-		// Add Nodes
-		if(auto nodes = data["Nodes"]) {
-			for(auto node : nodes) {
-				Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].as<unsigned int>();
-				float x = node["Position"][0].as<float>();
-				float y = node["Position"][1].as<float>();
+		// // Add Nodes
+		// if(auto nodes = data["Nodes"]) {
+		// 	for(auto node : nodes) {
+		// 		Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].as<unsigned int>();
+		// 		float x = node["Position"][0].as<float>();
+		// 		float y = node["Position"][1].as<float>();
 
-				auto newNode = m_nodeGroup->addNode(type, {x, y});
+		// 		auto newNode = m_nodeGroup->addNode(type, {x, y});
 
-				if(auto nodeName = node["Name"]) {
-					std::string name = node["Name"].as<std::string>();
-					newNode->setName(name);
-				}
+		// 		if(auto nodeName = node["Name"]) {
+		// 			std::string name = node["Name"].as<std::string>();
+		// 			newNode->setName(name);
+		// 		}
 
-				if(auto values = node["Values"]) {
-					int valueIndex = 0;
-					for(auto value : values) {
-						newNode->setValue(valueIndex, value.as<float>());
-						valueIndex++;
-					}
-				}
-			}
-		}
+		// 		if(auto values = node["Values"]) {
+		// 			int valueIndex = 0;
+		// 			for(auto value : values) {
+		// 				newNode->setValue(valueIndex, value.as<float>());
+		// 				valueIndex++;
+		// 			}
+		// 		}
+		// 	}
+		// }
 
-		// Add connection to nodes previously added
-		if(auto nodes = data["Nodes"]) {
-			int nodeIndex = 0;
-			for(auto node : nodes) {
-				if(auto inputs = node["Inputs"]) {
-					int inputIndex = 0;
-					for(auto input : inputs) {
-						auto connectionNodeIndex = input[0].as<int>();
-						auto outputIndex = input[1].as<int>();
-						auto defaultValue = input[2].as<float>();
-						if(connectionNodeIndex > -1 && outputIndex > -1) {
-							// Has connection
-							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue};
-							m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
-						} else {
-							m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
-						}
-						inputIndex++;
-					}
-				}
-				if(auto nodeGroupId = node["Node Group ID"]) {
-					m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
-				}
-				nodeIndex++;
-			}
-		}
+		// // Add connection to nodes previously added
+		// if(auto nodes = data["Nodes"]) {
+		// 	int nodeIndex = 0;
+		// 	for(auto node : nodes) {
+		// 		if(auto inputs = node["Inputs"]) {
+		// 			int inputIndex = 0;
+		// 			for(auto input : inputs) {
+		// 				auto connectionNodeIndex = input[0].as<int>();
+		// 				auto outputIndex = input[1].as<int>();
+		// 				auto defaultValue = input[2].as<float>();
+		// 				if(connectionNodeIndex > -1 && outputIndex > -1) {
+		// 					// Has connection
+		// 					NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue};
+		// 					m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
+		// 				} else {
+		// 					m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
+		// 				}
+		// 				inputIndex++;
+		// 			}
+		// 		}
+		// 		if(auto nodeGroupId = node["Node Group ID"]) {
+		// 			m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
+		// 		}
+		// 		nodeIndex++;
+		// 	}
+		// }
 
 		return true;
 	}

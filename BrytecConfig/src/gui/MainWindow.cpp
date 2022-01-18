@@ -15,18 +15,18 @@ void MainWindow::setupFonts()
 {
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("vendor\\imgui\\misc\\fonts\\DroidSans.ttf", 16.0f);
+    io.Fonts->AddFontFromFileTTF("../../BrytecConfig/vendor/imgui/misc/fonts/DroidSans.ttf", 16.0f);
     
     static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 14.0f, &icons_config, icons_ranges);
+    io.Fonts->AddFontFromFileTTF("../../BrytecConfig/vendor/fontawesome/fa-solid-900.ttf", 14.0f, &icons_config, icons_ranges);
     //ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::ForceAutoHint | ImGuiFreeType::MonoHinting);
 
     ImFontConfig icons_config2;
     icons_config2.PixelSnapH = true;
-    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
+    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF("../../BrytecConfig/vendor/fontawesome/fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
 
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();

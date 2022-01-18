@@ -12,10 +12,10 @@ namespace AppManager
 
 	struct Data
 	{
-		std::shared_ptr<Config> Config;
+		std::shared_ptr<Config> config;
 		std::weak_ptr<Selectable> SelectedItem;
 		GLFWwindow* GLFWWindow;
-		std::unique_ptr<MainWindow> MainWindow;
+		std::unique_ptr<MainWindow> mainWindow;
 		ImFont* BigIcons = nullptr;
 	};
 

@@ -80,7 +80,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		int totalNodes = 0;
 		for(auto& pin : module->getPins()) {
-			if(auto& ng = pin->getNodeGroup())
+			if(auto ng = pin->getNodeGroup())
 				totalNodes += ng->getNodes().size();
 		}
 		ImGui::Text("%d", totalNodes);
