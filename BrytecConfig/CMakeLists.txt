@@ -1,0 +1,68 @@
+add_executable(BrytecConfig
+                src/main.cpp              
+                src/AppManager.cpp
+                src/AppManager.h 
+                src/data/Config.cpp
+                src/data/Config.h
+                src/data/IOTypes.cpp
+                src/data/IOTypes.h
+                src/data/Module.cpp
+                src/data/Module.h
+                src/data/Node.cpp
+                src/data/Node.h
+                src/data/NodeGroup.cpp
+                src/data/NodeGroup.h
+                src/data/Pin.cpp
+                src/data/Pin.h
+                src/data/Selectable.h
+                src/embedded/Nodes.cpp
+                src/embedded/Nodes.h
+                src/embedded/NodesVector.h
+                src/embedded/NodeVariant.cpp
+                src/embedded/NodeVariant.h
+                src/gui/MainWindow.cpp
+                src/gui/MainWindow.h
+                src/gui/ModuleBuilderWindow.cpp
+                src/gui/ModuleBuilderWindow.h
+                src/gui/ModuleWindow.cpp
+                src/gui/ModuleWindow.h
+                src/gui/NodeGroupWindow.cpp
+                src/gui/NodeGroupWindow.h
+                src/gui/NodeWindow.cpp
+                src/gui/NodeWindow.h
+                src/gui/PropertiesWindow.cpp
+                src/gui/PropertiesWindow.h
+                src/utils/ConfigSerializer.cpp
+                src/utils/ConfigSerializer.h
+                src/utils/FileDialogs.cpp
+                src/utils/FileDialogs.h
+                src/utils/ModuleSerializer.cpp
+                src/utils/ModuleSerializer.h
+                src/utils/NodeGroupSerializer.cpp
+                src/utils/NodeGroupSerializer.h
+                src/utils/UUID.cpp
+                src/utils/UUID.h
+)
+
+target_include_directories(BrytecConfig PUBLIC
+                           "${PROJECT_BINARY_DIR}"
+                           "vendor/yaml-cpp/include"
+                           "vendor/glfw/include"
+                           "vendor/fontawesome"
+                           )
+
+add_subdirectory(vendor/yaml-cpp)
+add_subdirectory(vendor/glfw)
+add_subdirectory(vendor/glad)
+add_subdirectory(vendor/imgui)
+add_subdirectory(vendor/nativefiledialog)
+add_subdirectory(vendor/imnodes)
+
+target_link_libraries(BrytecConfig PUBLIC 
+                        yaml-cpp
+                        glfw
+                        glad
+                        imgui
+                        nativefiledialog
+                        imnodes
+                    )
