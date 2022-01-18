@@ -95,7 +95,7 @@ void ModuleBuilderWindow::drawModuleTable()
                     ImGui::TableNextColumn();
                     ImGui::PushID(&pin);
 
-                    if(ImGui::TreeNodeEx("###PinoutName", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding, pin->getPinoutName().c_str())) {
+                    if(ImGui::TreeNodeEx("###PinoutName", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding, pin->getPinoutName().c_str(), "")) {
 
                         ImGui::TableNextColumn();
                         ImGui::SetNextItemWidth(-FLT_MIN);
