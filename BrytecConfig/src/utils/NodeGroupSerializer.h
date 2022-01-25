@@ -25,30 +25,30 @@ private:
 	template<typename T>
 	bool deserializeTemplate(T& data)
 	{
-		m_nodeGroup->setName(data["Name"].as<std::string>());
+		m_nodeGroup->setName(data["Name"].template as<std::string>());
 
-		m_nodeGroup->setType((IOTypes::Types) data["Type"].as<unsigned int>());
+		m_nodeGroup->setType((IOTypes::Types) data["Type"].template as<unsigned int>());
 
-		m_nodeGroup->setEnabled(data["Enabled"].as<bool>());
+		m_nodeGroup->setEnabled(data["Enabled"].template as<bool>());
 
 		// Add Nodes
 		if(auto nodes = data["Nodes"]) {
 			for(auto node : nodes) {
-				Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].as<unsigned int>();
-				float x = node["Position"][0].as<float>();
-				float y = node["Position"][1].as<float>();
+				Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].template as<unsigned int>();
+				float x = node["Position"][0].template as<float>();
+				float y = node["Position"][1].template as<float>();
 
 				auto newNode = m_nodeGroup->addNode(type, {x, y});
 
 				if(auto nodeName = node["Name"]) {
-					std::string name = node["Name"].as<std::string>();
+					std::string name = node["Name"].template as<std::string>();
 					newNode->setName(name);
 				}
 
 				if(auto values = node["Values"]) {
 					int valueIndex = 0;
 					for(auto value : values) {
-						newNode->setValue(valueIndex, value.as<float>());
+						newNode->setValue(valueIndex, value.template as<float>());
 						valueIndex++;
 					}
 				}
@@ -62,9 +62,9 @@ private:
 				if(auto inputs = node["Inputs"]) {
 					int inputIndex = 0;
 					for(auto input : inputs) {
-						auto connectionNodeIndex = input[0].as<int>();
-						auto outputIndex = input[1].as<int>();
-						auto defaultValue = input[2].as<float>();
+						auto connectionNodeIndex = input[0].template as<int>();
+						auto outputIndex = input[1].template as<int>();
+						auto defaultValue = input[2].template as<float>();
 						if(connectionNodeIndex > -1 && outputIndex > -1) {
 							// Has connection
 							NodeConnection nodeConnection = {m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue};
@@ -76,7 +76,7 @@ private:
 					}
 				}
 				if(auto nodeGroupId = node["Node Group ID"]) {
-					m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.as<uint64_t>());
+					m_nodeGroup->getNodes()[nodeIndex]->setSelectedNodeGroup(nodeGroupId.template as<uint64_t>());
 				}
 				nodeIndex++;
 			}

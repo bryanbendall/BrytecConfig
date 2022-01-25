@@ -6,6 +6,7 @@
 #include <iostream>
 #include "../utils/NodeGroupSerializer.h"
 #include "../utils/FileDialogs.h"
+#include "../utils/DefaultPaths.h"
 
 NodeGroupWindow::NodeGroupWindow() 
 {
@@ -41,7 +42,7 @@ void NodeGroupWindow::drawMenubar()
 
         // Open
         if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
-            auto path = FileDialogs::OpenFile("btnodes");
+            auto path = FileDialogs::OpenFile("btnodes", NODE_GROUPS_PATH);
             if(!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
@@ -56,8 +57,7 @@ void NodeGroupWindow::drawMenubar()
         // Save
         if(ImGui::MenuItem(ICON_FA_SAVE, NULL, false, nodeGroupSelected)) {
             if(nodeGroup) {
-                auto defaultPath = std::filesystem::absolute("data/node groups/");
-                auto path = FileDialogs::SaveFile("btnodes", defaultPath.string().c_str());
+                auto path = FileDialogs::SaveFile("btnodes", NODE_GROUPS_PATH);
 
                 if(path.extension().empty())
                     path.replace_extension("btnodes");
@@ -131,7 +131,7 @@ void NodeGroupWindow::drawNodeGroups()
             if(ImGui::BeginDragDropSource()) {
                 ImGui::SetDragDropPayload("NodeGroup", &i, sizeof(int));
 
-                ImGui::Text(nodeGroup->getName().c_str());
+                ImGui::Text(nodeGroup->getName().c_str(), "");
                 ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
 
                 ImGui::EndDragDropSource();

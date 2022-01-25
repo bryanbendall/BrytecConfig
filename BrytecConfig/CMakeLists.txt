@@ -34,6 +34,7 @@ add_executable(BrytecConfig
                 src/gui/PropertiesWindow.h
                 src/utils/ConfigSerializer.cpp
                 src/utils/ConfigSerializer.h
+                src/utils/DefaultPaths.h
                 src/utils/FileDialogs.cpp
                 src/utils/FileDialogs.h
                 src/utils/ModuleSerializer.cpp

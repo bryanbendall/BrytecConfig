@@ -5,6 +5,7 @@
 #include "utils/FileDialogs.h"
 #include <memory>
 #include <imgui.h>
+#include "utils/DefaultPaths.h"
 
 namespace AppManager
 {
@@ -13,24 +14,24 @@ namespace AppManager
 
 	void init(GLFWwindow* window)
 	{
-		data.MainWindow = std::make_unique<MainWindow>();
+		data.mainWindow = std::make_unique<MainWindow>();
 		data.GLFWWindow = window;
 		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { AppManager::exit(); });
-		data.MainWindow->setWindow(window);
-		data.MainWindow->setupFonts();
-		data.MainWindow->setupStyle();
+		data.mainWindow->setWindow(window);
+		data.mainWindow->setupFonts();
+		data.mainWindow->setupStyle();
 		newConfig();
 	}
 
 	void update()
 	{
-		data.MainWindow->drawWindow();
+		data.mainWindow->drawWindow();
 		handleKeyEvents();
 	}
 
 	std::shared_ptr<Config>& getConfig()
 	{
-		return data.Config;
+		return data.config;
 	}
 
 	std::weak_ptr<Selectable> getSelectedItem()
@@ -61,13 +62,13 @@ namespace AppManager
 	void newConfig()
 	{
 		clearSelected();
-		data.Config = std::make_shared<Config>("");
+		data.config = std::make_shared<Config>("");
 		updateWindowTitle();
 	}
 
 	void openConfig()
 	{
-		auto path = FileDialogs::OpenFile("btconfig");
+		auto path = FileDialogs::OpenFile("btconfig", CONFIGS_PATH);
 		if(path.empty())
 			return;
 
@@ -75,7 +76,7 @@ namespace AppManager
 		ConfigSerializer serializer(config);
 		if(serializer.deserializeText(config->getFilepath())) {
 			clearSelected();
-			data.Config = config;
+			data.config = config;
 			updateWindowTitle();
 		} else
 			std::cout << "Could not deserialize file: " << "" << std::endl;
@@ -89,15 +90,15 @@ namespace AppManager
 
 	void saveConfig()
 	{
-		if(data.Config->getFilepath().empty())
+		if(data.config->getFilepath().empty())
 			saveAsConfig();
 		else
-			save(data.Config, data.Config->getFilepath());
+			save(data.config, data.config->getFilepath());
 	}
 
 	void saveAsConfig()
 	{
-		auto path = FileDialogs::SaveFile("btconfig");
+		auto path = FileDialogs::SaveFile("btconfig", CONFIGS_PATH);
 
 		if(path.empty())
 			return;
@@ -105,8 +106,8 @@ namespace AppManager
 		if(path.extension().empty())
 			path.replace_extension("btconfig");
 
-		save(data.Config, path);
-		data.Config->setFilepath(path);
+		save(data.config, path);
+		data.config->setFilepath(path);
 
 		updateWindowTitle();
 	}
@@ -126,8 +127,8 @@ namespace AppManager
 	{
 		std::string title = "Brytec Config - ";
 
-		if(!data.Config->getFilepath().empty())
-			title.append(data.Config->getFilepath().stem().string());
+		if(!data.config->getFilepath().empty())
+			title.append(data.config->getFilepath().stem().string());
 		else
 			title.append("Untitled");
 
@@ -157,20 +158,20 @@ namespace AppManager
 
 		// Delete
 		if(ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
-			if(!data.MainWindow->isNodeWindowFocused()) {
+			if(!data.mainWindow->isNodeWindowFocused()) {
 				std::shared_ptr<Selectable> selected = data.SelectedItem.lock();
 				if(!selected)
 					return;
 
 				if(auto module = std::dynamic_pointer_cast<Module>(selected)) {
 					clearSelected();
-					data.Config->removeModule(module);
+					data.config->removeModule(module);
 				}
 
 				if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
 					clearSelected();
-					data.Config->removeNodeGroup(nodeGroup);
-					data.MainWindow->removeNodeGroupContext(nodeGroup);
+					data.config->removeNodeGroup(nodeGroup);
+					data.mainWindow->removeNodeGroupContext(nodeGroup);
 				}
 
 			}

@@ -32,7 +32,7 @@ NodeGroup::NodeGroup(const NodeGroup& other)
 
 		// Copy node connections
 		for(size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
-			if(auto& oldConnectedNode = oldNode->getInputs()[inputIndex].ConnectedNode.lock()) {
+			if(auto oldConnectedNode = oldNode->getInputs()[inputIndex].ConnectedNode.lock()) {
 				for(size_t oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
 					if(other.m_nodes[oldConnectedNodeIndex] == oldConnectedNode)
 						newNode->setInput(inputIndex, {m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].OutputIndex, oldNode->getInputs()[inputIndex].DefaultValue});
@@ -57,7 +57,7 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 	return nullptr;
 }
 
-int NodeGroup::getNodeIndex(std::shared_ptr<Node>& node)
+int NodeGroup::getNodeIndex(std::shared_ptr<Node> node)
 {
 	for(size_t i = 0; i < m_nodes.size(); i++) {
 		if(m_nodes[i] == node)
@@ -108,7 +108,7 @@ float NodeGroup::getValue(int attributeIndex)
 	uint8_t nodeIndex = attributeIndex >> 8;
 	uint8_t ioIndex = attributeIndex;
 
-	auto& node = getNode(nodeIndex);
+	auto node = getNode(nodeIndex);
 	if(!node)
 		return 0.0f;
 

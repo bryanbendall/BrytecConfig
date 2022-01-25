@@ -6,6 +6,7 @@
 #include <IconsFontAwesome5.h>
 #include "../AppManager.h"
 #include <functional>
+#include "../utils/DefaultPaths.h"
 
 MainWindow::MainWindow() 
 { 
@@ -15,18 +16,18 @@ void MainWindow::setupFonts()
 {
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("vendor\\imgui\\misc\\fonts\\DroidSans.ttf", 16.0f);
-    
+    io.Fonts->AddFontFromFileTTF(FONTS_PATH_DROID_SANS, 16.0f);
+
     static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 14.0f, &icons_config, icons_ranges);
+    io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, 14.0f, &icons_config, icons_ranges);
     //ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::ForceAutoHint | ImGuiFreeType::MonoHinting);
 
     ImFontConfig icons_config2;
     icons_config2.PixelSnapH = true;
-    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF("vendor\\fontawesome\\fa-solid-900.ttf", 20.0f, &icons_config2, icons_ranges));
+    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, 20.0f, &icons_config2, icons_ranges));
 
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
@@ -107,7 +108,7 @@ void MainWindow::drawWindow()
     drawMenu();
     drawMenuBar();
 
-    //sImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
     ImGui::ShowMetricsWindow();
 
     m_nodeWindow.drawWindow();
@@ -222,7 +223,7 @@ static void ToolbarButton(const char* icon, const char* tooltip, std::function<v
     if(ImGui::IsItemHovered()) {
         anyItemHovered = true;
         if(hoveredTime > 40)
-            ImGui::SetTooltip(tooltip);
+            ImGui::SetTooltip(tooltip, "");
     }
     ImGui::PushFont(AppManager::getBigIconFont());
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
