@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include "../utils/DefaultPaths.h"
 
 ModuleSerializer::ModuleSerializer(std::shared_ptr<Module>& module)
 	: m_module(module)
@@ -53,14 +54,11 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
 {
 	std::vector<std::filesystem::path> moduleList;
 
-	// Read file names from disk
-	std::filesystem::path modulePath = "data/modules";
-
 	// Return empty list if it doesn't exist
-	if(!std::filesystem::exists(modulePath))
+	if(!std::filesystem::exists(MODULES_PATH))
 		return moduleList;
 
-	for(auto& directoryEntry : std::filesystem::directory_iterator(modulePath)) {
+	for(auto& directoryEntry : std::filesystem::directory_iterator(MODULES_PATH)) {
 		const auto& path = directoryEntry.path();
 
 		// Check extension

@@ -105,7 +105,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::Text("Pinout Name");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text(pin->getPinoutName().c_str());
+		ImGui::Text(pin->getPinoutName().c_str(), "");
 
 		// Current Limit
 		ImGui::TableNextRow();
@@ -124,7 +124,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		if(pin->getNodeGroup())
-			ImGui::Text(pin->getNodeGroup()->getName().c_str());
+			ImGui::Text(pin->getNodeGroup()->getName().c_str(), "");
 		else
 			ImGui::TextDisabled("None");
 
@@ -146,7 +146,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 				ImGui::TableNextColumn();
 				ImGui::TableNextColumn();
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text(IOTypes::getString(type));
+				ImGui::Text(IOTypes::getString(type), "");
 
 				ImGui::PopID();
 			}
@@ -182,7 +182,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::Text("Id");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text("%llu", nodeGroup->getId());
+		ImGui::Text("%llu", (unsigned long long)nodeGroup->getId());
 
 		// Enabled
 		ImGui::TableNextRow();
@@ -213,7 +213,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
 		ImGui::Text("Total Nodes");
 		ImGui::TableNextColumn();
 		ImGui::SetNextItemWidth(-FLT_MIN);
-		ImGui::Text("%d", nodeGroup->getNodes().size());
+		ImGui::Text("%d", (int)nodeGroup->getNodes().size());
 
 		ImGui::EndTable();
 	}

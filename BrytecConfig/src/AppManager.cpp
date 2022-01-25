@@ -5,6 +5,7 @@
 #include "utils/FileDialogs.h"
 #include <memory>
 #include <imgui.h>
+#include "utils/DefaultPaths.h"
 
 namespace AppManager
 {
@@ -67,7 +68,7 @@ namespace AppManager
 
 	void openConfig()
 	{
-		auto path = FileDialogs::OpenFile("btconfig");
+		auto path = FileDialogs::OpenFile("btconfig", CONFIGS_PATH);
 		if(path.empty())
 			return;
 
@@ -97,7 +98,7 @@ namespace AppManager
 
 	void saveAsConfig()
 	{
-		auto path = FileDialogs::SaveFile("btconfig");
+		auto path = FileDialogs::SaveFile("btconfig", CONFIGS_PATH);
 
 		if(path.empty())
 			return;

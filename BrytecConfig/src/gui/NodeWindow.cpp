@@ -17,7 +17,7 @@ namespace UI
     {
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
         ImGui::Dummy(ImVec2(1.0f, 3.0f));
-        ImGui::Text(text.c_str());
+        ImGui::Text(text.c_str(), "");
         ImGui::Dummy(ImVec2(1.0f, 3.0f));
         ImGui::PopStyleVar();
     }
@@ -58,7 +58,7 @@ namespace UI
             if(ImGui::Checkbox("###Check", &value))
                 node->getInput(attribute).DefaultValue = value;
             ImGui::SameLine();
-            ImGui::Text(label.c_str());
+            ImGui::Text(label.c_str(), "");
         } else {
             UI::SameHeightText(label);
         }
