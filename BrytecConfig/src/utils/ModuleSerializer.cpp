@@ -1,10 +1,10 @@
 #include "ModuleSerializer.h"
 
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <filesystem>
 #include <iostream>
 #include <fstream>
-#include "../utils/DefaultPaths.h"
+#include "utils/DefaultPaths.h"
 
 ModuleSerializer::ModuleSerializer(std::shared_ptr<Module>& module)
 	: m_module(module)

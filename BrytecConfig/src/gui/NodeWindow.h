@@ -3,8 +3,8 @@
 #include <vector>
 #include <utility>
 #include <memory>
-#include "../data/NodeGroup.h"
-#include "../data/Selectable.h"
+#include "data/NodeGroup.h"
+#include "data/Selectable.h"
 #include <map>
 #include <imnodes.h>
 

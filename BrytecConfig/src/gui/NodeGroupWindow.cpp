@@ -2,11 +2,11 @@
 
 #include <imgui.h>
 #include <IconsFontAwesome5.h>
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <iostream>
-#include "../utils/NodeGroupSerializer.h"
-#include "../utils/FileDialogs.h"
-#include "../utils/DefaultPaths.h"
+#include "utils/NodeGroupSerializer.h"
+#include "utils/FileDialogs.h"
+#include "utils/DefaultPaths.h"
 
 NodeGroupWindow::NodeGroupWindow() 
 {

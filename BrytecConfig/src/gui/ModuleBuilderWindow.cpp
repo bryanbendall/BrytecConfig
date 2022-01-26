@@ -2,10 +2,10 @@
 
 #include <IconsFontAwesome5.h>
 #include <imgui.h>
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <misc/cpp/imgui_stdlib.h>
-#include "../utils/ModuleSerializer.h"
-#include "../utils/FileDialogs.h"
+#include "utils/ModuleSerializer.h"
+#include "utils/FileDialogs.h"
 
 ModuleBuilderWindow::ModuleBuilderWindow()
 {

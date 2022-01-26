@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "../data/Config.h"
+#include "data/Config.h"
 #include <filesystem>
 
 class ConfigSerializer

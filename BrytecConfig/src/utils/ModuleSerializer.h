@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "../data/Module.h"
-#include "../data/Config.h"
+#include "data/Module.h"
+#include "data/Config.h"
 #include <vector>
 #include <filesystem>
 #include <yaml-cpp/yaml.h>

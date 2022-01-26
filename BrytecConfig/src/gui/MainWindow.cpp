@@ -4,9 +4,9 @@
 //#include <misc/freetype/imgui_freetype.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <IconsFontAwesome5.h>
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <functional>
-#include "../utils/DefaultPaths.h"
+#include "utils/DefaultPaths.h"
 
 MainWindow::MainWindow() 
 { 

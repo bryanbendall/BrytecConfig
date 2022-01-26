@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <IconsFontAwesome5.h>
 #include <memory>
 

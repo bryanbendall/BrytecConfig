@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../data/Module.h"
-#include "../data/Pin.h"
+#include "data/Module.h"
+#include "data/Pin.h"
 
 class PropertiesWindow
 {

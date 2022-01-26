@@ -2,12 +2,12 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include "../data/Selectable.h"
-#include "../AppManager.h"
+#include "data/Selectable.h"
+#include "AppManager.h"
 #include <iostream>
 #include <bitset>
 #include <IconsFontAwesome5.h>
-#include "../embedded/Nodes.h"
+#include "BrytecConfigEmbedded/Nodes.h"
 #include <misc/cpp/imgui_stdlib.h>
 #include <sstream>
 

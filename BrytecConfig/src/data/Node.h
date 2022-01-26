@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "../embedded/Nodes.h"
-#include "../utils/UUID.h"
+#include "BrytecConfigEmbedded/Nodes.h"
+#include "utils/UUID.h"
 
 class Node;
 struct NodeConnection {

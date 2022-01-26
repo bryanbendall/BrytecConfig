@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../data/NodeGroup.h"
+#include "data/NodeGroup.h"
 #include <memory>
 #include <filesystem>
 #include <yaml-cpp/yaml.h>
-#include "../AppManager.h"
-#include "../embedded/Nodes.h"
+#include "AppManager.h"
+#include "BrytecConfigEmbedded/Nodes.h"
 
 class NodeGroupSerializer
 {

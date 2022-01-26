@@ -1,6 +1,6 @@
 #include "Config.h"
 
-#include "../utils/ModuleSerializer.h"
+#include "utils/ModuleSerializer.h"
 #include "Module.h"
 
 Config::Config(const std::filesystem::path& path)

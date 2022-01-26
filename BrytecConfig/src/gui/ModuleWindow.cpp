@@ -1,8 +1,8 @@
 #include "ModuleWindow.h"
-#include "../AppManager.h"
+#include "AppManager.h"
 #include <iostream>
 #include <IconsFontAwesome5.h>
-#include "../utils/ModuleSerializer.h"
+#include "utils/ModuleSerializer.h"
 #include <filesystem>
 
 ModuleWindow::ModuleWindow() {

@@ -3,7 +3,7 @@
 #include <vector>
 #include <imgui.h>
 #include <memory>
-#include "../data/Module.h"
+#include "data/Module.h"
 
 class ModuleWindow
 {

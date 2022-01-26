@@ -6,7 +6,7 @@
 #include <string>
 #include "Selectable.h"
 #include "IOTypes.h"
-#include "../utils/UUID.h"
+#include "utils/UUID.h"
 
 class NodeGroup : public Selectable 
 {

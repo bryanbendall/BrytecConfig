@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "../data/Module.h"
+#include "data/Module.h"
 
 class ModuleBuilderWindow
 {

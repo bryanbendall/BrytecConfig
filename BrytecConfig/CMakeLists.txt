@@ -1,7 +1,12 @@
 add_executable(BrytecConfig
                 src/main.cpp              
                 src/AppManager.cpp
-                src/AppManager.h 
+                src/AppManager.h
+                src/BrytecConfigEmbedded/Nodes.cpp
+                src/BrytecConfigEmbedded/Nodes.h
+                src/BrytecConfigEmbedded/NodesVector.h
+                src/BrytecConfigEmbedded/NodeVariant.cpp
+                src/BrytecConfigEmbedded/NodeVariant.h
                 src/data/Config.cpp
                 src/data/Config.h
                 src/data/IOTypes.cpp
@@ -15,11 +20,6 @@ add_executable(BrytecConfig
                 src/data/Pin.cpp
                 src/data/Pin.h
                 src/data/Selectable.h
-                src/embedded/Nodes.cpp
-                src/embedded/Nodes.h
-                src/embedded/NodesVector.h
-                src/embedded/NodeVariant.cpp
-                src/embedded/NodeVariant.h
                 src/gui/MainWindow.cpp
                 src/gui/MainWindow.h
                 src/gui/ModuleBuilderWindow.cpp
@@ -46,7 +46,7 @@ add_executable(BrytecConfig
 )
 
 target_include_directories(BrytecConfig PUBLIC
-                           "${PROJECT_BINARY_DIR}"
+                           "${CMAKE_CURRENT_SOURCE_DIR}/src"
                            "vendor/yaml-cpp/include"
                            "vendor/glfw/include"
                            "vendor/fontawesome"

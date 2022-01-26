@@ -1,6 +1,6 @@
 #include "Module.h"
 
-#include "../utils/ModuleSerializer.h"
+#include "utils/ModuleSerializer.h"
 
 Module::Module() 
 {
