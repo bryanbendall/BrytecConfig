@@ -6,6 +6,7 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include "utils/ModuleSerializer.h"
 #include "utils/FileDialogs.h"
+#include "utils/DefaultPaths.h"
 
 ModuleBuilderWindow::ModuleBuilderWindow()
 {
@@ -32,6 +33,18 @@ void ModuleBuilderWindow::drawMenubar()
         // New
         if(ImGui::MenuItem(ICON_FA_FILE))
             m_module = std::make_shared<Module>();
+
+        // Open
+        if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)){
+            auto path = FileDialogs::OpenFile("btmodule", MODULES_PATH);
+		    if(path.empty())
+			    return;
+
+            std::shared_ptr<Module> module = std::make_shared<Module>();
+            ModuleSerializer serializer(module);
+            if(serializer.deserializeTemplateText(path))
+                m_module = module;
+        }
 
         // Save
         if(ImGui::MenuItem(ICON_FA_SAVE)) {
