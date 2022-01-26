@@ -13,3 +13,6 @@
 [submodule "BrytecConfig/vendor/nativefiledialog"]
 	path = BrytecConfig/vendor/nativefiledialog
 	url = https://github.com/bryanbendall/nativefiledialog.git
+[submodule "BrytecConfig/src/BrytecConfigEmbedded"]
+	path = BrytecConfig/src/BrytecConfigEmbedded
+	url = https://github.com/bryanbendall/BrytecConfigEmbedded.git
