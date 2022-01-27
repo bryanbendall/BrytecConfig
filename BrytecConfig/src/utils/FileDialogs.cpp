@@ -4,28 +4,28 @@
 
 std::filesystem::path FileDialogs::OpenFile(const char* filter, const char* defaultPath)
 {
-	nfdchar_t* outPath = NULL;
-	nfdresult_t result = NFD_OpenDialog(filter, defaultPath, &outPath);
-	
-	if(result != NFD_OKAY)
-		return std::filesystem::path();
+    nfdchar_t* outPath = NULL;
+    nfdresult_t result = NFD_OpenDialog(filter, defaultPath, &outPath);
 
-	std::filesystem::path path = outPath;
-	free(outPath);
+    if (result != NFD_OKAY)
+        return std::filesystem::path();
 
-	return path;
+    std::filesystem::path path = outPath;
+    free(outPath);
+
+    return path;
 }
 
 std::filesystem::path FileDialogs::SaveFile(const char* filter, const char* defaultPath)
 {
-	nfdchar_t* outPath = NULL;
-	nfdresult_t result = NFD_SaveDialog(filter, defaultPath, &outPath);
+    nfdchar_t* outPath = NULL;
+    nfdresult_t result = NFD_SaveDialog(filter, defaultPath, &outPath);
 
-	if(result != NFD_OKAY)
-		return std::filesystem::path();
+    if (result != NFD_OKAY)
+        return std::filesystem::path();
 
-	std::filesystem::path path = outPath;
-	free(outPath);
+    std::filesystem::path path = outPath;
+    free(outPath);
 
-	return path;
+    return path;
 }

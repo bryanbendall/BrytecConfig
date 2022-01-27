@@ -1,182 +1,180 @@
 #include "AppManager.h"
 
 #include "utils/ConfigSerializer.h"
-#include <iostream>
-#include "utils/FileDialogs.h"
-#include <memory>
-#include <imgui.h>
 #include "utils/DefaultPaths.h"
+#include "utils/FileDialogs.h"
+#include <imgui.h>
+#include <iostream>
+#include <memory>
 
-namespace AppManager
+namespace AppManager {
+
+static Data data;
+
+void init(GLFWwindow* window)
 {
+    data.mainWindow = std::make_unique<MainWindow>();
+    data.GLFWWindow = window;
+    glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { AppManager::exit(); });
+    data.mainWindow->setWindow(window);
+    data.mainWindow->setupFonts();
+    data.mainWindow->setupStyle();
+    newConfig();
+}
 
-	static Data data;
+void update()
+{
+    data.mainWindow->drawWindow();
+    handleKeyEvents();
+}
 
-	void init(GLFWwindow* window)
-	{
-		data.mainWindow = std::make_unique<MainWindow>();
-		data.GLFWWindow = window;
-		glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { AppManager::exit(); });
-		data.mainWindow->setWindow(window);
-		data.mainWindow->setupFonts();
-		data.mainWindow->setupStyle();
-		newConfig();
-	}
+std::shared_ptr<Config>& getConfig()
+{
+    return data.config;
+}
 
-	void update()
-	{
-		data.mainWindow->drawWindow();
-		handleKeyEvents();
-	}
+std::weak_ptr<Selectable> getSelectedItem()
+{
+    return data.SelectedItem;
+}
 
-	std::shared_ptr<Config>& getConfig()
-	{
-		return data.config;
-	}
+void setSelected(std::weak_ptr<Selectable> sel)
+{
+    data.SelectedItem = sel;
+}
 
-	std::weak_ptr<Selectable> getSelectedItem()
-	{
-		return data.SelectedItem;
-	}
+void clearSelected()
+{
+    setSelected(std::weak_ptr<Selectable>());
+}
 
-	void setSelected(std::weak_ptr<Selectable> sel)
-	{
-		data.SelectedItem = sel;
-	}
+void setBigIconFont(ImFont* font)
+{
+    data.BigIcons = font;
+}
 
-	void clearSelected()
-	{
-		setSelected(std::weak_ptr<Selectable>());
-	}
+ImFont* getBigIconFont()
+{
+    return data.BigIcons;
+}
 
-	void setBigIconFont(ImFont* font)
-	{
-		data.BigIcons = font;
-	}
+void newConfig()
+{
+    clearSelected();
+    data.config = std::make_shared<Config>("");
+    updateWindowTitle();
+}
 
-	ImFont* getBigIconFont()
-	{
-		return data.BigIcons;
-	}
+void openConfig()
+{
+    auto path = FileDialogs::OpenFile("btconfig", CONFIGS_PATH);
+    if (path.empty())
+        return;
 
-	void newConfig()
-	{
-		clearSelected();
-		data.config = std::make_shared<Config>("");
-		updateWindowTitle();
-	}
+    std::shared_ptr<Config> config = std::make_shared<Config>(path);
+    ConfigSerializer serializer(config);
+    if (serializer.deserializeText(config->getFilepath())) {
+        clearSelected();
+        data.config = config;
+        updateWindowTitle();
+    } else
+        std::cout << "Could not deserialize file: "
+                  << "" << std::endl;
+}
 
-	void openConfig()
-	{
-		auto path = FileDialogs::OpenFile("btconfig", CONFIGS_PATH);
-		if(path.empty())
-			return;
+static void save(std::shared_ptr<Config>& config, const std::filesystem::path& path)
+{
+    ConfigSerializer serializer(config);
+    serializer.serializeText(path);
+}
 
-		std::shared_ptr<Config> config = std::make_shared<Config>(path);
-		ConfigSerializer serializer(config);
-		if(serializer.deserializeText(config->getFilepath())) {
-			clearSelected();
-			data.config = config;
-			updateWindowTitle();
-		} else
-			std::cout << "Could not deserialize file: " << "" << std::endl;
-	}
+void saveConfig()
+{
+    if (data.config->getFilepath().empty())
+        saveAsConfig();
+    else
+        save(data.config, data.config->getFilepath());
+}
 
-	static void save(std::shared_ptr<Config>& config, const std::filesystem::path& path)
-	{
-		ConfigSerializer serializer(config);
-		serializer.serializeText(path);
-	}
+void saveAsConfig()
+{
+    auto path = FileDialogs::SaveFile("btconfig", CONFIGS_PATH);
 
-	void saveConfig()
-	{
-		if(data.config->getFilepath().empty())
-			saveAsConfig();
-		else
-			save(data.config, data.config->getFilepath());
-	}
+    if (path.empty())
+        return;
 
-	void saveAsConfig()
-	{
-		auto path = FileDialogs::SaveFile("btconfig", CONFIGS_PATH);
+    if (path.extension().empty())
+        path.replace_extension("btconfig");
 
-		if(path.empty())
-			return;
+    save(data.config, path);
+    data.config->setFilepath(path);
 
-		if(path.extension().empty())
-			path.replace_extension("btconfig");
+    updateWindowTitle();
+}
 
-		save(data.config, path);
-		data.config->setFilepath(path);
+void exit()
+{
+    // TODO
+    // Check should close
+    bool shouldClose = true;
+    if (shouldClose)
+        glfwSetWindowShouldClose(data.GLFWWindow, GL_TRUE);
+    else
+        glfwSetWindowShouldClose(data.GLFWWindow, GL_FALSE);
+}
 
-		updateWindowTitle();
-	}
+void updateWindowTitle()
+{
+    std::string title = "Brytec Config - ";
 
-	void exit()
-	{
-		// TODO
-		// Check should close
-		bool shouldClose = true;
-		if(shouldClose)
-			glfwSetWindowShouldClose(data.GLFWWindow, GL_TRUE);
-		else
-			glfwSetWindowShouldClose(data.GLFWWindow, GL_FALSE);
-	}
+    if (!data.config->getFilepath().empty())
+        title.append(data.config->getFilepath().stem().string());
+    else
+        title.append("Untitled");
 
-	void updateWindowTitle()
-	{
-		std::string title = "Brytec Config - ";
+    glfwSetWindowTitle(data.GLFWWindow, title.c_str());
+}
 
-		if(!data.config->getFilepath().empty())
-			title.append(data.config->getFilepath().stem().string());
-		else
-			title.append("Untitled");
+void handleKeyEvents()
+{
+    bool control = ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_CONTROL);
+    bool shift = ImGui::IsKeyDown(GLFW_KEY_LEFT_SHIFT) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_SHIFT);
 
-		glfwSetWindowTitle(data.GLFWWindow, title.c_str());
-	}
+    // New
+    if (control && ImGui::IsKeyPressed(GLFW_KEY_N, false))
+        newConfig();
 
-	void handleKeyEvents()
-	{
-		bool control = ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_CONTROL);
-		bool shift = ImGui::IsKeyDown(GLFW_KEY_LEFT_SHIFT) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_SHIFT);
+    // Open
+    if (control && ImGui::IsKeyPressed(GLFW_KEY_O, false))
+        openConfig();
 
-		// New
-		if(control && ImGui::IsKeyPressed(GLFW_KEY_N, false))
-			newConfig();
+    // Save
+    if (control && ImGui::IsKeyPressed(GLFW_KEY_S, false)) {
+        if (shift)
+            saveAsConfig();
+        else
+            saveConfig();
+    }
 
-		// Open
-		if(control && ImGui::IsKeyPressed(GLFW_KEY_O, false))
-			openConfig();
+    // Delete
+    if (ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
+        if (!data.mainWindow->isNodeWindowFocused()) {
+            std::shared_ptr<Selectable> selected = data.SelectedItem.lock();
+            if (!selected)
+                return;
 
-		// Save
-		if(control && ImGui::IsKeyPressed(GLFW_KEY_S, false)) {
-			if(shift)
-				saveAsConfig();
-			else
-				saveConfig();
-		}
+            if (auto module = std::dynamic_pointer_cast<Module>(selected)) {
+                clearSelected();
+                data.config->removeModule(module);
+            }
 
-		// Delete
-		if(ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
-			if(!data.mainWindow->isNodeWindowFocused()) {
-				std::shared_ptr<Selectable> selected = data.SelectedItem.lock();
-				if(!selected)
-					return;
-
-				if(auto module = std::dynamic_pointer_cast<Module>(selected)) {
-					clearSelected();
-					data.config->removeModule(module);
-				}
-
-				if(auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
-					clearSelected();
-					data.config->removeNodeGroup(nodeGroup);
-					data.mainWindow->removeNodeGroupContext(nodeGroup);
-				}
-
-			}
-		}
-
-	}
+            if (auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
+                clearSelected();
+                data.config->removeNodeGroup(nodeGroup);
+                data.mainWindow->removeNodeGroupContext(nodeGroup);
+            }
+        }
+    }
+}
 
 }

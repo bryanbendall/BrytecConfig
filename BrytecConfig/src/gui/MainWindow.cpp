@@ -2,23 +2,23 @@
 
 #include <imgui.h>
 //#include <misc/freetype/imgui_freetype.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <IconsFontAwesome5.h>
 #include "AppManager.h"
-#include <functional>
 #include "utils/DefaultPaths.h"
+#include <IconsFontAwesome5.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <functional>
 
-MainWindow::MainWindow() 
-{ 
+MainWindow::MainWindow()
+{
 }
 
-void MainWindow::setupFonts() 
+void MainWindow::setupFonts()
 {
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF(FONTS_PATH_DROID_SANS, 16.0f);
 
-    static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+    static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
@@ -33,7 +33,7 @@ void MainWindow::setupFonts()
     ImGui_ImplOpenGL3_CreateDeviceObjects();
 }
 
-void MainWindow::setupStyle() 
+void MainWindow::setupStyle()
 {
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -51,9 +51,9 @@ void MainWindow::setupStyle()
     //setDarkThemeColors();
 }
 
-void MainWindow::loadLayout() 
+void MainWindow::loadLayout()
 {
-    if(m_ini_to_load) {
+    if (m_ini_to_load) {
         ImGui::LoadIniSettingsFromDisk(m_ini_to_load);
         m_ini_to_load = NULL;
     }
@@ -70,7 +70,7 @@ void MainWindow::drawWindow()
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    if(opt_fullscreen) {
+    if (opt_fullscreen) {
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
         ImGui::SetNextWindowSize(viewport->Size);
@@ -79,28 +79,28 @@ void MainWindow::drawWindow()
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-}
+    }
 
     // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
-    if(dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
         window_flags |= ImGuiWindowFlags_NoBackground;
 
     // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
+    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
     // all active windows docked into it will lose their parent and become undocked.
-    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
+    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
     // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
     ImGui::PopStyleVar();
 
-    if(opt_fullscreen)
+    if (opt_fullscreen)
         ImGui::PopStyleVar(2);
 
     // DockSpace
     ImGuiIO& io = ImGui::GetIO();
     ImGuiStyle& style = ImGui::GetStyle();
-    if(io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
         ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
@@ -118,7 +118,6 @@ void MainWindow::drawWindow()
     m_moduleBuilderWindow.drawWindow();
 
     ImGui::End();
-
 }
 
 void MainWindow::removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup)
@@ -126,31 +125,31 @@ void MainWindow::removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup)
     m_nodeWindow.removeContext(nodeGroup);
 }
 
-void MainWindow::drawMenu() 
+void MainWindow::drawMenu()
 {
-    if(ImGui::BeginMenuBar()) {
-        if(ImGui::BeginMenu("File")) {
-            if(ImGui::MenuItem("New", "Ctrl+N"))
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("New", "Ctrl+N"))
                 AppManager::newConfig();
-            if(ImGui::MenuItem("Open", "Ctrl+O"))
+            if (ImGui::MenuItem("Open", "Ctrl+O"))
                 AppManager::openConfig();
             ImGui::Separator();
-            if(ImGui::MenuItem("Save", "Ctrl+S"))
+            if (ImGui::MenuItem("Save", "Ctrl+S"))
                 AppManager::saveConfig();
-            if(ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
+            if (ImGui::MenuItem("Save As", "Ctrl+Shift+S"))
                 AppManager::saveAsConfig();
             ImGui::Separator();
-            if(ImGui::MenuItem("Exit", "Alt+F4"))
+            if (ImGui::MenuItem("Exit", "Alt+F4"))
                 AppManager::exit();
             ImGui::EndMenu();
         }
 
-        if(ImGui::BeginMenu("View")) {
-            if(ImGui::MenuItem("Module Window", "", m_moduleWindow.getOpenedState()))       
+        if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Module Window", "", m_moduleWindow.getOpenedState()))
                 m_moduleWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Node Window", "", m_nodeWindow.getOpenedState()))
+            if (ImGui::MenuItem("Node Window", "", m_nodeWindow.getOpenedState()))
                 m_nodeWindow.setOpenedState(true);
-            if(ImGui::MenuItem("Properties Window", "", m_propertiesWindow.getOpenedState()))
+            if (ImGui::MenuItem("Properties Window", "", m_propertiesWindow.getOpenedState()))
                 m_propertiesWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
@@ -165,65 +164,64 @@ void MainWindow::drawMenu()
         }
 #endif
 
-        if(ImGui::BeginMenu("Tools")) {
-            if(ImGui::MenuItem("Module Builder"))
+        if (ImGui::BeginMenu("Tools")) {
+            if (ImGui::MenuItem("Module Builder"))
                 m_moduleBuilderWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
         ImGui::EndMenuBar();
     }
-
 }
 
 void MainWindow::setDarkThemeColors()
 {
     auto& colors = ImGui::GetStyle().Colors;
-    colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+    colors[ImGuiCol_WindowBg] = ImVec4 { 0.1f, 0.105f, 0.11f, 1.0f };
 
     // Headers
-    colors[ImGuiCol_Header] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-    colors[ImGuiCol_HeaderHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_HeaderActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_Header] = ImVec4 { 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_HeaderHovered] = ImVec4 { 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_HeaderActive] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
 
     // Buttons
-    colors[ImGuiCol_Button] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-    colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_ButtonActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_Button] = ImVec4 { 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_ButtonHovered] = ImVec4 { 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_ButtonActive] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
 
     // Frame BG
-    colors[ImGuiCol_FrameBg] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-    colors[ImGuiCol_FrameBgHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
-    colors[ImGuiCol_FrameBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_FrameBg] = ImVec4 { 0.2f, 0.205f, 0.21f, 1.0f };
+    colors[ImGuiCol_FrameBgHovered] = ImVec4 { 0.3f, 0.305f, 0.31f, 1.0f };
+    colors[ImGuiCol_FrameBgActive] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
 
     // Tabs
-    colors[ImGuiCol_Tab] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabHovered] = ImVec4{0.38f, 0.3805f, 0.381f, 1.0f};
-    colors[ImGuiCol_TabActive] = ImVec4{0.28f, 0.2805f, 0.281f, 1.0f};
-    colors[ImGuiCol_TabUnfocused] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
+    colors[ImGuiCol_Tab] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TabHovered] = ImVec4 { 0.38f, 0.3805f, 0.381f, 1.0f };
+    colors[ImGuiCol_TabActive] = ImVec4 { 0.28f, 0.2805f, 0.281f, 1.0f };
+    colors[ImGuiCol_TabUnfocused] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4 { 0.2f, 0.205f, 0.21f, 1.0f };
 
     // Title
-    colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-    colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+    colors[ImGuiCol_TitleBg] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgActive] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4 { 0.15f, 0.1505f, 0.151f, 1.0f };
 }
 
 static bool anyItemHovered = false;
 static int hoveredTime = 0;
 
-template<typename T>
+template <typename T>
 static void ToolbarButton(const char* icon, const char* tooltip, T&& function)
 {
     static float iconSize = 40.0f;
     ImGui::SameLine();
-    if(ImGui::Button(icon, ImVec2(iconSize, iconSize)))
+    if (ImGui::Button(icon, ImVec2(iconSize, iconSize)))
         function();
     ImGui::PopFont();
     ImGui::PopStyleVar(2);
-    if(ImGui::IsItemHovered()) {
+    if (ImGui::IsItemHovered()) {
         anyItemHovered = true;
-        if(hoveredTime > 40)
+        if (hoveredTime > 40)
             ImGui::SetTooltip(tooltip, "");
     }
     ImGui::PushFont(AppManager::getBigIconFont());
@@ -235,9 +233,9 @@ static void ToolbarSeperator()
 {
     ImGui::SameLine();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddLine(ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 28.0f), 
-                        ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 55.0f), 
-                        IM_COL32(80,80,80,255));
+    draw_list->AddLine(ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 28.0f),
+        ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 55.0f),
+        IM_COL32(80, 80, 80, 255));
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(10.0f, 0.0f));
 }
@@ -254,15 +252,15 @@ void MainWindow::drawMenuBar()
 
     ImGui::Begin("##Menu Bar", nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-    ToolbarButton(ICON_FA_FILE,         "New",  &AppManager::newConfig);
-    ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", &AppManager::openConfig);
-    ToolbarButton(ICON_FA_SAVE,         "Save", &AppManager::saveConfig);
+    ToolbarButton(ICON_FA_FILE, "New", &AppManager::newConfig);
+    ToolbarButton(ICON_FA_FOLDER_OPEN, "Open", &AppManager::openConfig);
+    ToolbarButton(ICON_FA_SAVE, "Save", &AppManager::saveConfig);
 
     ToolbarSeperator();
 
-    ToolbarButton(ICON_FA_CUBES,        "Module Builder", [&](){m_moduleBuilderWindow.setOpenedState(true);});
+    ToolbarButton(ICON_FA_CUBES, "Module Builder", [&]() { m_moduleBuilderWindow.setOpenedState(true); });
 
-    if(anyItemHovered) {
+    if (anyItemHovered) {
         anyItemHovered = false;
         hoveredTime++;
     } else {

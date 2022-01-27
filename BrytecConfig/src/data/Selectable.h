@@ -1,10 +1,8 @@
 #pragma once
-class Selectable
-{
+
+class Selectable {
 
 public:
-	Selectable() = default;
-	virtual ~Selectable() = default;
-
+    Selectable() = default;
+    virtual ~Selectable() = default;
 };
-

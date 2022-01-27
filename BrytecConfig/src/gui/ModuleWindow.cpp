@@ -1,33 +1,34 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
-#include <iostream>
-#include <IconsFontAwesome5.h>
 #include "utils/ModuleSerializer.h"
+#include <IconsFontAwesome5.h>
 #include <filesystem>
+#include <iostream>
 
-ModuleWindow::ModuleWindow() {
-
+ModuleWindow::ModuleWindow()
+{
 }
 
-void ModuleWindow::drawWindow() {
+void ModuleWindow::drawWindow()
+{
     if (!m_opened)
         return;
-	ImGui::Begin(ICON_FA_DICE_D6" Modules", &m_opened, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(ICON_FA_DICE_D6 " Modules", &m_opened, ImGuiWindowFlags_MenuBar);
     drawMenubar();
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
         AppManager::setSelected(std::weak_ptr<Selectable>());
     drawModules();
-	ImGui::End();
+    ImGui::End();
 }
 
-void ModuleWindow::drawMenubar() 
+void ModuleWindow::drawMenubar()
 {
-    if(ImGui::BeginMenuBar()) {
+    if (ImGui::BeginMenuBar()) {
 
-        if(ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
+        if (ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
             auto moduleList = ModuleSerializer::readModulesFromDisk();
-            for(auto& modulePath : moduleList) {
-                if(ImGui::MenuItem(modulePath.stem().string().c_str()))
+            for (auto& modulePath : moduleList) {
+                if (ImGui::MenuItem(modulePath.stem().string().c_str()))
                     AppManager::getConfig()->addModule(modulePath);
             }
             ImGui::EndMenu();
@@ -35,7 +36,6 @@ void ModuleWindow::drawMenubar()
 
         ImGui::EndMenuBar();
     }
-
 }
 
 void ModuleWindow::drawModules()
@@ -46,8 +46,7 @@ void ModuleWindow::drawModules()
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 
     //ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
-    for (unsigned int n = 0; n < moduleCount; n++)
-    {
+    for (unsigned int n = 0; n < moduleCount; n++) {
         ImGui::PushID(n);
         std::shared_ptr<Module> m = AppManager::getConfig()->getModules()[n];
         drawModule(m);
@@ -59,7 +58,6 @@ void ModuleWindow::drawModules()
         ImGui::PopID();
     }
     //ImGui::PopStyleVar();
-
 }
 
 void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
@@ -72,21 +70,21 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImDrawList* drawList = ImGui::GetWindowDrawList();
     drawList->ChannelsSplit(2);
     drawList->ChannelsSetCurrent(1);
-    
+
     // Module style setup
     bool titleHovered = false;
     ImVec2 label_size = ImGui::CalcTextSize("Module");
     float titleBarHeight = label_size.y + ImGui::GetStyle().FramePadding.y * 2.0f;
 
     ImGui::BeginGroup();
-    if(!m->getEnabled()) 
+    if (!m->getEnabled())
         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
     ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(0, 0, 0, 0));
-    
+
     // Draw Module button
-    if (ImGui::Button(m->getName().c_str(), { 150, titleBarHeight })) 
+    if (ImGui::Button(m->getName().c_str(), { 150, titleBarHeight }))
         AppManager::setSelected(m);
     titleHovered = ImGui::IsItemHovered();
 
@@ -94,9 +92,9 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
     ImGui::PopStyleColor();
-    
+
     // Pin button style setup
-    if (!m->getEnabled()) 
+    if (!m->getEnabled())
         ImGui::PopStyleColor();
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
     ImGui::Indent(5.0f);
@@ -110,19 +108,19 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : pin->getPinoutName();
         if (!enabled)
             ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-        if(ImGui::Button(buttonText.c_str(), { 140, 0 }))
+        if (ImGui::Button(buttonText.c_str(), { 140, 0 }))
             AppManager::setSelected(pin);
         if (!enabled)
             ImGui::PopStyleColor();
 
-        if(pin->getNodeGroup()) {
-            if(ImGui::BeginPopupContextItem()) {
-                if(ImGui::MenuItem("Remove Node Group", NULL, false))
+        if (pin->getNodeGroup()) {
+            if (ImGui::BeginPopupContextItem()) {
+                if (ImGui::MenuItem("Remove Node Group", NULL, false))
                     pin->setNodeGroup(nullptr);
                 ImGui::EndPopup();
             }
         }
-        
+
         // Selection boarder
         if (pin == std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock())) {
             ImVec2 rectMin = ImGui::GetItemRectMin();
@@ -130,26 +128,25 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
             drawList->AddRect(rectMin, rectMax, IM_COL32_WHITE, 4.0f);
         }
 
-
         // Drop Node Group
-        if(ImGui::BeginDragDropTarget()) {
+        if (ImGui::BeginDragDropTarget()) {
 
             // Check type to do the outline for drop
             bool accepted = false;
-            if(const ImGuiPayload * tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
-                int nodeGroupIndex = *(int*) tempPayload->Data;
+            if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
+                int nodeGroupIndex = *(int*)tempPayload->Data;
                 auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
-                if(std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
+                if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
                     accepted = true;
                 }
             }
 
             // Recieve the data if it is a compatible type
-            if(accepted) {
-                if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
+            if (accepted) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
 
                     // TODO: check if it is right type?
-                    int nodeGroupIndex = *(int*) payload->Data;
+                    int nodeGroupIndex = *(int*)payload->Data;
                     auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
                     pin->setNodeGroup(nodeGroup);
                 }
@@ -168,7 +165,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     // Draw background
     ImVec2 rectMin = ImGui::GetItemRectMin();
     ImVec2 rectMax = ImGui::GetItemRectMax();
-    
+
     drawList->ChannelsSetCurrent(0);
     // node base
     drawList->AddRectFilled(

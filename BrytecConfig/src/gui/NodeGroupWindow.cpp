@@ -1,25 +1,24 @@
 #include "NodeGroupWindow.h"
 
-#include <imgui.h>
-#include <IconsFontAwesome5.h>
 #include "AppManager.h"
-#include <iostream>
-#include "utils/NodeGroupSerializer.h"
-#include "utils/FileDialogs.h"
 #include "utils/DefaultPaths.h"
+#include "utils/FileDialogs.h"
+#include "utils/NodeGroupSerializer.h"
+#include <IconsFontAwesome5.h>
+#include <imgui.h>
+#include <iostream>
 
-NodeGroupWindow::NodeGroupWindow() 
+NodeGroupWindow::NodeGroupWindow()
 {
-
 }
 
 void NodeGroupWindow::drawWindow()
 {
-    if(!m_opened)
+    if (!m_opened)
         return;
-    ImGui::Begin(ICON_FA_DICE_D6" Node Group", &m_opened, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(ICON_FA_DICE_D6 " Node Group", &m_opened, ImGuiWindowFlags_MenuBar);
 
-    if(ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
+    if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
         AppManager::setSelected(std::weak_ptr<Selectable>());
 
     drawMenubar();
@@ -31,23 +30,23 @@ void NodeGroupWindow::drawWindow()
 
 void NodeGroupWindow::drawMenubar()
 {
-    if(ImGui::BeginMenuBar()) {
+    if (ImGui::BeginMenuBar()) {
 
         std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
         bool nodeGroupSelected = nodeGroup != nullptr;
 
         // Add blank
-        if(ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
+        if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
             AppManager::setSelected(AppManager::getConfig()->addNodeGroup());
 
         // Open
-        if(ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
+        if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
             auto path = FileDialogs::OpenFile("btnodes", NODE_GROUPS_PATH);
-            if(!path.empty()) {
+            if (!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
 
-                if(!serializer.deserializeTemplateText(path))
+                if (!serializer.deserializeTemplateText(path))
                     std::cout << "Could not deserialize node group file" << std::endl;
                 else
                     AppManager::setSelected(nodeGroup);
@@ -55,21 +54,21 @@ void NodeGroupWindow::drawMenubar()
         }
 
         // Save
-        if(ImGui::MenuItem(ICON_FA_SAVE, NULL, false, nodeGroupSelected)) {
-            if(nodeGroup) {
+        if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, nodeGroupSelected)) {
+            if (nodeGroup) {
                 auto path = FileDialogs::SaveFile("btnodes", NODE_GROUPS_PATH);
 
-                if(path.extension().empty())
+                if (path.extension().empty())
                     path.replace_extension("btnodes");
 
-                if(!path.empty()) {
+                if (!path.empty()) {
                     NodeGroupSerializer serializer(nodeGroup);
                     serializer.serializeTemplateText(path);
                 }
             }
         }
 
-        if(ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
+        if (ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
             // Copy Constructor
             auto newNodeGroup = std::make_shared<NodeGroup>(*nodeGroup.get());
             AppManager::getConfig()->addNodeGroup(newNodeGroup);
@@ -79,10 +78,10 @@ void NodeGroupWindow::drawMenubar()
         ImGui::TextDisabled("|");
 
         // Filter
-        ImGui::Text(ICON_FA_FILTER" Filter");
+        ImGui::Text(ICON_FA_FILTER " Filter");
         ImGui::SetNextItemWidth(110);
-        static const char* items[] = {"All", "Assigned", "Unassigned"};
-        ImGui::Combo("##Filter", (int*) &m_filter, items, 3);
+        static const char* items[] = { "All", "Assigned", "Unassigned" };
+        ImGui::Combo("##Filter", (int*)&m_filter, items, 3);
 
         ImGui::EndMenuBar();
     }
@@ -97,38 +96,37 @@ void NodeGroupWindow::drawNodeGroups()
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
 
-    for(int i = 0; i < nodeGroupCount; i++) {
+    for (int i = 0; i < nodeGroupCount; i++) {
         auto& nodeGroup = nodeGroups[i];
 
-        switch(m_filter) {
-            case FilterType::All:
-                break;
-            case FilterType::Assigned:
-                if(!nodeGroup->getAssigned())
-                    continue;
-                break;
-            case FilterType::Unassigned:
-                if(nodeGroup->getAssigned())
-                    continue;
-                break;
+        switch (m_filter) {
+        case FilterType::All:
+            break;
+        case FilterType::Assigned:
+            if (!nodeGroup->getAssigned())
+                continue;
+            break;
+        case FilterType::Unassigned:
+            if (nodeGroup->getAssigned())
+                continue;
+            break;
         }
 
         ImGui::PushID(i);
 
         bool selected = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock()) == nodeGroup;
-        
-        if(selected) {
+
+        if (selected) {
             ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 255));
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
         }
 
-
-        if(ImGui::Button(nodeGroup->getName().c_str(), {buttonWidth, 0})) {
+        if (ImGui::Button(nodeGroup->getName().c_str(), { buttonWidth, 0 })) {
             AppManager::setSelected(nodeGroup);
         }
 
-        if(!nodeGroup->getAssigned()) {
-            if(ImGui::BeginDragDropSource()) {
+        if (!nodeGroup->getAssigned()) {
+            if (ImGui::BeginDragDropSource()) {
                 ImGui::SetDragDropPayload("NodeGroup", &i, sizeof(int));
 
                 ImGui::Text(nodeGroup->getName().c_str(), "");
@@ -138,7 +136,7 @@ void NodeGroupWindow::drawNodeGroups()
             }
         }
 
-        if(selected) {
+        if (selected) {
             ImGui::PopStyleVar();
             ImGui::PopStyleColor();
         }
@@ -147,7 +145,7 @@ void NodeGroupWindow::drawNodeGroups()
         ImGuiStyle& style = ImGui::GetStyle();
         float last_button_x2 = ImGui::GetItemRectMax().x;
         float next_button_x2 = last_button_x2 + style.ItemSpacing.x + buttonWidth; // Expected position if next button was on same line
-        if(i + 1 < nodeGroupCount && next_button_x2 < window_visible_x2)
+        if (i + 1 < nodeGroupCount && next_button_x2 < window_visible_x2)
             ImGui::SameLine();
 
         ImGui::PopID();

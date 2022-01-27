@@ -1,19 +1,17 @@
 #pragma once
 
-#include <memory>
 #include "data/Config.h"
 #include <filesystem>
+#include <memory>
 
-class ConfigSerializer
-{
+class ConfigSerializer {
 
 public:
-	ConfigSerializer(std::shared_ptr<Config>& config);
+    ConfigSerializer(std::shared_ptr<Config>& config);
 
-	void serializeText(const std::filesystem::path& filepath);
-	bool deserializeText(const std::filesystem::path& filepath);
+    void serializeText(const std::filesystem::path& filepath);
+    bool deserializeText(const std::filesystem::path& filepath);
 
 private:
-	std::shared_ptr<Config> m_config;
-
+    std::shared_ptr<Config> m_config;
 };

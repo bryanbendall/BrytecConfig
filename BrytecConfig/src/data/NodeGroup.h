@@ -1,55 +1,53 @@
 #pragma once
 
+#include "IOTypes.h"
 #include "Node.h"
+#include "Selectable.h"
+#include "utils/UUID.h"
 #include <deque>
 #include <memory>
 #include <string>
-#include "Selectable.h"
-#include "IOTypes.h"
-#include "utils/UUID.h"
 
-class NodeGroup : public Selectable 
-{
+class NodeGroup : public Selectable {
 
 public:
-	NodeGroup();
-	NodeGroup(UUID uuid);
-	NodeGroup(const NodeGroup& other);
-	
-	std::string& getName() { return m_name; }
-	void setName(const std::string& name) { m_name = name; }
+    NodeGroup();
+    NodeGroup(UUID uuid);
+    NodeGroup(const NodeGroup& other);
 
-	IOTypes::Types& getType() { return m_type; }
-	void setType(IOTypes::Types type) { m_type = type; }
+    std::string& getName() { return m_name; }
+    void setName(const std::string& name) { m_name = name; }
 
-	bool& getEnabled() { return m_enabled; }
-	void setEnabled(bool state) { m_enabled = state; }
+    IOTypes::Types& getType() { return m_type; }
+    void setType(IOTypes::Types type) { m_type = type; }
 
-	const UUID& getId() { return m_uuid; }
+    bool& getEnabled() { return m_enabled; }
+    void setEnabled(bool state) { m_enabled = state; }
 
-	float getValue(int attributeIndex);
+    const UUID& getId() { return m_uuid; }
 
-	bool getAssigned() { return m_assignedToPin; }
-	void setAssigned(bool state) { m_assignedToPin = state; }
-	
-	std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
-	std::shared_ptr<Node> getNode(int id);
-	int getNodeIndex(std::shared_ptr<Node> node);
-	std::shared_ptr<Node> addNode(Embedded::NodeTypes type, ImVec2 position = {0.0f, 0.0f});
-	void deleteNode(int nodeId);
-	void sortNodes();
-	void evaluateAllNodes();
+    float getValue(int attributeIndex);
 
-private:
-	void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
+    bool getAssigned() { return m_assignedToPin; }
+    void setAssigned(bool state) { m_assignedToPin = state; }
+
+    std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
+    std::shared_ptr<Node> getNode(int id);
+    int getNodeIndex(std::shared_ptr<Node> node);
+    std::shared_ptr<Node> addNode(Embedded::NodeTypes type, ImVec2 position = { 0.0f, 0.0f });
+    void deleteNode(int nodeId);
+    void sortNodes();
+    void evaluateAllNodes();
 
 private:
-	std::string m_name = "Unnamed";
-	UUID m_uuid;
-	IOTypes::Types m_type = IOTypes::Types::Undefined;
-	bool m_enabled = true;
-	bool m_assignedToPin = false;
-	std::deque<std::shared_ptr<Node>> m_nodes;
-	int m_nodesIds = 0;
+    void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
 
+private:
+    std::string m_name = "Unnamed";
+    UUID m_uuid;
+    IOTypes::Types m_type = IOTypes::Types::Undefined;
+    bool m_enabled = true;
+    bool m_assignedToPin = false;
+    std::deque<std::shared_ptr<Node>> m_nodes;
+    int m_nodesIds = 0;
 };

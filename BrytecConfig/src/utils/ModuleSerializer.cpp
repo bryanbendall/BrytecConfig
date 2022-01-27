@@ -1,102 +1,102 @@
 #include "ModuleSerializer.h"
 
 #include "AppManager.h"
-#include <filesystem>
-#include <iostream>
-#include <fstream>
 #include "utils/DefaultPaths.h"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 
 ModuleSerializer::ModuleSerializer(std::shared_ptr<Module>& module)
-	: m_module(module)
+    : m_module(module)
 {
 }
 
 ModuleSerializer::ModuleSerializer(std::shared_ptr<Config>& config, std::shared_ptr<Module>& module)
-	: m_config(config), m_module(module)
+    : m_config(config)
+    , m_module(module)
 {
 }
 
 void ModuleSerializer::serializeTemplateText(const std::filesystem::path& filepath)
 {
-	YAML::Emitter out;
-	out << YAML::BeginMap;
+    YAML::Emitter out;
+    out << YAML::BeginMap;
 
-	serializeTemplate(out);
+    serializeTemplate(out);
 
-	out << YAML::EndMap;
+    out << YAML::EndMap;
 
-	std::ofstream fout(filepath);
-	fout << out.c_str();
+    std::ofstream fout(filepath);
+    fout << out.c_str();
 }
 
 bool ModuleSerializer::deserializeTemplateText(const std::filesystem::path& filepath)
 {
-	YAML::Node data = YAML::LoadFile(filepath.string());
-	if(!data["Name"]) {
-		assert(false);
-		return false;
-	}
-	return deserializeTemplate(data);
+    YAML::Node data = YAML::LoadFile(filepath.string());
+    if (!data["Name"]) {
+        assert(false);
+        return false;
+    }
+    return deserializeTemplate(data);
 }
 
 void ModuleSerializer::serializeTemplateBinary(const std::filesystem::path& filepath)
 {
-	assert(false);
+    assert(false);
 }
 
 bool ModuleSerializer::deserializeTemplateBinary(const std::filesystem::path& filepath)
 {
-	assert(false);
-	return false;
+    assert(false);
+    return false;
 }
 
 std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
 {
-	std::vector<std::filesystem::path> moduleList;
+    std::vector<std::filesystem::path> moduleList;
 
-	// Return empty list if it doesn't exist
-	if(!std::filesystem::exists(MODULES_PATH))
-		return moduleList;
+    // Return empty list if it doesn't exist
+    if (!std::filesystem::exists(MODULES_PATH))
+        return moduleList;
 
-	for(auto& directoryEntry : std::filesystem::directory_iterator(MODULES_PATH)) {
-		const auto& path = directoryEntry.path();
+    for (auto& directoryEntry : std::filesystem::directory_iterator(MODULES_PATH)) {
+        const auto& path = directoryEntry.path();
 
-		// Check extension
-		if(path.extension() != ".btmodule")
-			continue;
+        // Check extension
+        if (path.extension() != ".btmodule")
+            continue;
 
-		// Ignore directories
-		if(directoryEntry.is_directory())
-			continue;
+        // Ignore directories
+        if (directoryEntry.is_directory())
+            continue;
 
-		moduleList.push_back(path);
-	}
+        moduleList.push_back(path);
+    }
 
-	return moduleList;
+    return moduleList;
 }
 
 void ModuleSerializer::serializeTemplate(YAML::Emitter& out)
 {
-	out << YAML::Key << "Name" << YAML::Value << m_module->getName();
-	out << YAML::Key << "Address" << YAML::Value << (int) m_module->getAddress();
-	out << YAML::Key << "Enabled" << YAML::Value << m_module->getEnabled();
-	
-	out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
-	for(auto pin : m_module->getPins()) {
-		out << YAML::BeginMap;
-		out << YAML::Key << "Pinout Name" << YAML::Value << pin->getPinoutName();
-		out << YAML::Key << "Available Types" << YAML::Value << YAML::BeginSeq;
-		for(auto type : pin->getAvailableTypes())
-			out << (unsigned int) type << YAML::Comment(IOTypes::getString(type));
-		out << YAML::EndSeq;
+    out << YAML::Key << "Name" << YAML::Value << m_module->getName();
+    out << YAML::Key << "Address" << YAML::Value << (int)m_module->getAddress();
+    out << YAML::Key << "Enabled" << YAML::Value << m_module->getEnabled();
 
-		if(m_config) {
-			if(auto nodeGroup = pin->getNodeGroup())
-				out << YAML::Key << "Node Group Id" << YAML::Value << nodeGroup->getId();
-		}
+    out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
+    for (auto pin : m_module->getPins()) {
+        out << YAML::BeginMap;
+        out << YAML::Key << "Pinout Name" << YAML::Value << pin->getPinoutName();
+        out << YAML::Key << "Available Types" << YAML::Value << YAML::BeginSeq;
+        for (auto type : pin->getAvailableTypes())
+            out << (unsigned int)type << YAML::Comment(IOTypes::getString(type));
+        out << YAML::EndSeq;
 
-		out << YAML::EndMap;
-	}
-	out << YAML::EndSeq;
+        if (m_config) {
+            if (auto nodeGroup = pin->getNodeGroup())
+                out << YAML::Key << "Node Group Id" << YAML::Value << nodeGroup->getId();
+        }
+
+        out << YAML::EndMap;
+    }
+    out << YAML::EndSeq;
 }
-
