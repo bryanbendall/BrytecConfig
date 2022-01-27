@@ -212,7 +212,8 @@ void MainWindow::setDarkThemeColors()
 static bool anyItemHovered = false;
 static int hoveredTime = 0;
 
-static void ToolbarButton(const char* icon, const char* tooltip, std::function<void(void)> function)
+template<typename T>
+static void ToolbarButton(const char* icon, const char* tooltip, T&& function)
 {
     static float iconSize = 40.0f;
     ImGui::SameLine();
@@ -230,6 +231,17 @@ static void ToolbarButton(const char* icon, const char* tooltip, std::function<v
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
 }
 
+static void ToolbarSeperator()
+{
+    ImGui::SameLine();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    draw_list->AddLine(ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 28.0f), 
+                        ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 55.0f), 
+                        IM_COL32(80,80,80,255));
+    ImGui::SameLine();
+    ImGui::Dummy(ImVec2(10.0f, 0.0f));
+}
+
 void MainWindow::drawMenuBar()
 {
     ImGui::PushFont(AppManager::getBigIconFont());
@@ -245,6 +257,10 @@ void MainWindow::drawMenuBar()
     ToolbarButton(ICON_FA_FILE,         "New",  &AppManager::newConfig);
     ToolbarButton(ICON_FA_FOLDER_OPEN,  "Open", &AppManager::openConfig);
     ToolbarButton(ICON_FA_SAVE,         "Save", &AppManager::saveConfig);
+
+    ToolbarSeperator();
+
+    ToolbarButton(ICON_FA_CUBES,        "Module Builder", [&](){m_moduleBuilderWindow.setOpenedState(true);});
 
     if(anyItemHovered) {
         anyItemHovered = false;

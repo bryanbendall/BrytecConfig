@@ -18,7 +18,7 @@ void ModuleBuilderWindow::drawWindow()
     if(!m_opened)
         return;
 
-    ImGui::Begin(ICON_FA_DICE_D6" Module Builder", &m_opened, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(ICON_FA_DICE_D6" Module Builder", &m_opened, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking);
 
     drawMenubar();
     drawModuleTable();
