@@ -124,8 +124,23 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
         ImGui::SetNextItemWidth(-FLT_MIN);
         if (pin->getNodeGroup())
             ImGui::Text(pin->getNodeGroup()->getName().c_str(), "");
-        else
-            ImGui::TextDisabled("None");
+        else {
+            // Show combo if there is none selected
+            if (ImGui::BeginCombo("###pinsCombo", "")) {
+
+                for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
+
+                    ImGui::PushID(nodeGroup.get());
+                    bool selected = false;
+                    if (!nodeGroup->getAssigned()) {
+                        if (ImGui::Selectable(nodeGroup->getName().c_str(), &selected))
+                            pin->setNodeGroup(nodeGroup);
+                    }
+                    ImGui::PopID();
+                }
+                ImGui::EndCombo();
+            }
+        }
 
         if (pin->getNodeGroup()) {
             ImGui::TableNextRow();
@@ -214,11 +229,5 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
         ImGui::Text("%d", (int)nodeGroup->getNodes().size());
 
         ImGui::EndTable();
-    }
-
-    // Nodes
-    ImGui::Separator();
-    for (auto n : nodeGroup->getNodes()) {
-        ImGui::LabelText(n->getName().c_str(), "%i", n->getId());
     }
 }
