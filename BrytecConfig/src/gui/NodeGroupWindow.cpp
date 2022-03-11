@@ -7,6 +7,7 @@
 #include <IconsFontAwesome5.h>
 #include <imgui.h>
 #include <iostream>
+#include <misc/cpp/imgui_stdlib.h>
 
 NodeGroupWindow::NodeGroupWindow()
 {
@@ -83,6 +84,19 @@ void NodeGroupWindow::drawMenubar()
         static const char* items[] = { "All", "Assigned", "Unassigned" };
         ImGui::Combo("##Filter", (int*)&m_filter, items, 3);
 
+        ImGui::TextDisabled("|");
+
+        // Search
+        ImGui::Text("Search");
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputText("###Search", &m_search, ImGuiInputTextFlags_AutoSelectAll);
+
+        int hidden = AppManager::getConfig()->getNodeGroups().size() - m_hiddenNodeGroups;
+        if (hidden) {
+            ImGui::TextDisabled("|");
+            ImGui::Text(ICON_FA_EXCLAMATION_TRIANGLE " %d Hidden", hidden);
+        }
+
         ImGui::EndMenuBar();
     }
 }
@@ -95,6 +109,8 @@ void NodeGroupWindow::drawNodeGroups()
     float buttonWidth = 150;
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+
+    m_hiddenNodeGroups = 0;
 
     for (int i = 0; i < nodeGroupCount; i++) {
         auto& nodeGroup = nodeGroups[i];
@@ -111,6 +127,24 @@ void NodeGroupWindow::drawNodeGroups()
                 continue;
             break;
         }
+
+        if (!m_search.empty()) {
+            // To Lower Case
+            std::string name = nodeGroup->getName();
+            std::transform(name.begin(), name.end(), name.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            // To Lower Case
+            std::string search = m_search;
+            std::transform(search.begin(), search.end(), search.begin(),
+                [](unsigned char c) { return std::tolower(c); });
+
+            if (name.find(search) > name.length()) {
+                continue;
+            }
+        }
+
+        m_hiddenNodeGroups++;
 
         ImGui::PushID(i);
 
