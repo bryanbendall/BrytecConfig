@@ -91,7 +91,7 @@ void NodeGroupWindow::drawMenubar()
         ImGui::SetNextItemWidth(110);
         ImGui::InputText("###Search", &m_search, ImGuiInputTextFlags_AutoSelectAll);
 
-        int hidden = AppManager::getConfig()->getNodeGroups().size() - m_hiddenNodeGroups;
+        int hidden = AppManager::getConfig()->getNodeGroups().size() - m_shownNodeGroups;
         if (hidden) {
             ImGui::TextDisabled("|");
             ImGui::Text(ICON_FA_EXCLAMATION_TRIANGLE " %d Hidden", hidden);
@@ -110,7 +110,7 @@ void NodeGroupWindow::drawNodeGroups()
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
 
-    m_hiddenNodeGroups = 0;
+    m_shownNodeGroups = 0;
 
     for (int i = 0; i < nodeGroupCount; i++) {
         auto& nodeGroup = nodeGroups[i];
@@ -144,7 +144,7 @@ void NodeGroupWindow::drawNodeGroups()
             }
         }
 
-        m_hiddenNodeGroups++;
+        m_shownNodeGroups++;
 
         ImGui::PushID(i);
 
