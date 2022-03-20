@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CanBus.h"
 #include "Pin.h"
 #include "Selectable.h"
 #include <memory>
@@ -26,9 +27,14 @@ public:
     void deletePin(std::shared_ptr<Pin>& pin);
     std::vector<std::shared_ptr<Pin>>& getPins() { return m_pins; }
 
+    void addCanBus(CanBus canBus) { m_canBus.push_back(canBus); }
+    CanBus& getCanBus(int index) { return m_canBus[index]; }
+    std::vector<CanBus>& getCanBuss() { return m_canBus; }
+
 private:
     std::vector<std::shared_ptr<Pin>> m_pins;
     std::string m_name = "Unnamed";
     uint8_t m_address = 2;
     bool m_enabled = true;
+    std::vector<CanBus> m_canBus;
 };

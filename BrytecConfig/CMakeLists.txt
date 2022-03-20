@@ -7,6 +7,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/NodesVector.h
                 src/BrytecConfigEmbedded/NodeVariant.cpp
                 src/BrytecConfigEmbedded/NodeVariant.h
+                src/data/CanBus.cpp
+                src/data/CanBus.h
                 src/data/Config.cpp
                 src/data/Config.h
                 src/data/IOTypes.cpp

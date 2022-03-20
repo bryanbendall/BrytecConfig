@@ -4,6 +4,10 @@
 
 Module::Module()
 {
+    addCanBus({ "Can 0", CanTypes::Types::Brytec });
+    addCanBus({ "Can 1" });
+    addCanBus({ "Can 2" });
+    addCanBus({ "Can 3" });
 }
 
 void Module::deletePin(std::shared_ptr<Pin>& pin)

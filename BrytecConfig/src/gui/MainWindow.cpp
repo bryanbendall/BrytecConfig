@@ -48,7 +48,7 @@ void MainWindow::setupStyle()
     style->FrameRounding = 3.0f;
     style->FramePadding = ImVec2(4.0f, 3.0f);
 
-    //setDarkThemeColors();
+    // setDarkThemeColors();
 }
 
 void MainWindow::loadLayout()
