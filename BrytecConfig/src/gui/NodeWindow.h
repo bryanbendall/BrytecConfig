@@ -70,4 +70,5 @@ private:
     void drawMath(std::shared_ptr<Node>& node);
     void drawValue(std::shared_ptr<Node>& node);
     void drawSwitch(std::shared_ptr<Node>& node);
+    void drawCanBus(std::shared_ptr<Node>& node);
 };

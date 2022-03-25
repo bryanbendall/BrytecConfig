@@ -33,7 +33,7 @@ private:
         // Add Nodes
         if (auto nodes = data["Nodes"]) {
             for (auto node : nodes) {
-                Embedded::NodeTypes type = (Embedded::NodeTypes)node["Type"].template as<unsigned int>();
+                NodeTypes type = (NodeTypes)node["Type"].template as<unsigned int>();
                 float x = node["Position"][0].template as<float>();
                 float y = node["Position"][1].template as<float>();
 

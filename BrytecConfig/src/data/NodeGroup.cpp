@@ -3,8 +3,8 @@
 NodeGroup::NodeGroup()
     : m_uuid(UUID())
 {
-    auto initalNode = addNode(Embedded::NodeTypes::Initial_Value, { 50.0f, 50.0f });
-    auto finalNode = addNode(Embedded::NodeTypes::Final_Value, { 350.0f, 50.0f });
+    auto initalNode = addNode(NodeTypes::Initial_Value, { 50.0f, 50.0f });
+    auto finalNode = addNode(NodeTypes::Final_Value, { 350.0f, 50.0f });
     finalNode->setInput(0, { initalNode, 0, 0.0f });
 }
 
@@ -66,7 +66,7 @@ int NodeGroup::getNodeIndex(std::shared_ptr<Node> node)
     return -1;
 }
 
-std::shared_ptr<Node> NodeGroup::addNode(Embedded::NodeTypes type, ImVec2 position)
+std::shared_ptr<Node> NodeGroup::addNode(NodeTypes type, ImVec2 position)
 {
     std::shared_ptr<Node> node = std::make_shared<Node>(m_nodesIds, position, type);
     m_nodes.push_back(node);
@@ -84,7 +84,7 @@ void NodeGroup::sortNodes()
 
     std::shared_ptr<Node> lastNode;
     for (auto& n : m_nodes) {
-        if (n->getType() == Embedded::NodeTypes::Final_Value) {
+        if (n->getType() == NodeTypes::Final_Value) {
             lastNode = n;
             break;
         }
@@ -125,7 +125,7 @@ void NodeGroup::deleteNode(int nodeId)
 {
     for (size_t i = 0; i < m_nodes.size(); i++) {
         if (m_nodes[i]->getId() == nodeId) {
-            if (m_nodes[i]->getType() == Embedded::NodeTypes::Final_Value)
+            if (m_nodes[i]->getType() == NodeTypes::Final_Value)
                 return;
             m_nodes.erase(m_nodes.begin() + i);
         }
