@@ -9,11 +9,13 @@
 #include <vector>
 
 class NodeWindow {
+public:
     enum class Mode {
         Build,
         Simulation
     };
 
+private:
     bool m_opened = true;
     bool m_isFocused = false;
 
@@ -51,24 +53,4 @@ private:
     void saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup);
     void doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup);
     imnodes::EditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
-
-    //Node Types
-    void drawInitialValue(std::shared_ptr<Node>& node);
-    void drawFinalValue(std::shared_ptr<Node>& node);
-    void drawNodeGroup(std::shared_ptr<Node>& node);
-    void drawAnd(std::shared_ptr<Node>& node);
-    void drawOr(std::shared_ptr<Node>& node);
-    void drawTwoStage(std::shared_ptr<Node>& node);
-    void drawCurve(std::shared_ptr<Node>& node);
-    void drawCompare(std::shared_ptr<Node>& node);
-    void drawOnOff(std::shared_ptr<Node>& node);
-    void drawInvert(std::shared_ptr<Node>& node);
-    void drawToggle(std::shared_ptr<Node>& node);
-    void drawDelay(std::shared_ptr<Node>& node);
-    void drawPushButton(std::shared_ptr<Node>& node);
-    void drawMapValue(std::shared_ptr<Node>& node);
-    void drawMath(std::shared_ptr<Node>& node);
-    void drawValue(std::shared_ptr<Node>& node);
-    void drawSwitch(std::shared_ptr<Node>& node);
-    void drawCanBus(std::shared_ptr<Node>& node);
 };

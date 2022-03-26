@@ -1,17 +1,85 @@
 #include "NodeUI.h"
 
-#include "Nodes/AndNodeUI.h"
+#include "gui/Nodes/AndNodeUI.h"
+#include "gui/Nodes/CanBusNodeUI.h"
+#include "gui/Nodes/CompareNodeUI.h"
+#include "gui/Nodes/CurveNodeUI.h"
+#include "gui/Nodes/DelayNodeUI.h"
+#include "gui/Nodes/FinalValueNodeUI.h"
+#include "gui/Nodes/InitialValueNodeUI.h"
+#include "gui/Nodes/InvertNodeUI.h"
+#include "gui/Nodes/MapValueNodeUI.h"
+#include "gui/Nodes/MathNodeUI.h"
+#include "gui/Nodes/NodeGroupNodeUI.h"
+#include "gui/Nodes/OnOffNodeUI.h"
+#include "gui/Nodes/OrNodeUI.h"
+#include "gui/Nodes/PushButtonNodeUI.h"
+#include "gui/Nodes/SwitchNodeUI.h"
+#include "gui/Nodes/ToggleNodeUI.h"
+#include "gui/Nodes/TwoStageNodeUI.h"
+#include "gui/Nodes/ValueNodeUI.h"
 #include <bitset>
 #include <imnodes.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
-void NodeUI::drawNode(std::shared_ptr<Node> node)
+void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup)
 {
     switch (node->getType()) {
+    case NodeTypes::Final_Value:
+        FinalValueNodeUI::draw(node, mode, nodeGroup);
+        break;
+    case NodeTypes::Initial_Value:
+        InitialValueNodeUI::draw(node, mode);
+        break;
+    case NodeTypes::Node_Group:
+        NodeGroupNodeUI::draw(node, mode, nodeGroup);
+        break;
     case NodeTypes::And:
         AndNodeUI::draw(node);
+        break;
+    case NodeTypes::Or:
+        OrNodeUI::draw(node);
+        break;
+    case NodeTypes::Two_Stage:
+        TwoStageNodeUI::draw(node);
+        break;
+    case NodeTypes::Curve:
+        CurveNodeUI::draw(node);
+        break;
+    case NodeTypes::Compare:
+        CompareNodeUI::draw(node);
+        break;
+    case NodeTypes::On_Off:
+        OnOffNodeUI::draw(node);
+        break;
+    case NodeTypes::Invert:
+        InvertNodeUI::draw(node);
+        break;
+    case NodeTypes::Toggle:
+        ToggleNodeUI::draw(node);
+        break;
+    case NodeTypes::Delay:
+        DelayNodeUI::draw(node);
+        break;
+    case NodeTypes::Push_Button:
+        PushButtonNodeUI::draw(node);
+        break;
+    case NodeTypes::Map_Value:
+        MapValueNodeUI::draw(node);
+        break;
+    case NodeTypes::Math:
+        MathNodeUI::draw(node);
+        break;
+    case NodeTypes::Value:
+        ValueNodeUI::draw(node);
+        break;
+    case NodeTypes::Switch:
+        SwitchNodeUI::draw(node);
+        break;
+    case NodeTypes::CanBus:
+        CanBusNodeUI::draw(node);
         break;
 
     default:

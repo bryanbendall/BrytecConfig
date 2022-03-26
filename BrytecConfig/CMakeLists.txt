@@ -40,11 +40,43 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
                 src/BrytecConfigEmbedded/ENode.cpp
                 src/BrytecConfigEmbedded/ENode.h
-                src/BrytecConfigEmbedded/Nodes.cpp
-                src/BrytecConfigEmbedded/Nodes.h
                 src/BrytecConfigEmbedded/NodesVector.h
                 src/data/Nodes/AndNode.cpp
                 src/data/Nodes/AndNode.h
+                src/data/Nodes/CanBusNode.cpp
+                src/data/Nodes/CanBusNode.h
+                src/data/Nodes/CompareNode.cpp
+                src/data/Nodes/CompareNode.h
+                src/data/Nodes/CurveNode.cpp
+                src/data/Nodes/CurveNode.h
+                src/data/Nodes/DelayNode.cpp
+                src/data/Nodes/DelayNode.h
+                src/data/Nodes/FinalValueNode.cpp
+                src/data/Nodes/FinalValueNode.h
+                src/data/Nodes/InitialValueNode.cpp
+                src/data/Nodes/InitialValueNode.h
+                src/data/Nodes/InvertNode.cpp
+                src/data/Nodes/InvertNode.h
+                src/data/Nodes/MapValueNode.cpp
+                src/data/Nodes/MapValueNode.h
+                src/data/Nodes/MathNode.cpp
+                src/data/Nodes/MathNode.h
+                src/data/Nodes/NodeGroupNode.cpp
+                src/data/Nodes/NodeGroupNode.h
+                src/data/Nodes/OnOffNode.cpp
+                src/data/Nodes/OnOffNode.h
+                src/data/Nodes/OrNode.cpp
+                src/data/Nodes/OrNode.h
+                src/data/Nodes/PushButtonNode.cpp
+                src/data/Nodes/PushButtonNode.h
+                src/data/Nodes/SwitchNode.cpp
+                src/data/Nodes/SwitchNode.h
+                src/data/Nodes/ToggleNode.cpp
+                src/data/Nodes/ToggleNode.h
+                src/data/Nodes/TwoStageNode.cpp
+                src/data/Nodes/TwoStageNode.h
+                src/data/Nodes/ValueNode.cpp
+                src/data/Nodes/ValueNode.h
                 src/data/CanBus.cpp
                 src/data/CanBus.h
                 src/data/Config.cpp
@@ -62,6 +94,40 @@ add_executable(BrytecConfig
                 src/data/Selectable.h
                 src/gui/Nodes/AndNodeUI.cpp
                 src/gui/Nodes/AndNodeUI.h
+                src/gui/Nodes/CanBusNodeUI.cpp
+                src/gui/Nodes/CanBusNodeUI.h
+                src/gui/Nodes/CompareNodeUI.cpp
+                src/gui/Nodes/CompareNodeUI.h
+                src/gui/Nodes/CurveNodeUI.cpp
+                src/gui/Nodes/CurveNodeUI.h
+                src/gui/Nodes/DelayNodeUI.cpp
+                src/gui/Nodes/DelayNodeUI.h
+                src/gui/Nodes/FinalValueNodeUI.cpp
+                src/gui/Nodes/FinalValueNodeUI.h
+                src/gui/Nodes/InitialValueNodeUI.cpp
+                src/gui/Nodes/InitialValueNodeUI.h
+                src/gui/Nodes/InvertNodeUI.cpp
+                src/gui/Nodes/InvertNodeUI.h
+                src/gui/Nodes/MapValueNodeUI.cpp
+                src/gui/Nodes/MapValueNodeUI.h
+                src/gui/Nodes/MathNodeUI.cpp
+                src/gui/Nodes/MathNodeUI.h
+                src/gui/Nodes/NodeGroupNodeUI.cpp
+                src/gui/Nodes/NodeGroupNodeUI.h
+                src/gui/Nodes/OnOffNodeUI.cpp
+                src/gui/Nodes/OnOffNodeUI.h
+                src/gui/Nodes/OrNodeUI.cpp
+                src/gui/Nodes/OrNodeUI.h
+                src/gui/Nodes/PushButtonNodeUI.cpp
+                src/gui/Nodes/PushButtonNodeUI.h
+                src/gui/Nodes/SwitchNodeUI.cpp
+                src/gui/Nodes/SwitchNodeUI.h
+                src/gui/Nodes/ToggleNodeUI.cpp
+                src/gui/Nodes/ToggleNodeUI.h
+                src/gui/Nodes/TwoStageNodeUI.cpp
+                src/gui/Nodes/TwoStageNodeUI.h
+                src/gui/Nodes/ValueNodeUI.cpp
+                src/gui/Nodes/ValueNodeUI.h
                 src/gui/MainWindow.cpp
                 src/gui/MainWindow.h
                 src/gui/ModuleBuilderWindow.cpp

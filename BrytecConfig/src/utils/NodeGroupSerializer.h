@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AppManager.h"
-#include "BrytecConfigEmbedded/Nodes.h"
 #include "data/NodeGroup.h"
 #include <filesystem>
 #include <memory>

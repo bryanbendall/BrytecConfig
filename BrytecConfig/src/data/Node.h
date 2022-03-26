@@ -40,10 +40,10 @@ class Node {
 
 public:
     Node(int id, ImVec2 position, NodeTypes type);
-    virtual ~Node() { }
     static std::shared_ptr<Node> create(int id, ImVec2 position, NodeTypes type);
+    virtual ~Node() { }
 
-    virtual void evaluate();
+    virtual void evaluate() { }
 
     std::string& getName() { return m_name; }
     void setName(std::string& name) { m_name = name; }
@@ -98,9 +98,6 @@ private:
 public:
     static const char* s_nodeName[(int)NodeTypes::Count];
     static const char* s_getTypeName(NodeTypes type) { return s_nodeName[(int)type]; }
-    static const char* s_compareNames[(int)CompareNode::Types::Count];
-    static const char* s_mathNames[(int)MathNode::Types::Count];
-    static const char* s_curveNames[(int)CurveNode::Types::Count];
 
 protected:
     std::string m_name;

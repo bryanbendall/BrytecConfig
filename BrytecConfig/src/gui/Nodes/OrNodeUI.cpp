@@ -1,8 +1,8 @@
-#include "AndNodeUI.h"
+#include "OrNodeUI.h"
 
 #include "gui/NodeUI.h"
 
-void AndNodeUI::draw(std::shared_ptr<Node> node)
+void OrNodeUI::draw(std::shared_ptr<Node> node)
 {
     NodeUI::InputBool(node, 0, "Input");
     NodeUI::InputBool(node, 1, "Input");

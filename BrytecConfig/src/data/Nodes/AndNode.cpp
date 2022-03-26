@@ -23,5 +23,5 @@ void AndNode::evaluate()
     node.SetValue(4, getInputValue(4));
 
     node.Evaluate(ImGui::GetIO().DeltaTime);
-    m_outputs[0] = *node.GetOutput(0); // node.m_out;
+    m_outputs[0] = node.m_out;
 }
