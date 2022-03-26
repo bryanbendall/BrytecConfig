@@ -1,6 +1,23 @@
 #include "Node.h"
 #include "NodeGroup.h"
 #include "Nodes/AndNode.h"
+#include "Nodes/CanBusNode.h"
+#include "Nodes/CompareNode.h"
+#include "Nodes/CurveNode.h"
+#include "Nodes/DelayNode.h"
+#include "Nodes/FinalValueNode.h"
+#include "Nodes/InitialValueNode.h"
+#include "Nodes/InvertNode.h"
+#include "Nodes/MapValueNode.h"
+#include "Nodes/MathNode.h"
+#include "Nodes/NodeGroupNode.h"
+#include "Nodes/OnOffNode.h"
+#include "Nodes/OrNode.h"
+#include "Nodes/PushButtonNode.h"
+#include "Nodes/SwitchNode.h"
+#include "Nodes/ToggleNode.h"
+#include "Nodes/TwoStageNode.h"
+#include "Nodes/ValueNode.h"
 #include <iostream>
 
 const char* Node::s_nodeName[(int)NodeTypes::Count] = {
@@ -35,8 +52,44 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 std::shared_ptr<Node> Node::create(int id, ImVec2 position, NodeTypes type)
 {
     switch (type) {
+    // case NodeTypes::And:
+    //     return std::make_shared<AndNode>(id, position, type);
+    case NodeTypes::Final_Value:
+        return std::make_shared<FinalValueNode>(id, position, type);
+    case NodeTypes::Initial_Value:
+        return std::make_shared<InitialValueNode>(id, position, type);
+    case NodeTypes::Node_Group:
+        return std::make_shared<NodeGroupNode>(id, position, type);
     case NodeTypes::And:
         return std::make_shared<AndNode>(id, position, type);
+    case NodeTypes::Or:
+        return std::make_shared<OrNode>(id, position, type);
+    case NodeTypes::Two_Stage:
+        return std::make_shared<TwoStageNode>(id, position, type);
+    case NodeTypes::Curve:
+        return std::make_shared<CurveNode>(id, position, type);
+    case NodeTypes::Compare:
+        return std::make_shared<CompareNode>(id, position, type);
+    case NodeTypes::On_Off:
+        return std::make_shared<OnOffNode>(id, position, type);
+    case NodeTypes::Invert:
+        return std::make_shared<InvertNode>(id, position, type);
+    case NodeTypes::Toggle:
+        return std::make_shared<ToggleNode>(id, position, type);
+    case NodeTypes::Delay:
+        return std::make_shared<DelayNode>(id, position, type);
+    case NodeTypes::Push_Button:
+        return std::make_shared<PushButtonNode>(id, position, type);
+    case NodeTypes::Map_Value:
+        return std::make_shared<MapValueNode>(id, position, type);
+    case NodeTypes::Math:
+        return std::make_shared<MathNode>(id, position, type);
+    case NodeTypes::Value:
+        return std::make_shared<ValueNode>(id, position, type);
+    case NodeTypes::Switch:
+        return std::make_shared<SwitchNode>(id, position, type);
+    case NodeTypes::CanBus:
+        return std::make_shared<CanBusNode>(id, position, type);
 
     default:
         assert(false);

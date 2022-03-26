@@ -38,8 +38,10 @@ struct NodeConnection {
 
 class Node {
 
-public:
+protected:
     Node(int id, ImVec2 position, NodeTypes type);
+
+public:
     static std::shared_ptr<Node> create(int id, ImVec2 position, NodeTypes type);
     virtual ~Node() { }
 
