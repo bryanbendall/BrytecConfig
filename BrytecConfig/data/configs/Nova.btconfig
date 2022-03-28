@@ -463,13 +463,13 @@ Node Groups:
         Inputs:
           - [0, 0, 0]
           - [-1, -1, 1]
-        Values: [0]
+        Values: [2]
       - Type: 7  # Compare
         Position: [260, 221]
         Inputs:
           - [0, 0, 0]
           - [-1, -1, 2]
-        Values: [2]
+        Values: [4]
       - Type: 3  # And
         Position: [453, 139]
         Inputs:
@@ -496,13 +496,13 @@ Node Groups:
         Inputs:
           - [0, 0, 0]
           - [-1, -1, 2]
-        Values: [0]
+        Values: [2]
       - Type: 7  # Compare
         Position: [260, 221]
         Inputs:
           - [0, 0, 0]
           - [-1, -1, 3]
-        Values: [2]
+        Values: [4]
       - Type: 3  # And
         Position: [453, 139]
         Inputs:
