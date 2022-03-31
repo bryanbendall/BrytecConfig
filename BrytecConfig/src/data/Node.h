@@ -81,20 +81,6 @@ public:
     unsigned int getBytesSize();
 
 private:
-    void evaluateAnd();
-    void evaluateOr();
-    void evaluateInvert();
-    void evaluateTwoStage();
-    void evaluateOnOff();
-    void evaluateToggle();
-    void evaluateDelay();
-    void evaluateCompare();
-    void evaluateMath();
-    void evaluateMap();
-    void evaulateCurve();
-    void evaluatePushButton();
-    void evaluateSwitch();
-
     bool hasConnection(int inputIndex);
 
 public:

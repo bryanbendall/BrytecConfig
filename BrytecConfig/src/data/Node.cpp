@@ -3,6 +3,7 @@
 #include "Nodes/AndNode.h"
 #include "Nodes/CanBusNode.h"
 #include "Nodes/CompareNode.h"
+#include "Nodes/ConvertNode.h"
 #include "Nodes/CurveNode.h"
 #include "Nodes/DelayNode.h"
 #include "Nodes/FinalValueNode.h"
@@ -38,7 +39,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Math",
     "Value",
     "Switch",
-    "Can Bus"
+    "Can Bus",
+    "Convert"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -52,8 +54,6 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 std::shared_ptr<Node> Node::create(int id, ImVec2 position, NodeTypes type)
 {
     switch (type) {
-    // case NodeTypes::And:
-    //     return std::make_shared<AndNode>(id, position, type);
     case NodeTypes::Final_Value:
         return std::make_shared<FinalValueNode>(id, position, type);
     case NodeTypes::Initial_Value:
@@ -90,6 +90,8 @@ std::shared_ptr<Node> Node::create(int id, ImVec2 position, NodeTypes type)
         return std::make_shared<SwitchNode>(id, position, type);
     case NodeTypes::CanBus:
         return std::make_shared<CanBusNode>(id, position, type);
+    case NodeTypes::Convert:
+        return std::make_shared<ConvertNode>(id, position, type);
 
     default:
         assert(false);

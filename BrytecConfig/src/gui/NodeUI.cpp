@@ -3,6 +3,7 @@
 #include "gui/Nodes/AndNodeUI.h"
 #include "gui/Nodes/CanBusNodeUI.h"
 #include "gui/Nodes/CompareNodeUI.h"
+#include "gui/Nodes/ConvertNodeUI.h"
 #include "gui/Nodes/CurveNodeUI.h"
 #include "gui/Nodes/DelayNodeUI.h"
 #include "gui/Nodes/FinalValueNodeUI.h"
@@ -81,6 +82,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     case NodeTypes::CanBus:
         CanBusNodeUI::draw(node);
         break;
+    case NodeTypes::Convert:
+        ConvertNodeUI::draw(node);
+        break;
 
     default:
         drawUnimplimentedNode(node);
@@ -90,7 +94,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
 void NodeUI::drawUnimplimentedNode(std::shared_ptr<Node> node)
 {
-    SameHeightText("Unimplimented");
+    SameHeightText("**Unimplimented**");
 }
 
 void NodeUI::SameHeightText(std::string text)
@@ -102,13 +106,13 @@ void NodeUI::SameHeightText(std::string text)
     ImGui::PopStyleVar();
 }
 
-void NodeUI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min, float max, float speed)
+void NodeUI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals, float min, float max, float speed)
 {
     imnodes::BeginInputAttribute(node->getIntputId(attribute));
 
     if (node->getInput(attribute).ConnectedNode.expired()) {
         std::stringstream stream;
-        stream << std::fixed << std::setprecision(2) << node->getInput(attribute).DefaultValue;
+        stream << std::fixed << std::setprecision(decimals) << node->getInput(attribute).DefaultValue;
         float floatX = ImGui::CalcTextSize(stream.str().c_str()).x;
 
         float labelX = ImGui::CalcTextSize(label.c_str()).x;

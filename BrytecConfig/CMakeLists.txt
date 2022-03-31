@@ -7,7 +7,9 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.h
                 src/BrytecConfigEmbedded/Nodes/ECompareNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECompareNode.h
+                src/BrytecConfigEmbedded/Nodes/ECompareNode.h                
+                src/BrytecConfigEmbedded/Nodes/EConvertNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EConvertNode.h
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.h
                 src/BrytecConfigEmbedded/Nodes/EDelayNode.cpp
@@ -47,6 +49,8 @@ add_executable(BrytecConfig
                 src/data/Nodes/CanBusNode.h
                 src/data/Nodes/CompareNode.cpp
                 src/data/Nodes/CompareNode.h
+                src/data/Nodes/ConvertNode.cpp
+                src/data/Nodes/ConvertNode.h
                 src/data/Nodes/CurveNode.cpp
                 src/data/Nodes/CurveNode.h
                 src/data/Nodes/DelayNode.cpp
@@ -98,6 +102,8 @@ add_executable(BrytecConfig
                 src/gui/Nodes/CanBusNodeUI.h
                 src/gui/Nodes/CompareNodeUI.cpp
                 src/gui/Nodes/CompareNodeUI.h
+                src/gui/Nodes/ConvertNodeUI.cpp
+                src/gui/Nodes/ConvertNodeUI.h
                 src/gui/Nodes/CurveNodeUI.cpp
                 src/gui/Nodes/CurveNodeUI.h
                 src/gui/Nodes/DelayNodeUI.cpp

@@ -4,7 +4,8 @@
 CanBusNode::CanBusNode(int id, ImVec2 position, NodeTypes type)
     : Node(id, position, type)
 {
-    m_outputs.push_back(0.0f);
+    m_inputs.push_back(NodeConnection(1.0f));
+
     m_outputs.push_back(0.0f);
     m_outputs.push_back(0.0f);
     m_outputs.push_back(0.0f);

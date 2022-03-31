@@ -11,7 +11,7 @@ public:
 
     // UI
     static void SameHeightText(std::string text);
-    static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+    static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
     static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
     static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
     static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);

@@ -3,6 +3,8 @@
 #include "gui/NodeUI.h"
 
 const char* CompareNodeUI::s_compareNames[(int)ECompareNode::Types::Count] = {
+    "Equal",
+    "Not Equal",
     "Greater Than",
     "Greater Equal To",
     "Less Than",
