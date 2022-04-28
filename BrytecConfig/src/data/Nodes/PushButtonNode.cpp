@@ -14,17 +14,17 @@ PushButtonNode::PushButtonNode(int id, ImVec2 position, NodeTypes type)
 
 void PushButtonNode::evaluate()
 {
-    EPushButtonNode node;
+    // EPushButtonNode node;
 
-    node.SetValue(0, getInputValue(0));
-    node.SetValue(1, getInputValue(1));
-    node.SetValue(2, getInputValue(2));
-    node.SetValue(3, getValue(0));
-    node.m_ignitionOut = m_outputs[0];
-    node.m_starterOut = m_outputs[1];
+    // node.SetValue(0, getInputValue(0));
+    // node.SetValue(1, getInputValue(1));
+    // node.SetValue(2, getInputValue(2));
+    // node.SetValue(3, getValue(0));
+    // node.m_ignitionOut = m_outputs[0];
+    // node.m_starterOut = m_outputs[1];
 
-    node.Evaluate(ImGui::GetIO().DeltaTime);
-    m_values[0] = node.m_lastButtonState.value;
-    m_outputs[0] = node.m_ignitionOut;
-    m_outputs[1] = node.m_starterOut;
+    // node.Evaluate(ImGui::GetIO().DeltaTime);
+    // m_values[0] = node.m_lastButtonState.value;
+    // m_outputs[0] = node.m_ignitionOut;
+    // m_outputs[1] = node.m_starterOut;
 }

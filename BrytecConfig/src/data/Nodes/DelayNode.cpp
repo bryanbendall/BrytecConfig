@@ -12,13 +12,13 @@ DelayNode::DelayNode(int id, ImVec2 position, NodeTypes type)
 
 void DelayNode::evaluate()
 {
-    EDelayNode node;
+    // EDelayNode node;
 
-    node.SetValue(0, getInputValue(0));
-    node.SetValue(1, getInputValue(1));
-    node.SetValue(2, getValue(0));
+    // node.SetValue(0, getInputValue(0));
+    // node.SetValue(1, getInputValue(1));
+    // node.SetValue(2, getValue(0));
 
-    node.Evaluate(ImGui::GetIO().DeltaTime);
-    m_values[0] = node.m_counter.value;
-    m_outputs[0] = node.m_out;
+    // node.Evaluate(ImGui::GetIO().DeltaTime);
+    // m_values[0] = node.m_counter.value;
+    // m_outputs[0] = node.m_out;
 }

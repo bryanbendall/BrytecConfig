@@ -12,12 +12,12 @@ CompareNode::CompareNode(int id, ImVec2 position, NodeTypes type)
 
 void CompareNode::evaluate()
 {
-    ECompareNode node;
+    // ECompareNode node;
 
-    node.SetValue(0, getInputValue(0));
-    node.SetValue(1, getInputValue(1));
-    node.SetValue(2, getValue(0));
+    // node.SetValue(0, getInputValue(0));
+    // node.SetValue(1, getInputValue(1));
+    // node.SetValue(2, getValue(0));
 
-    node.Evaluate(ImGui::GetIO().DeltaTime);
-    m_outputs[0] = node.m_out;
+    // node.Evaluate(ImGui::GetIO().DeltaTime);
+    // m_outputs[0] = node.m_out;
 }

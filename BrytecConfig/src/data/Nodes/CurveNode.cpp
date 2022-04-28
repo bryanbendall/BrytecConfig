@@ -14,15 +14,15 @@ CurveNode::CurveNode(int id, ImVec2 position, NodeTypes type)
 
 void CurveNode::evaluate()
 {
-    ECurveNode node;
+    // ECurveNode node;
 
-    node.SetValue(0, getInputValue(0));
-    node.SetValue(1, getInputValue(1));
-    node.SetValue(2, getInputValue(2));
-    node.SetValue(3, getValue(0));
-    node.SetValue(4, getValue(1));
+    // node.SetValue(0, getInputValue(0));
+    // node.SetValue(1, getInputValue(1));
+    // node.SetValue(2, getInputValue(2));
+    // node.SetValue(3, getValue(0));
+    // node.SetValue(4, getValue(1));
 
-    node.Evaluate(ImGui::GetIO().DeltaTime);
-    m_values[1] = node.m_timerCounter.value;
-    m_outputs[0] = node.m_out;
+    // node.Evaluate(ImGui::GetIO().DeltaTime);
+    // m_values[1] = node.m_timerCounter.value;
+    // m_outputs[0] = node.m_out;
 }

@@ -8,5 +8,5 @@ class CompareNodeUI {
 public:
     static void draw(std::shared_ptr<Node> node);
 
-    static const char* s_compareNames[(int)ECompareNode::Types::Count];
+    static const char* s_compareNames[(int)CompareType::Count];
 };
