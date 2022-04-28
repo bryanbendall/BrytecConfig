@@ -3,6 +3,7 @@
 #include "utils/ConfigSerializer.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
+#include <fstream>
 #include <imgui.h>
 #include <iostream>
 #include <memory>
@@ -73,6 +74,14 @@ void openConfig()
 
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
+
+    ///////////////////////////////
+    // Test ///////////////////////
+    BinaryDeserializer des(path);
+    serializer.deserializeBinary(des);
+    return;
+    //////////////////////////////
+
     if (serializer.deserializeText(config->getFilepath())) {
         clearSelected();
         data.config = config;
@@ -82,10 +91,12 @@ void openConfig()
                   << "" << std::endl;
 }
 
-static void save(std::shared_ptr<Config>& config, const std::filesystem::path& path)
+static void save(std::shared_ptr<Config>& config)
 {
     ConfigSerializer serializer(config);
-    serializer.serializeText(path);
+    // serializer.serializeText(path);
+    auto configBinary = serializer.serializeBinary();
+    configBinary.writeToFile(config->getFilepath());
 }
 
 void saveConfig()
@@ -93,7 +104,7 @@ void saveConfig()
     if (data.config->getFilepath().empty())
         saveAsConfig();
     else
-        save(data.config, data.config->getFilepath());
+        save(data.config);
 }
 
 void saveAsConfig()
@@ -106,8 +117,8 @@ void saveAsConfig()
     if (path.extension().empty())
         path.replace_extension("btconfig");
 
-    save(data.config, path);
     data.config->setFilepath(path);
+    save(data.config);
 
     updateWindowTitle();
 }
@@ -128,7 +139,7 @@ void updateWindowTitle()
     std::string title = "Brytec Config - ";
 
     if (!data.config->getFilepath().empty())
-        title.append(data.config->getFilepath().stem().string());
+        title.append(data.config->getName());
     else
         title.append("Untitled");
 

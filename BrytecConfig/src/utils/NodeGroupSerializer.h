@@ -17,6 +17,8 @@ public:
     void serializeTemplateBinary(const std::filesystem::path& filepath);
     bool deserializeTemplateBinary(const std::filesystem::path& filepath);
 
+    BinarySerializer serializeBinary();
+
 private:
     void serializeTemplate(YAML::Emitter& out);
 

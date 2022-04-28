@@ -42,6 +42,7 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
                 src/BrytecConfigEmbedded/ENode.cpp
                 src/BrytecConfigEmbedded/ENode.h
+                src/BrytecConfigEmbedded/ENodeConnection.h
                 src/BrytecConfigEmbedded/NodesVector.h
                 src/data/Nodes/AndNode.cpp
                 src/data/Nodes/AndNode.h
@@ -148,6 +149,8 @@ add_executable(BrytecConfig
                 src/gui/NodeWindow.h
                 src/gui/PropertiesWindow.cpp
                 src/gui/PropertiesWindow.h
+                src/utils/BinarySerializer.cpp
+                src/utils/BinarySerializer.h
                 src/utils/ConfigSerializer.cpp
                 src/utils/ConfigSerializer.h
                 src/utils/DefaultPaths.h

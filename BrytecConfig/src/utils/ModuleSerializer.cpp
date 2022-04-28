@@ -1,6 +1,7 @@
 #include "ModuleSerializer.h"
 
 #include "AppManager.h"
+#include "NodeGroupSerializer.h"
 #include "utils/DefaultPaths.h"
 #include <filesystem>
 #include <fstream>
@@ -49,6 +50,55 @@ bool ModuleSerializer::deserializeTemplateBinary(const std::filesystem::path& fi
 {
     assert(false);
     return false;
+}
+
+BinarySerializer ModuleSerializer::serializeBinary()
+{
+    BinarySerializer ser;
+
+    // Basic info
+    ser.writeRaw<std::string>(m_module->getName());
+    ser.writeRaw<uint8_t>(m_module->getAddress());
+    ser.writeRaw<uint8_t>(m_module->getEnabled());
+
+    // Prototype pins
+    uint16_t nodeGroupCount = 0;
+    ser.writeRaw<uint16_t>(m_module->getPins().size());
+    for (auto pin : m_module->getPins()) {
+        ser.writeRaw(pin->getPinoutName());
+        ser.writeRaw<uint8_t>(pin->getAvailableTypes().size());
+        for (auto type : pin->getAvailableTypes())
+            ser.writeRaw(type);
+
+        if (auto nodeGroup = pin->getNodeGroup())
+            nodeGroupCount++;
+    }
+
+    // Node groups
+    ser.writeRaw<uint16_t>(nodeGroupCount);
+    for (auto pin : m_module->getPins()) {
+        if (auto nodeGroup = pin->getNodeGroup()) {
+            NodeGroupSerializer nodeGroupSer(nodeGroup);
+            auto nodeGroupBinary = nodeGroupSer.serializeBinary();
+            ser.append(nodeGroupBinary);
+        }
+    }
+
+    return ser;
+}
+
+bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
+{
+    // Basic info
+    m_module->setName(des.readRaw<std::string>());
+    m_module->setAddress(des.readRaw<uint8_t>());
+    m_module->setEnabled(des.readRaw<uint8_t>());
+
+    // Prototype pins
+
+    // Node groups
+
+    return true;
 }
 
 std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()

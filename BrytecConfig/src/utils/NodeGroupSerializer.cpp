@@ -41,6 +41,50 @@ bool NodeGroupSerializer::deserializeTemplateBinary(const std::filesystem::path&
     return false;
 }
 
+BinarySerializer NodeGroupSerializer::serializeBinary()
+{
+    BinarySerializer ser;
+
+    // Basic info
+    ser.writeRaw<std::string>(m_nodeGroup->getName());
+    ser.writeRaw<uint64_t>(m_nodeGroup->getId());
+    ser.writeRaw<uint8_t>((uint8_t)m_nodeGroup->getType());
+    ser.writeRaw<uint8_t>(m_nodeGroup->getEnabled());
+
+    // Nodes
+    ser.writeRaw<uint16_t>(m_nodeGroup->getNodes().size());
+    for (auto node : m_nodeGroup->getNodes()) {
+        ser.writeRaw<std::string>(node->getName());
+        ser.writeRaw<uint16_t>((uint16_t)node->getType());
+        ser.writeRaw<float>(node->getPosition().x);
+        ser.writeRaw<float>(node->getPosition().y);
+
+        // Inputs
+        ser.writeRaw<uint8_t>(node->getInputs().size());
+        for (auto input : node->getInputs()) {
+            if (!input.ConnectedNode.expired()) {
+                ser.writeRaw<int8_t>(m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()));
+                ser.writeRaw<int8_t>(input.OutputIndex);
+                ser.writeRaw<float>(input.DefaultValue);
+            } else {
+                ser.writeRaw<int8_t>(-1);
+                ser.writeRaw<int8_t>(-1);
+                ser.writeRaw<float>(input.DefaultValue);
+            }
+        }
+
+        // Values
+        ser.writeRaw<uint8_t>(node->getValues().size());
+        for (float value : node->getValues())
+            ser.writeRaw<float>(value);
+
+        // Node Group reference (special case for NodeGroup Node)
+        // TODO
+    }
+
+    return ser;
+}
+
 void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)
 {
     out << YAML::Key << "Name" << YAML::Value << m_nodeGroup->getName();
