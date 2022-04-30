@@ -41,17 +41,6 @@ bool ModuleSerializer::deserializeTemplateText(const std::filesystem::path& file
     return deserializeTemplate(data);
 }
 
-void ModuleSerializer::serializeTemplateBinary(const std::filesystem::path& filepath)
-{
-    assert(false);
-}
-
-bool ModuleSerializer::deserializeTemplateBinary(const std::filesystem::path& filepath)
-{
-    assert(false);
-    return false;
-}
-
 BinarySerializer ModuleSerializer::serializeBinary()
 {
     BinarySerializer ser;
@@ -68,7 +57,7 @@ BinarySerializer ModuleSerializer::serializeBinary()
         ser.writeRaw(pin->getPinoutName());
         ser.writeRaw<uint8_t>(pin->getAvailableTypes().size());
         for (auto type : pin->getAvailableTypes())
-            ser.writeRaw(type);
+            ser.writeRaw<uint8_t>((uint8_t)type);
 
         if (auto nodeGroup = pin->getNodeGroup())
             nodeGroupCount++;
@@ -76,8 +65,9 @@ BinarySerializer ModuleSerializer::serializeBinary()
 
     // Node groups
     ser.writeRaw<uint16_t>(nodeGroupCount);
-    for (auto pin : m_module->getPins()) {
-        if (auto nodeGroup = pin->getNodeGroup()) {
+    for (int i = 0; i < m_module->getPins().size(); i++) {
+        if (auto nodeGroup = m_module->getPins()[i]->getNodeGroup()) {
+            ser.writeRaw<uint16_t>(i);
             NodeGroupSerializer nodeGroupSer(nodeGroup);
             auto nodeGroupBinary = nodeGroupSer.serializeBinary();
             ser.append(nodeGroupBinary);
@@ -95,8 +85,30 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
     m_module->setEnabled(des.readRaw<uint8_t>());
 
     // Prototype pins
+    uint32_t pinCount = des.readRaw<uint16_t>();
+    for (int i = 0; i < pinCount; i++) {
+        std::string pinoutName = des.readRaw<std::string>();
+
+        std::vector<IOTypes::Types> availableTypesVec;
+        uint8_t typesCount = des.readRaw<uint8_t>();
+        for (int j = 0; j < typesCount; j++)
+            availableTypesVec.push_back((IOTypes::Types)des.readRaw<uint8_t>());
+
+        std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
+        m_module->getPins().push_back(newPin);
+    }
 
     // Node groups
+    uint16_t nodeGroupCount = des.readRaw<uint16_t>();
+    for (int i = 0; i < nodeGroupCount; i++) {
+        uint16_t pinIndex = des.readRaw<uint16_t>();
+        std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
+        NodeGroupSerializer serializer(nodeGroup);
+        if (serializer.deserializeBinary(des)) {
+            m_module->getPins()[pinIndex]->setNodeGroup(nodeGroup);
+        } else
+            return false;
+    }
 
     return true;
 }

@@ -79,6 +79,9 @@ void openConfig()
     // Test ///////////////////////
     BinaryDeserializer des(path);
     serializer.deserializeBinary(des);
+    clearSelected();
+    data.config = config;
+    updateWindowTitle();
     return;
     //////////////////////////////
 

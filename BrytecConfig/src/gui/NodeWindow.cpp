@@ -41,9 +41,7 @@ NodeWindow::NodeWindow()
 
     ser.writeRaw<std::string>("hello");
 
-    ser.writeRaw<int>(0);
-    ser.writeRaw<int>(0);
-    ser.writeRaw<int>(0);
+    ser.writeRaw<float>(1234.5);
 
     ////////////////////////////////////////////////
 
@@ -56,6 +54,8 @@ NodeWindow::NodeWindow()
     uint32_t test2 = des.readRaw<uint8_t>();
 
     std::string text = des.readRaw<std::string>();
+
+    float f = des.readRaw<float>();
 
     //////////////////////////////////
 

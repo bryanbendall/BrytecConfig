@@ -129,7 +129,7 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
     uint32_t moduleCount = des.readRaw<uint32_t>();
     for (int i = 0; i < moduleCount; i++) {
         std::shared_ptr<Module> module = std::make_shared<Module>();
-        ModuleSerializer serializer(module);
+        ModuleSerializer serializer(m_config, module);
         if (serializer.deserializeBinary(des))
             m_config->addModule(module);
         else

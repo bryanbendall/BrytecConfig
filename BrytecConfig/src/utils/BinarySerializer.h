@@ -57,18 +57,22 @@ public:
     template <typename T>
     T readRaw()
     {
-        T temp = 0;
+        uint64_t temp = 0;
         for (int i = m_currentOffset; i < m_currentOffset + sizeof(T); i++) {
-            temp |= (T)m_data[i] << ((i - m_currentOffset) * 8);
+            temp |= (uint64_t)m_data[i] << ((i - m_currentOffset) * 8);
         }
         m_currentOffset += sizeof(T);
-        return temp;
+        return *((T*)&temp);
     }
+
+    void saveOffset() { m_savedOffset = m_currentOffset; }
+    void goToSavedOffset() { m_currentOffset = m_savedOffset; }
 
 private:
     bool m_ownData = false;
     uint8_t* m_data;
     uint64_t m_currentOffset = 0;
+    uint64_t m_savedOffset = 0;
 };
 
 template <>

@@ -30,17 +30,6 @@ bool NodeGroupSerializer::deserializeTemplateText(const std::filesystem::path& f
     return deserializeTemplate(data);
 }
 
-void NodeGroupSerializer::serializeTemplateBinary(const std::filesystem::path& filepath)
-{
-    assert(false);
-}
-
-bool NodeGroupSerializer::deserializeTemplateBinary(const std::filesystem::path& filepath)
-{
-    assert(false);
-    return false;
-}
-
 BinarySerializer NodeGroupSerializer::serializeBinary()
 {
     BinarySerializer ser;
@@ -83,6 +72,71 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
     }
 
     return ser;
+}
+
+bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
+{
+    // Basic info
+    m_nodeGroup->setName(des.readRaw<std::string>());
+    m_nodeGroup->setId(des.readRaw<uint64_t>());
+    m_nodeGroup->setType((IOTypes::Types)des.readRaw<uint8_t>());
+    m_nodeGroup->setEnabled(des.readRaw<uint8_t>());
+
+    uint16_t nodeCount = des.readRaw<uint16_t>();
+    des.saveOffset();
+    for (int i = 0; i < nodeCount; i++) {
+        std::string name = des.readRaw<std::string>();
+        NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
+        float x = des.readRaw<float>();
+        float y = des.readRaw<float>();
+
+        auto newNode = m_nodeGroup->addNode(type, { x, y });
+        newNode->setName(name);
+
+        // Inputs - skip till later
+        uint8_t inputCount = des.readRaw<uint8_t>();
+        for (int j = 0; j < inputCount; j++) {
+            des.readRaw<int8_t>();
+            des.readRaw<int8_t>();
+            des.readRaw<float>();
+        }
+
+        // Values
+        uint8_t valueCount = des.readRaw<uint8_t>();
+        for (int valueIndex = 0; valueIndex < valueCount; valueIndex++)
+            newNode->setValue(valueIndex, des.readRaw<float>());
+    }
+
+    // Connect inputs to already added nodes
+    des.goToSavedOffset();
+    for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
+        std::string name = des.readRaw<std::string>();
+        NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
+        float x = des.readRaw<float>();
+        float y = des.readRaw<float>();
+
+        // Inputs
+        uint8_t inputCount = des.readRaw<uint8_t>();
+        for (int inputIndex = 0; inputIndex < inputCount; inputIndex++) {
+            auto connectionNodeIndex = des.readRaw<int8_t>();
+            auto outputIndex = des.readRaw<int8_t>();
+            auto defaultValue = des.readRaw<float>();
+            if (connectionNodeIndex > -1 && outputIndex > -1) {
+                // Has connection
+                NodeConnection nodeConnection = { m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue };
+                m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
+            } else {
+                m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
+            }
+        }
+
+        // Values - Skip
+        uint8_t valueCount = des.readRaw<uint8_t>();
+        for (int j = 0; j < valueCount; j++)
+            des.readRaw<float>();
+    }
+
+    return true;
 }
 
 void NodeGroupSerializer::serializeTemplate(YAML::Emitter& out)

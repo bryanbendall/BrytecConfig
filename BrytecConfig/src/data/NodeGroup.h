@@ -25,6 +25,7 @@ public:
     void setEnabled(bool state) { m_enabled = state; }
 
     const UUID& getId() { return m_uuid; }
+    void setId(const UUID& uuid) { m_uuid = uuid; }
 
     float getValue(int attributeIndex);
 
