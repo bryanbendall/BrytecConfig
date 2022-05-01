@@ -68,7 +68,9 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
             ser.writeRaw<float>(value);
 
         // Node Group reference (special case for NodeGroup Node)
-        // TODO
+        if (node->getType() == NodeTypes::Node_Group) {
+            ser.writeRaw<uint64_t>(node->getSelectedNodeGroup());
+        }
     }
 
     return ser;
@@ -105,6 +107,11 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
         uint8_t valueCount = des.readRaw<uint8_t>();
         for (int valueIndex = 0; valueIndex < valueCount; valueIndex++)
             newNode->setValue(valueIndex, des.readRaw<float>());
+
+        // Special Node Groups
+        if (type == NodeTypes::Node_Group) {
+            newNode->setSelectedNodeGroup(des.readRaw<uint64_t>());
+        }
     }
 
     // Connect inputs to already added nodes
@@ -134,6 +141,11 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
         uint8_t valueCount = des.readRaw<uint8_t>();
         for (int j = 0; j < valueCount; j++)
             des.readRaw<float>();
+
+        // Special Node Groups - Skip
+        if (type == NodeTypes::Node_Group) {
+            des.readRaw<uint64_t>();
+        }
     }
 
     return true;
