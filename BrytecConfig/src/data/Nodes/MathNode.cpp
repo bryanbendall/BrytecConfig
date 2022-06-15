@@ -21,16 +21,23 @@ void MathNode::evaluate()
     // node.Evaluate(ImGui::GetIO().DeltaTime);
     // m_outputs[0] = node.m_out;
 
-    uint8_t buff[100];
+    // Create spec
     EMathNodeSpecification spec;
     spec.input0 = Float;
     spec.input1 = Float;
     spec.type = (MathType)getValue(0);
+
+    // Create embedded node
+    uint8_t buff[100];
     auto create = EMathNode::CreateInPlace(spec, buff);
 
+    // Setup values
     create->SetValue(0, getInputValue(0));
     create->SetValue(1, getInputValue(1));
 
+    // Evaulate
     create->Evaluate(ImGui::GetIO().DeltaTime);
+
+    // Get output values
     m_outputs[0] = *create->GetOutput();
 }
