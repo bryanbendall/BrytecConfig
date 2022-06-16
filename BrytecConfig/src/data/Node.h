@@ -38,14 +38,11 @@ struct NodeConnection {
 
 class Node {
 
-protected:
+public:
     Node(int id, ImVec2 position, NodeTypes type);
 
-public:
-    static std::shared_ptr<Node> create(int id, ImVec2 position, NodeTypes type);
-    virtual ~Node() { }
-
-    virtual void evaluate() { }
+    // TODO
+    void evaluate() { }
 
     std::string& getName() { return m_name; }
     void setName(std::string& name) { m_name = name; }

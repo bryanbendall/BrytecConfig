@@ -68,7 +68,7 @@ int NodeGroup::getNodeIndex(std::shared_ptr<Node> node)
 
 std::shared_ptr<Node> NodeGroup::addNode(NodeTypes type, ImVec2 position)
 {
-    std::shared_ptr<Node> node = Node::create(m_nodesIds, position, type);
+    std::shared_ptr<Node> node = std::make_shared<Node>(m_nodesIds, position, type);
     m_nodes.push_back(node);
     m_nodesIds++;
     return node;

@@ -1,24 +1,9 @@
 #include "NodeUI.h"
 
-#include "gui/Nodes/AndNodeUI.h"
-#include "gui/Nodes/CanBusNodeUI.h"
-#include "gui/Nodes/CompareNodeUI.h"
-#include "gui/Nodes/ConvertNodeUI.h"
-#include "gui/Nodes/CurveNodeUI.h"
-#include "gui/Nodes/DelayNodeUI.h"
-#include "gui/Nodes/FinalValueNodeUI.h"
-#include "gui/Nodes/InitialValueNodeUI.h"
-#include "gui/Nodes/InvertNodeUI.h"
-#include "gui/Nodes/MapValueNodeUI.h"
-#include "gui/Nodes/MathNodeUI.h"
-#include "gui/Nodes/NodeGroupNodeUI.h"
-#include "gui/Nodes/OnOffNodeUI.h"
-#include "gui/Nodes/OrNodeUI.h"
-#include "gui/Nodes/PushButtonNodeUI.h"
-#include "gui/Nodes/SwitchNodeUI.h"
-#include "gui/Nodes/ToggleNodeUI.h"
-#include "gui/Nodes/TwoStageNodeUI.h"
-#include "gui/Nodes/ValueNodeUI.h"
+#include "AppManager.h"
+#include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
+#include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
+#include "BrytecConfigEmbedded/Nodes/EMathNode.h"
 #include <bitset>
 #include <imnodes.h>
 #include <iomanip>
@@ -28,62 +13,265 @@
 void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup)
 {
     switch (node->getType()) {
+
     case NodeTypes::Final_Value:
-        FinalValueNodeUI::draw(node, mode, nodeGroup);
+        NodeUI::InputFloat(node, 0, "Final Value");
+
+        if (mode == NodeWindow::Mode::Simulation) {
+            bool onOff = false;
+            bool floatValue = false;
+            bool percentValue = false;
+
+            if (!nodeGroup.expired()) {
+                auto ng = nodeGroup.lock();
+                auto type = ng->getType();
+                switch (type) {
+                case IOTypes::Types::Output_12V_Pwm:
+                    percentValue = true;
+                    break;
+                case IOTypes::Types::Output_12V:
+                case IOTypes::Types::Output_12V_Low_Current:
+                case IOTypes::Types::Output_Ground:
+                case IOTypes::Types::Input_12V:
+                case IOTypes::Types::Input_Ground:
+                case IOTypes::Types::Input_5V:
+                    onOff = true;
+                    break;
+                case IOTypes::Types::Input_5V_Variable:
+                case IOTypes::Types::Input_Can:
+                    floatValue = true;
+                    break;
+                }
+            }
+
+            float& value = node->getInputValue(0);
+
+            if (onOff) {
+                NodeUI::OnOffButton(node, value, false);
+            } else if (floatValue) {
+                std::stringstream stream;
+                stream << std::fixed << std::setprecision(2) << value;
+                NodeUI::SameHeightText(stream.str());
+            } else if (percentValue) {
+                ImGui::ProgressBar(value / 100.0f, ImVec2(NodeWindow::nodeWidth, 0.0f));
+            }
+        }
         break;
+
     case NodeTypes::Initial_Value:
-        InitialValueNodeUI::draw(node, mode);
+        if (mode == NodeWindow::Mode::Simulation) {
+            NodeUI::ValueFloat(node, 0, "Value", 0.0f, 5.0f, 0.01f);
+            NodeUI::OnOffButton(node, node->getValue(0), true);
+        }
+        NodeUI::Ouput(node, 0, "Value");
         break;
+
     case NodeTypes::Node_Group:
-        NodeGroupNodeUI::draw(node, mode, nodeGroup);
+        imnodes::BeginStaticAttribute(node->getValueId(0));
+
+        static std::shared_ptr<NodeGroup> thisNodeGroup;
+
+        if (!nodeGroup.expired())
+            thisNodeGroup = nodeGroup.lock();
+
+        static std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+
+        if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str())) {
+
+            for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
+
+                // Skip if it is this node group
+                if (thisNodeGroup && thisNodeGroup == nodeGroup)
+                    continue;
+
+                ImGui::PushID(nodeGroup.get());
+                bool isSelected = nodeGroup == selectedNodeGroup;
+                if (ImGui::Selectable(nodeGroup->getName().c_str(), isSelected)) {
+                    node->setSelectedNodeGroup(nodeGroup->getId());
+                }
+                ImGui::PopID();
+
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+
+        if (mode == NodeWindow::Mode::Simulation) {
+
+            ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 10000.0f, "%.2f");
+
+            const char* text;
+            ImU32 color;
+            ImU32 hoverColor;
+            if (node->getValue(0) > 0.0f) {
+                text = "On";
+                color = IM_COL32(20, 200, 20, 255);
+                hoverColor = IM_COL32(20, 220, 20, 255);
+            } else {
+                text = "Off";
+                color = IM_COL32(200, 20, 20, 255);
+                hoverColor = IM_COL32(220, 20, 20, 255);
+            }
+            ImGui::PushStyleColor(ImGuiCol_Button, color);
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
+            if (ImGui::Button(text, ImVec2(NodeWindow::nodeWidth, 0.0f)))
+                node->getValue(0) > 0.0f ? node->getValue(0) = 0.0f : node->getValue(0) = 1.0f;
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(3);
+        }
+
+        imnodes::EndStaticAttribute();
+
+        NodeUI::Ouput(node, 0, "Result");
         break;
+
     case NodeTypes::And:
-        AndNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Input");
+        NodeUI::InputBool(node, 1, "Input");
+        NodeUI::InputBool(node, 2, "Input");
+        NodeUI::InputBool(node, 3, "Input");
+        NodeUI::InputBool(node, 4, "Input");
+        NodeUI::Ouput(node, 0, "Result", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Or:
-        OrNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Input");
+        NodeUI::InputBool(node, 1, "Input");
+        NodeUI::InputBool(node, 2, "Input");
+        NodeUI::InputBool(node, 3, "Input");
+        NodeUI::InputBool(node, 4, "Input");
+        NodeUI::Ouput(node, 0, "Result", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Two_Stage:
-        TwoStageNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Stage 1");
+        NodeUI::InputFloat(node, 1, "Stage 1");
+        NodeUI::InputBool(node, 2, "Stage 2");
+        NodeUI::InputFloat(node, 3, "Stage 2");
+        NodeUI::Ouput(node, 0, "Result");
         break;
+
     case NodeTypes::Curve:
-        CurveNodeUI::draw(node);
+        static const char* s_curveNames[(int)ECurveNode::Types::Count] = {
+            "Toggle",
+            "Linear",
+            "Expontial",
+            "Breathing"
+        };
+        NodeUI::InputBool(node, 0, "Input");
+        NodeUI::ValueCombo(node, 0, s_curveNames, (int)ECurveNode::Types::Count);
+        NodeUI::InputBool(node, 1, "Repeat");
+        NodeUI::InputFloat(node, 2, "Time", 0.0f, 10.0f, 0.05f);
+        NodeUI::Ouput(node, 0, "Result", NodeWindow::zeroToOneColor);
         break;
+
     case NodeTypes::Compare:
-        CompareNodeUI::draw(node);
+        static const char* s_compareNames[(int)CompareType::Count] = {
+            "Equal",
+            "Not Equal",
+            "Greater Than",
+            "Greater Equal To",
+            "Less Than",
+            "Less Equal To"
+        };
+        NodeUI::InputFloat(node, 0, "Value 1");
+        NodeUI::InputFloat(node, 1, "Value 2");
+        NodeUI::ValueCombo(node, 0, s_compareNames, (int)CompareType::Count);
+        NodeUI::Ouput(node, 0, "Result", NodeWindow::boolColor);
         break;
+
     case NodeTypes::On_Off:
-        OnOffNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "On");
+        NodeUI::InputBool(node, 1, "Off");
+        NodeUI::Ouput(node, 0, "Output", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Invert:
-        InvertNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Input");
+        NodeUI::Ouput(node, 0, "Output", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Toggle:
-        ToggleNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Input");
+        NodeUI::Ouput(node, 0, "Output", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Delay:
-        DelayNodeUI::draw(node);
+        NodeUI::InputFloat(node, 0, "Input");
+        NodeUI::InputFloat(node, 1, "Time");
+        NodeUI::Ouput(node, 0, "Output");
         break;
+
     case NodeTypes::Push_Button:
-        PushButtonNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Button");
+        NodeUI::InputBool(node, 1, "Neutral Safety");
+        NodeUI::InputBool(node, 2, "Enging Running");
+        NodeUI::Ouput(node, 0, "Ignition", NodeWindow::boolColor);
+        NodeUI::Ouput(node, 1, "Starter", NodeWindow::boolColor);
         break;
+
     case NodeTypes::Map_Value:
-        MapValueNodeUI::draw(node);
+        NodeUI::InputFloat(node, 0, "Input");
+        NodeUI::InputFloat(node, 1, "From Min");
+        NodeUI::InputFloat(node, 2, "From Max");
+        NodeUI::InputFloat(node, 3, "To Min");
+        NodeUI::InputFloat(node, 4, "To Max");
+        NodeUI::Ouput(node, 0, "Result");
         break;
+
     case NodeTypes::Math:
-        MathNodeUI::draw(node);
+        static const char* s_mathNames[(int)MathType::Count] = {
+            "Add",
+            "Subtract",
+            "Multiply",
+            "Divide"
+        };
+        NodeUI::InputFloat(node, 0, "Value");
+        NodeUI::InputFloat(node, 1, "Value");
+        NodeUI::ValueCombo(node, 0, s_mathNames, (int)MathType::Count);
+        NodeUI::Ouput(node, 0, "Result");
         break;
+
     case NodeTypes::Value:
-        ValueNodeUI::draw(node);
+        NodeUI::ValueFloat(node, 0, "Value");
+        NodeUI::Ouput(node, 0, "Output");
         break;
+
     case NodeTypes::Switch:
-        SwitchNodeUI::draw(node);
+        NodeUI::InputBool(node, 0, "Selection");
+        NodeUI::InputFloat(node, 1, "If True");
+        NodeUI::InputFloat(node, 2, "If False");
+        NodeUI::Ouput(node, 0, "Output");
         break;
+
     case NodeTypes::CanBus:
-        CanBusNodeUI::draw(node);
+        NodeUI::InputFloat(node, 0, "Id", 0, 0.0f, 300.0f);
+        NodeUI::Ouput(node, 0, "Data 0");
+        NodeUI::Ouput(node, 1, "Data 1");
+        NodeUI::Ouput(node, 2, "Data 2");
+        NodeUI::Ouput(node, 3, "Data 3");
+        NodeUI::Ouput(node, 4, "Data 4");
+        NodeUI::Ouput(node, 5, "Data 5");
+        NodeUI::Ouput(node, 6, "Data 6");
+        NodeUI::Ouput(node, 7, "Data 7");
         break;
+
     case NodeTypes::Convert:
-        ConvertNodeUI::draw(node);
+        NodeUI::InputFloat(node, 0, "Data 0");
+        if (node->getValue(1) >= 1.0f)
+            NodeUI::InputFloat(node, 1, "Data 1");
+        if (node->getValue(1) >= 2.0f) {
+            NodeUI::InputFloat(node, 2, "Data 2");
+            NodeUI::InputFloat(node, 3, "Data 3");
+        }
+        static const char* endians[2] = { "Big", "Little" };
+        NodeUI::ValueCombo(node, 0, endians, 2);
+        static const char* outputs[3] = { "uint8", "uint16", "uint32" };
+        NodeUI::ValueCombo(node, 1, outputs, 3);
+        NodeUI::Ouput(node, 0, "Output");
         break;
 
     default:

@@ -1,24 +1,5 @@
 #include "Node.h"
 #include "NodeGroup.h"
-#include "Nodes/AndNode.h"
-#include "Nodes/CanBusNode.h"
-#include "Nodes/CompareNode.h"
-#include "Nodes/ConvertNode.h"
-#include "Nodes/CurveNode.h"
-#include "Nodes/DelayNode.h"
-#include "Nodes/FinalValueNode.h"
-#include "Nodes/InitialValueNode.h"
-#include "Nodes/InvertNode.h"
-#include "Nodes/MapValueNode.h"
-#include "Nodes/MathNode.h"
-#include "Nodes/NodeGroupNode.h"
-#include "Nodes/OnOffNode.h"
-#include "Nodes/OrNode.h"
-#include "Nodes/PushButtonNode.h"
-#include "Nodes/SwitchNode.h"
-#include "Nodes/ToggleNode.h"
-#include "Nodes/TwoStageNode.h"
-#include "Nodes/ValueNode.h"
 #include <iostream>
 
 const char* Node::s_nodeName[(int)NodeTypes::Count] = {
@@ -49,53 +30,129 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
     , m_type(type)
     , m_name("")
 {
-}
-
-std::shared_ptr<Node> Node::create(int id, ImVec2 position, NodeTypes type)
-{
     switch (type) {
-    case NodeTypes::Final_Value:
-        return std::make_shared<FinalValueNode>(id, position, type);
-    case NodeTypes::Initial_Value:
-        return std::make_shared<InitialValueNode>(id, position, type);
-    case NodeTypes::Node_Group:
-        return std::make_shared<NodeGroupNode>(id, position, type);
-    case NodeTypes::And:
-        return std::make_shared<AndNode>(id, position, type);
-    case NodeTypes::Or:
-        return std::make_shared<OrNode>(id, position, type);
-    case NodeTypes::Two_Stage:
-        return std::make_shared<TwoStageNode>(id, position, type);
-    case NodeTypes::Curve:
-        return std::make_shared<CurveNode>(id, position, type);
-    case NodeTypes::Compare:
-        return std::make_shared<CompareNode>(id, position, type);
-    case NodeTypes::On_Off:
-        return std::make_shared<OnOffNode>(id, position, type);
-    case NodeTypes::Invert:
-        return std::make_shared<InvertNode>(id, position, type);
-    case NodeTypes::Toggle:
-        return std::make_shared<ToggleNode>(id, position, type);
-    case NodeTypes::Delay:
-        return std::make_shared<DelayNode>(id, position, type);
-    case NodeTypes::Push_Button:
-        return std::make_shared<PushButtonNode>(id, position, type);
-    case NodeTypes::Map_Value:
-        return std::make_shared<MapValueNode>(id, position, type);
-    case NodeTypes::Math:
-        return std::make_shared<MathNode>(id, position, type);
-    case NodeTypes::Value:
-        return std::make_shared<ValueNode>(id, position, type);
-    case NodeTypes::Switch:
-        return std::make_shared<SwitchNode>(id, position, type);
-    case NodeTypes::CanBus:
-        return std::make_shared<CanBusNode>(id, position, type);
-    case NodeTypes::Convert:
-        return std::make_shared<ConvertNode>(id, position, type);
 
+    case NodeTypes::Initial_Value:
+        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f);
+        break;
+
+    case NodeTypes::Final_Value:
+        m_inputs.push_back(NodeConnection());
+        break;
+
+    case NodeTypes::Node_Group:
+        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f);
+        break;
+
+    case NodeTypes::And:
+        m_inputs.push_back(NodeConnection(1.0f)); // Input
+        m_inputs.push_back(NodeConnection(1.0f)); // Input
+        m_inputs.push_back(NodeConnection(1.0f)); // Input
+        m_inputs.push_back(NodeConnection(1.0f)); // Input
+        m_inputs.push_back(NodeConnection(1.0f)); // Input
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Or:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Input
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Two_Stage:
+        m_inputs.push_back(NodeConnection()); // Stage 1 trig
+        m_inputs.push_back(NodeConnection(50.0f)); // Stage 1 value
+        m_inputs.push_back(NodeConnection()); // Stage 2 trig
+        m_inputs.push_back(NodeConnection(100.0f)); // Stage 2 value
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Curve:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Repeat
+        m_inputs.push_back(NodeConnection()); // Time
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Curve type
+        m_values.push_back(0.0f); // Internet time counter
+        break;
+
+    case NodeTypes::Compare:
+        m_inputs.push_back(NodeConnection()); // Value 1
+        m_inputs.push_back(NodeConnection()); // Value 2
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Compare type
+        break;
+
+    case NodeTypes::On_Off:
+        m_inputs.push_back(NodeConnection()); // On
+        m_inputs.push_back(NodeConnection()); // Off
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Invert:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Toggle:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Internal last value
+        break;
+
+    case NodeTypes::Delay:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection(1.0f)); // Delay time
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Internal timer
+        break;
+
+    case NodeTypes::Push_Button:
+        m_inputs.push_back(NodeConnection()); // Button
+        m_inputs.push_back(NodeConnection()); // Neutral Safety
+        m_inputs.push_back(NodeConnection()); // Engine running
+        m_outputs.push_back(0.0f); // Ignition output
+        m_outputs.push_back(0.0f); // Starter output
+        m_values.push_back(0.0f); // Internal state
+        break;
+
+    case NodeTypes::Map_Value:
+        m_inputs.push_back(NodeConnection()); // Value
+        m_inputs.push_back(NodeConnection()); // From min
+        m_inputs.push_back(NodeConnection(1.0f)); // From max
+        m_inputs.push_back(NodeConnection()); // To min
+        m_inputs.push_back(NodeConnection(100.0f)); // To max
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Math:
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f);
+        break;
+
+    case NodeTypes::Value:
+        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f);
+        break;
+
+    case NodeTypes::Switch:
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::Count:
     default:
         assert(false);
-        return nullptr;
+        break;
     }
 }
 
