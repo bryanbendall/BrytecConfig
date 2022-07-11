@@ -12,9 +12,10 @@ void Config::addModule(std::filesystem::path modulePath)
 {
     std::shared_ptr<Module> module = std::make_shared<Module>();
     ModuleSerializer serializer(module);
-    if (serializer.deserializeTemplateText(modulePath)) {
-        m_modules.push_back(module);
-    }
+    // TODO
+    // if (serializer.deserializeTemplateText(modulePath)) {
+    //     m_modules.push_back(module);
+    // }
 }
 
 void Config::addModule(std::shared_ptr<Module>& module)

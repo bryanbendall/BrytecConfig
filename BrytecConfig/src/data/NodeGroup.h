@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-class NodeGroup : public Selectable {
+class NodeGroup : public Selectable, public std::enable_shared_from_this<NodeGroup> {
 
 public:
     NodeGroup();

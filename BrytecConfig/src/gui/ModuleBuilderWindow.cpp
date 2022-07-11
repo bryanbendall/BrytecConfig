@@ -42,8 +42,9 @@ void ModuleBuilderWindow::drawMenubar()
 
             std::shared_ptr<Module> module = std::make_shared<Module>();
             ModuleSerializer serializer(module);
-            if (serializer.deserializeTemplateText(path))
-                m_module = module;
+            // TODO
+            // if (serializer.deserializeTemplateText(path))
+            //     m_module = module;
         }
 
         // Save
@@ -55,8 +56,9 @@ void ModuleBuilderWindow::drawMenubar()
                 path.replace_extension("btmodule");
 
             if (!path.empty()) {
-                ModuleSerializer serializer(m_module);
-                serializer.serializeTemplateText(path);
+                // TODO
+                // ModuleSerializer serializer(m_module);
+                // serializer.serializeTemplateText(path);
             }
         }
 

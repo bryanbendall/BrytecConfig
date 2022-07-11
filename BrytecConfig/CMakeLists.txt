@@ -40,6 +40,12 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/ETwoStageNode.h
                 src/BrytecConfigEmbedded/Nodes/EValueNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
+                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.cpp
+                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.h
+                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
+                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h
+                src/BrytecConfigEmbedded/EBrytecApp.cpp
+                src/BrytecConfigEmbedded/EBrytecApp.h
                 src/BrytecConfigEmbedded/ENode.cpp
                 src/BrytecConfigEmbedded/ENode.h
                 src/BrytecConfigEmbedded/ENodeConnection.h

@@ -11,6 +11,7 @@
 #include <misc/cpp/imgui_stdlib.h>
 
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
+#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
 #include "utils/BinarySerializer.h"
 
 NodeWindow::NodeWindow()

@@ -41,9 +41,6 @@ class Node {
 public:
     Node(int id, ImVec2 position, NodeTypes type);
 
-    // TODO
-    void evaluate() { }
-
     std::string& getName() { return m_name; }
     void setName(std::string& name) { m_name = name; }
 

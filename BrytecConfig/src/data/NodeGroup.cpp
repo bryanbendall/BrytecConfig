@@ -1,5 +1,7 @@
 #include "NodeGroup.h"
 
+#include "utils/NodeGroupSerializer.h"
+
 NodeGroup::NodeGroup()
     : m_uuid(UUID())
 {
@@ -134,8 +136,16 @@ void NodeGroup::deleteNode(int nodeId)
 
 void NodeGroup::evaluateAllNodes()
 {
-    for (auto& node : m_nodes)
-        node->evaluate();
+    // Serialize node group
+    auto sharedPtr = shared_from_this();
+    NodeGroupSerializer nodeGroupSer(sharedPtr);
+    BinarySerializer ser = nodeGroupSer.serializeBinary();
+
+    // Create node vector
+
+    // Evaluate vector
+
+    // Extract output values
 }
 
 void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck)

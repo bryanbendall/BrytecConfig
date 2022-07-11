@@ -1,5 +1,7 @@
 #include "AppManager.h"
 
+#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
+#include "utils/BinarySerializer.h"
 #include "utils/ConfigSerializer.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
@@ -29,7 +31,13 @@ void update()
     handleKeyEvents();
 }
 
-std::shared_ptr<Config>& getConfig()
+Version getVersion()
+{
+    return data.version;
+}
+
+std::shared_ptr<Config>&
+getConfig()
 {
     return data.config;
 }
@@ -78,20 +86,14 @@ void openConfig()
     ///////////////////////////////
     // Test ///////////////////////
     BinaryDeserializer des(path);
-    serializer.deserializeBinary(des);
-    clearSelected();
-    data.config = config;
-    updateWindowTitle();
-    return;
-    //////////////////////////////
-
-    if (serializer.deserializeText(config->getFilepath())) {
+    if (serializer.deserializeBinary(des)) {
         clearSelected();
         data.config = config;
         updateWindowTitle();
-    } else
+    } else {
         std::cout << "Could not deserialize file: "
                   << "" << std::endl;
+    }
 }
 
 static void save(std::shared_ptr<Config>& config)
