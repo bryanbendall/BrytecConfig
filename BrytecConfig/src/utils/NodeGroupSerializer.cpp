@@ -36,15 +36,10 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
         // Inputs
         ser.writeRaw<uint8_t>(node->getInputs().size());
         for (auto input : node->getInputs()) {
-            if (!input.ConnectedNode.expired()) {
-                ser.writeRaw<int8_t>(m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()));
-                ser.writeRaw<int8_t>(input.OutputIndex);
-                ser.writeRaw<float>(input.DefaultValue);
-            } else {
-                ser.writeRaw<int8_t>(-1);
-                ser.writeRaw<int8_t>(-1);
-                ser.writeRaw<float>(input.DefaultValue);
-            }
+            if (!input.ConnectedNode.expired())
+                ser.writeRaw<int8_t>(ConnectionType::Pointer);
+            else
+                ser.writeRaw<int8_t>(ConnectionType::Float);
         }
 
         // Values
@@ -59,6 +54,25 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
         }
     }
 
+    // Node Connections
+    ser.writeRaw<uint16_t>(m_nodeGroup->getNodes().size());
+    for (auto node : m_nodeGroup->getNodes()) {
+
+        // Inputs
+        ser.writeRaw<uint8_t>(node->getInputs().size());
+        for (auto input : node->getInputs()) {
+            if (!input.ConnectedNode.expired()) {
+                ser.writeRaw<int8_t>(m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()));
+                ser.writeRaw<int8_t>(input.OutputIndex);
+                ser.writeRaw<float>(input.DefaultValue);
+            } else {
+                ser.writeRaw<int8_t>(-1);
+                ser.writeRaw<int8_t>(-1);
+                ser.writeRaw<float>(input.DefaultValue);
+            }
+        }
+    }
+
     return ser;
 }
 
@@ -70,67 +84,54 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
     m_nodeGroup->setType((IOTypes::Types)des.readRaw<uint8_t>());
     m_nodeGroup->setEnabled(des.readRaw<uint8_t>());
 
-    uint16_t nodeCount = des.readRaw<uint16_t>();
-    des.saveOffset();
-    for (int i = 0; i < nodeCount; i++) {
-        std::string name = des.readRaw<std::string>();
-        NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
-        float x = des.readRaw<float>();
-        float y = des.readRaw<float>();
+    {
+        uint16_t nodeCount = des.readRaw<uint16_t>();
+        for (int i = 0; i < nodeCount; i++) {
+            std::string name = des.readRaw<std::string>();
+            NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
+            float x = des.readRaw<float>();
+            float y = des.readRaw<float>();
 
-        auto newNode = m_nodeGroup->addNode(type, { x, y });
-        newNode->setName(name);
+            auto newNode = m_nodeGroup->addNode(type, { x, y });
+            newNode->setName(name);
 
-        // Inputs - skip till later
-        uint8_t inputCount = des.readRaw<uint8_t>();
-        for (int j = 0; j < inputCount; j++) {
-            des.readRaw<int8_t>();
-            des.readRaw<int8_t>();
-            des.readRaw<float>();
-        }
+            // Inputs - skip till later
+            uint8_t inputCount = des.readRaw<uint8_t>();
+            for (int j = 0; j < inputCount; j++) {
+                des.readRaw<int8_t>(); // Connection type
+            }
 
-        // Values
-        uint8_t valueCount = des.readRaw<uint8_t>();
-        for (int valueIndex = 0; valueIndex < valueCount; valueIndex++)
-            newNode->setValue(valueIndex, des.readRaw<float>());
+            // Values
+            uint8_t valueCount = des.readRaw<uint8_t>();
+            for (int valueIndex = 0; valueIndex < valueCount; valueIndex++)
+                newNode->setValue(valueIndex, des.readRaw<float>());
 
-        // Special Node Groups
-        if (type == NodeTypes::Node_Group) {
-            newNode->setSelectedNodeGroup(des.readRaw<uint64_t>());
+            // Special Node Groups
+            if (type == NodeTypes::Node_Group) {
+                newNode->setSelectedNodeGroup(des.readRaw<uint64_t>());
+            }
         }
     }
 
     // Connect inputs to already added nodes
-    des.goToSavedOffset();
-    for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
-        std::string name = des.readRaw<std::string>();
-        NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
-        float x = des.readRaw<float>();
-        float y = des.readRaw<float>();
+    {
+        uint16_t nodeCount = des.readRaw<uint16_t>();
+        for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
 
-        // Inputs
-        uint8_t inputCount = des.readRaw<uint8_t>();
-        for (int inputIndex = 0; inputIndex < inputCount; inputIndex++) {
-            auto connectionNodeIndex = des.readRaw<int8_t>();
-            auto outputIndex = des.readRaw<int8_t>();
-            auto defaultValue = des.readRaw<float>();
-            if (connectionNodeIndex > -1 && outputIndex > -1) {
-                // Has connection
-                NodeConnection nodeConnection = { m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue };
-                m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
-            } else {
-                m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
+            // Inputs
+            uint8_t inputCount = des.readRaw<uint8_t>();
+            for (int inputIndex = 0; inputIndex < inputCount; inputIndex++) {
+                auto connectionNodeIndex = des.readRaw<int8_t>();
+                auto outputIndex = des.readRaw<int8_t>();
+                auto defaultValue = des.readRaw<float>();
+                if (connectionNodeIndex > -1 && outputIndex > -1) {
+                    // Has connection
+                    NodeConnection nodeConnection = { m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue };
+                    m_nodeGroup->getNodes()[nodeIndex]->setInput(inputIndex, nodeConnection);
+                } else {
+                    m_nodeGroup->getNodes()[nodeIndex]->getInput(inputIndex).DefaultValue = defaultValue;
+                }
             }
-        }
-
-        // Values - Skip
-        uint8_t valueCount = des.readRaw<uint8_t>();
-        for (int j = 0; j < valueCount; j++)
-            des.readRaw<float>();
-
-        // Special Node Groups - Skip
-        if (type == NodeTypes::Node_Group) {
-            des.readRaw<uint64_t>();
         }
     }
 

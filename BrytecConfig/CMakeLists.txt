@@ -42,20 +42,23 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
                 src/BrytecConfigEmbedded/Utils/BinaryDeserializer.cpp
                 src/BrytecConfigEmbedded/Utils/BinaryDeserializer.h
+                src/BrytecConfigEmbedded/Utils/ENodeConnection.h
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h
+                src/BrytecConfigEmbedded/Utils/ENodeGroup.cpp
+                src/BrytecConfigEmbedded/Utils/ENodeGroup.h
+                src/BrytecConfigEmbedded/Utils/NodesVector.h
+                src/BrytecConfigEmbedded/BrytecBoard.h
                 src/BrytecConfigEmbedded/EBrytecApp.cpp
                 src/BrytecConfigEmbedded/EBrytecApp.h
                 src/BrytecConfigEmbedded/ENode.cpp
                 src/BrytecConfigEmbedded/ENode.h
-                src/BrytecConfigEmbedded/ENodeConnection.h
-                src/BrytecConfigEmbedded/NodesVector.h
+                src/BrytecConfigEmbedded/IOTypes.cpp
+                src/BrytecConfigEmbedded/IOTypes.h
                 src/data/CanBus.cpp
                 src/data/CanBus.h
                 src/data/Config.cpp
                 src/data/Config.h
-                src/data/IOTypes.cpp
-                src/data/IOTypes.h
                 src/data/Module.cpp
                 src/data/Module.h
                 src/data/Node.cpp

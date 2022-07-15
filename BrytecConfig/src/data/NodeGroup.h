@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IOTypes.h"
+#include "BrytecConfigEmbedded/IOTypes.h"
 #include "Node.h"
 #include "Selectable.h"
 #include "utils/UUID.h"
