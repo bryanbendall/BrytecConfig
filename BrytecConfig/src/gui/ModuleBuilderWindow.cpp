@@ -36,29 +36,30 @@ void ModuleBuilderWindow::drawMenubar()
 
         // Open
         if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
-            auto path = FileDialogs::OpenFile("btmodule", MODULES_PATH);
-            if (path.empty())
+            auto modulePath = FileDialogs::OpenFile("btmodule", MODULES_PATH);
+            if (modulePath.empty())
                 return;
 
             std::shared_ptr<Module> module = std::make_shared<Module>();
             ModuleSerializer serializer(module);
-            // TODO
-            // if (serializer.deserializeTemplateText(path))
-            //     m_module = module;
+            BinaryDeserializer des(modulePath);
+            if (serializer.deserializeTemplateBinary(des)) {
+                m_module = module;
+            }
         }
 
         // Save
         if (ImGui::MenuItem(ICON_FA_SAVE)) {
             auto defaultPath = std::filesystem::absolute("data/modules/");
-            auto path = FileDialogs::SaveFile("yaml", defaultPath.string().c_str());
+            auto path = FileDialogs::SaveFile("btmodule", defaultPath.string().c_str());
 
             if (path.extension().empty())
                 path.replace_extension("btmodule");
 
             if (!path.empty()) {
-                // TODO
-                // ModuleSerializer serializer(m_module);
-                // serializer.serializeTemplateText(path);
+                ModuleSerializer serializer(m_module);
+                auto moduleTemplateBinary = serializer.serializeTemplateBinary();
+                moduleTemplateBinary.writeToFile(path);
             }
         }
 

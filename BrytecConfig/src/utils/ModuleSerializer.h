@@ -15,6 +15,7 @@ public:
     ModuleSerializer(std::shared_ptr<Config>& config, std::shared_ptr<Module>& module);
 
     BinarySerializer serializeTemplateBinary();
+    bool deserializeTemplateBinary(BinaryDeserializer& des);
     BinarySerializer serializeBinary();
     bool deserializeBinary(BinaryDeserializer& des);
 

@@ -99,7 +99,6 @@ void openConfig()
 static void save(std::shared_ptr<Config>& config)
 {
     ConfigSerializer serializer(config);
-    // serializer.serializeText(path);
     auto configBinary = serializer.serializeBinary();
     configBinary.writeToFile(config->getFilepath());
 }

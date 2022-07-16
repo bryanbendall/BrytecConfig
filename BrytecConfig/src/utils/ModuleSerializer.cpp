@@ -38,7 +38,6 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     // default address
 
     // Prototype pins
-    uint16_t nodeGroupCount = 0;
     ser.writeRaw<uint16_t>(m_module->getPins().size());
     for (auto pin : m_module->getPins()) {
         ser.writeRaw(pin->getPinoutName());
@@ -48,6 +47,32 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     }
 
     return ser;
+}
+
+bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
+{
+    des.readRaw<char>(); // T
+    des.readRaw<char>(); // M
+    // TODO check header
+
+    des.readRaw<uint8_t>(); // Major
+    des.readRaw<uint8_t>(); // Minor
+    // TODO check version
+
+    uint16_t pinCount = des.readRaw<uint16_t>();
+    for (int i = 0; i < pinCount; i++) {
+        std::string pinoutName = des.readRaw<std::string>();
+
+        std::vector<IOTypes::Types> availableTypesVec;
+        uint8_t typesCount = des.readRaw<uint8_t>();
+        for (int j = 0; j < typesCount; j++)
+            availableTypesVec.push_back((IOTypes::Types)des.readRaw<uint8_t>());
+
+        std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
+        m_module->getPins().push_back(newPin);
+    }
+
+    return true;
 }
 
 BinarySerializer ModuleSerializer::serializeBinary()
@@ -78,7 +103,7 @@ BinarySerializer ModuleSerializer::serializeBinary()
     ser.writeRaw<uint16_t>(nodeGroupCount);
     for (int i = 0; i < m_module->getPins().size(); i++) {
         if (auto nodeGroup = m_module->getPins()[i]->getNodeGroup()) {
-            ser.writeRaw<uint16_t>(i);
+            ser.writeRaw<uint16_t>(i); // pin index
             NodeGroupSerializer nodeGroupSer(nodeGroup);
             auto nodeGroupBinary = nodeGroupSer.serializeBinary();
             ser.append(nodeGroupBinary);
@@ -90,24 +115,18 @@ BinarySerializer ModuleSerializer::serializeBinary()
 
 bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
 {
+    des.readRaw<char>(); // T
+    des.readRaw<char>(); // M
+    // TODO check header
+
+    des.readRaw<uint8_t>(); // Major
+    des.readRaw<uint8_t>(); // Minor
+    // TODO check version
+
     // Basic info
     m_module->setName(des.readRaw<std::string>());
     m_module->setAddress(des.readRaw<uint8_t>());
     m_module->setEnabled(des.readRaw<uint8_t>());
-
-    // Prototype pins
-    uint32_t pinCount = des.readRaw<uint16_t>();
-    for (int i = 0; i < pinCount; i++) {
-        std::string pinoutName = des.readRaw<std::string>();
-
-        std::vector<IOTypes::Types> availableTypesVec;
-        uint8_t typesCount = des.readRaw<uint8_t>();
-        for (int j = 0; j < typesCount; j++)
-            availableTypesVec.push_back((IOTypes::Types)des.readRaw<uint8_t>());
-
-        std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
-        m_module->getPins().push_back(newPin);
-    }
 
     // Node groups
     uint16_t nodeGroupCount = des.readRaw<uint16_t>();

@@ -2,6 +2,8 @@ add_executable(BrytecConfig
                 src/main.cpp              
                 src/AppManager.cpp
                 src/AppManager.h
+                src/BrytecConfigEmbedded/Boards/BrytecBoard.h
+                src/BrytecConfigEmbedded/Boards/BrytecPowerModuleV1.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
@@ -48,7 +50,6 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Utils/ENodeGroup.cpp
                 src/BrytecConfigEmbedded/Utils/ENodeGroup.h
                 src/BrytecConfigEmbedded/Utils/NodesVector.h
-                src/BrytecConfigEmbedded/BrytecBoard.h
                 src/BrytecConfigEmbedded/EBrytecApp.cpp
                 src/BrytecConfigEmbedded/EBrytecApp.h
                 src/BrytecConfigEmbedded/ENode.cpp

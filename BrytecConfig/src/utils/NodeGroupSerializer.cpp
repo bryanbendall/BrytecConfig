@@ -78,6 +78,14 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
 
 bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
 {
+    // Header
+    des.readRaw<char>(); // N
+    des.readRaw<char>(); // G
+
+    // Version
+    des.readRaw<uint8_t>(); // Major
+    des.readRaw<uint8_t>(); // Minor
+
     // Basic info
     m_nodeGroup->setName(des.readRaw<std::string>());
     m_nodeGroup->setId(des.readRaw<uint64_t>());
