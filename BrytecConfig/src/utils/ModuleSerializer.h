@@ -25,6 +25,4 @@ public:
 private:
     std::shared_ptr<Module> m_module;
     std::shared_ptr<Config> m_config = nullptr;
-
-    friend class ConfigSerializer;
 };

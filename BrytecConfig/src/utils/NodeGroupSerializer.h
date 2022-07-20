@@ -18,6 +18,4 @@ public:
 
 private:
     std::shared_ptr<NodeGroup> m_nodeGroup;
-
-    friend class ConfigSerializer;
 };

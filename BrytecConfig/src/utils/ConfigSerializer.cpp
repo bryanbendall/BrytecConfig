@@ -115,14 +115,11 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
             return false;
     }
 
-    // Test
-    return true;
-
     // Footer
     char footer[2];
     footer[0] = des.readRaw<char>();
     footer[1] = des.readRaw<char>();
-    if (memcmp(header, "BT", 2) != 0)
+    if (memcmp(footer, "BT", 2) != 0)
         return false;
 
     return true;

@@ -7,9 +7,11 @@ class NodeGroupWindow {
 public:
     NodeGroupWindow();
     void drawWindow();
+    void setOpenedState(bool state) { m_opened = state; }
+
+private:
     void drawMenubar();
     void drawNodeGroups();
-    void setOpenedState(bool state) { m_opened = state; }
 
 private:
     enum class FilterType {
