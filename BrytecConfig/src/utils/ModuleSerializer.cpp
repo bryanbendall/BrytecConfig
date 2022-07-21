@@ -115,8 +115,8 @@ BinarySerializer ModuleSerializer::serializeBinary()
 
 bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
 {
-    des.readRaw<char>(); // T
     des.readRaw<char>(); // M
+    des.readRaw<char>(); // D
     // TODO check header
 
     des.readRaw<uint8_t>(); // Major

@@ -42,7 +42,7 @@ public:
     Node(int id, ImVec2 position, NodeTypes type);
 
     std::string& getName() { return m_name; }
-    void setName(std::string& name) { m_name = name; }
+    void setName(const std::string& name) { m_name = name; }
 
     ImVec2& getPosition() { return m_position; }
 
