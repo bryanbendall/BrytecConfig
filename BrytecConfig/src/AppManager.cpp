@@ -32,7 +32,7 @@ void test()
     std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
     nodeGroup->setType(IOTypes::Types::Input_12V);
     auto n1 = nodeGroup->addNode(NodeTypes::Math);
-    // nodeGroup->addNode(NodeTypes::Curve);
+    nodeGroup->addNode(NodeTypes::Curve);
 
     module->addPin("Pin1", { IOTypes::Types::Input_12V });
     module->getPins()[0]->setNodeGroup(nodeGroup);
