@@ -29,7 +29,7 @@ public:
     std::vector<IOTypes::Types>& getAvailableTypes() { return m_availableTypes; }
 
     std::shared_ptr<NodeGroup> getNodeGroup() { return m_nodeGroup.lock(); }
-    void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup);
+    void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup, bool simulation = false);
 
 public:
     static const char* currentNames[(size_t)PinCurrentLimit::Count];
