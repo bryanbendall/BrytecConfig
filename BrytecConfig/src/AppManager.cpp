@@ -59,7 +59,7 @@ void init(GLFWwindow* window)
     s_data.mainWindow->setupStyle();
     newConfig();
 
-    test();
+    // test();
 }
 
 void update()

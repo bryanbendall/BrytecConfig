@@ -1,6 +1,7 @@
 #include "NodeGroup.h"
 
-#include "utils/NodeGroupSerializer.h"
+#include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "utils/ModuleSerializer.h"
 
 NodeGroup::NodeGroup()
     : m_uuid(UUID())
@@ -137,15 +138,38 @@ void NodeGroup::deleteNode(int nodeId)
 void NodeGroup::evaluateAllNodes()
 {
     // Serialize node group
-    auto sharedPtr = shared_from_this();
-    NodeGroupSerializer nodeGroupSer(sharedPtr);
-    BinarySerializer ser = nodeGroupSer.serializeBinary();
+    std::shared_ptr<NodeGroup> thisNodeGroup = shared_from_this();
 
-    // Create node vector
+    std::shared_ptr<Module> module = std::make_shared<Module>();
+    module->addPin();
+    module->getPins()[0]->setNodeGroup(thisNodeGroup);
 
-    // Evaluate vector
+    ModuleSerializer moduleSer(module);
+    BinarySerializer ser = moduleSer.serializeBinary();
+    BinaryDeserializer des(ser.getData().data());
 
-    // Extract output values
+    EBrytecApp::deserializeModule(des);
+    EBrytecApp::evaulateJustNodes(ImGui::GetIO().DeltaTime);
+
+    // TODO Extract output values
+    for (int index = 0; index < m_nodes.size(); index++) {
+        auto node = m_nodes[index];
+        auto eNode = EBrytecApp::getNode(index);
+
+        // Outputs
+        {
+            for (int i = 0; i < node->getOutputs().size(); i++) {
+                node->getOutput(i) = *(eNode->GetOutput(i));
+            }
+        }
+
+        // Values
+        {
+            for (int i = 0; i < node->getValues().size(); i++) {
+                node->getValue(i) = eNode->GetValue(i + node->getInputs().size());
+            }
+        }
+    }
 }
 
 void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck)

@@ -19,6 +19,8 @@ Pin::Pin(const std::string& pinoutName, const std::vector<IOTypes::Types>& avail
 
 Pin::~Pin()
 {
+    if (auto oldNodeGroup = m_nodeGroup.lock())
+        oldNodeGroup->setAssigned(false);
 }
 
 void Pin::setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup)
