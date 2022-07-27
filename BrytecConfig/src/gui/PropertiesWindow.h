@@ -4,7 +4,6 @@
 #include "data/Pin.h"
 
 class PropertiesWindow {
-    bool m_opened = true;
 
 public:
     PropertiesWindow() = default;
@@ -18,4 +17,7 @@ private:
     void drawCanBus(CanBus& can);
     void drawPinProps(std::shared_ptr<Pin> pin);
     void drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup);
+
+private:
+    bool m_opened = true;
 };

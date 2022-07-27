@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BrytecConfigEmbedded/Nodes.h"
+#include "BrytecConfigEmbedded/ENode.h"
 #include "utils/UUID.h"
 #include <imgui.h>
 #include <memory>
@@ -39,16 +39,14 @@ struct NodeConnection {
 class Node {
 
 public:
-    Node(int id, ImVec2 position, Embedded::NodeTypes type);
-
-    void evaluate();
+    Node(int id, ImVec2 position, NodeTypes type);
 
     std::string& getName() { return m_name; }
-    void setName(std::string& name) { m_name = name; }
+    void setName(const std::string& name) { m_name = name; }
 
     ImVec2& getPosition() { return m_position; }
 
-    Embedded::NodeTypes& getType() { return m_type; }
+    NodeTypes& getType() { return m_type; }
 
     int getId() { return m_id; }
     int getOutputId(int index) { return (m_id << 8) + index; }
@@ -77,38 +75,20 @@ public:
     unsigned int getBytesSize();
 
 private:
-    void evaluateAnd();
-    void evaluateOr();
-    void evaluateInvert();
-    void evaluateTwoStage();
-    void evaluateOnOff();
-    void evaluateToggle();
-    void evaluateDelay();
-    void evaluateCompare();
-    void evaluateMath();
-    void evaluateMap();
-    void evaulateCurve();
-    void evaluatePushButton();
-    void evaluateSwitch();
-
     bool hasConnection(int inputIndex);
 
 public:
-    static const char* s_nodeName[(int)Embedded::NodeTypes::Count];
-    static const char* s_getTypeName(Embedded::NodeTypes type) { return s_nodeName[(int)type]; }
-    static const char* s_compareNames[(int)Embedded::CompareNode::Types::Count];
-    static const char* s_mathNames[(int)Embedded::MathNode::Types::Count];
-    static const char* s_curveNames[(int)Embedded::CurveNode::Types::Count];
+    static const char* s_nodeName[(int)NodeTypes::Count];
+    static const char* s_getTypeName(NodeTypes type) { return s_nodeName[(int)type]; }
 
-private:
+protected:
     std::string m_name;
-    Embedded::NodeTypes m_type;
+    NodeTypes m_type;
     int m_id;
     ImVec2 m_position;
     std::vector<float> m_outputs;
     std::vector<NodeConnection> m_inputs;
     std::vector<float> m_values;
-    std::vector<float> m_unconnectedValues;
     bool m_loopFound = false;
     UUID m_selectedNodeGroup;
 };

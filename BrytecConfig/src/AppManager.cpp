@@ -1,46 +1,92 @@
 #include "AppManager.h"
 
+#include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
+#include "utils/BinarySerializer.h"
 #include "utils/ConfigSerializer.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
+#include "utils/ModuleSerializer.h"
+#include <fstream>
 #include <imgui.h>
 #include <iostream>
 #include <memory>
 
 namespace AppManager {
 
-static Data data;
+struct AppManagerData {
+    std::shared_ptr<Config> config;
+    std::weak_ptr<Selectable> SelectedItem;
+    GLFWwindow* GLFWWindow;
+    std::unique_ptr<MainWindow> mainWindow;
+    ImFont* BigIcons = nullptr;
+    Version version;
+};
+
+static AppManagerData s_data;
+
+void test()
+{
+    std::shared_ptr<Module> module = std::make_shared<Module>();
+
+    std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
+    nodeGroup->setType(IOTypes::Types::Input_12V);
+    auto n1 = nodeGroup->addNode(NodeTypes::Math);
+    nodeGroup->addNode(NodeTypes::Node_Group);
+
+    module->addPin("Pin1", { IOTypes::Types::Input_12V });
+    module->getPins()[0]->setNodeGroup(nodeGroup);
+
+    ModuleSerializer moduleSer(module);
+    auto moduleData = moduleSer.serializeBinary();
+    BinarySerializer ser(moduleData);
+
+    // ser.writeToFile("/home/bendall/Desktop/dump.hex");
+
+    BinaryDeserializer des(ser.getData().data());
+    EBrytecApp::deserializeModule(des);
+    EBrytecApp::setupPins();
+    EBrytecApp::update(2.0f);
+}
 
 void init(GLFWwindow* window)
 {
-    data.mainWindow = std::make_unique<MainWindow>();
-    data.GLFWWindow = window;
+    s_data.mainWindow = std::make_unique<MainWindow>();
+    s_data.GLFWWindow = window;
     glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { AppManager::exit(); });
-    data.mainWindow->setWindow(window);
-    data.mainWindow->setupFonts();
-    data.mainWindow->setupStyle();
+    s_data.mainWindow->setWindow(window);
+    s_data.mainWindow->setupFonts();
+    s_data.mainWindow->setupStyle();
     newConfig();
+
+    // test();
 }
 
 void update()
 {
-    data.mainWindow->drawWindow();
+    s_data.mainWindow->drawWindow();
     handleKeyEvents();
 }
 
-std::shared_ptr<Config>& getConfig()
+Version getVersion()
 {
-    return data.config;
+    return s_data.version;
+}
+
+std::shared_ptr<Config>&
+getConfig()
+{
+    return s_data.config;
 }
 
 std::weak_ptr<Selectable> getSelectedItem()
 {
-    return data.SelectedItem;
+    return s_data.SelectedItem;
 }
 
 void setSelected(std::weak_ptr<Selectable> sel)
 {
-    data.SelectedItem = sel;
+    s_data.SelectedItem = sel;
 }
 
 void clearSelected()
@@ -50,18 +96,18 @@ void clearSelected()
 
 void setBigIconFont(ImFont* font)
 {
-    data.BigIcons = font;
+    s_data.BigIcons = font;
 }
 
 ImFont* getBigIconFont()
 {
-    return data.BigIcons;
+    return s_data.BigIcons;
 }
 
 void newConfig()
 {
     clearSelected();
-    data.config = std::make_shared<Config>("");
+    s_data.config = std::make_shared<Config>("");
     updateWindowTitle();
 }
 
@@ -73,27 +119,33 @@ void openConfig()
 
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
-    if (serializer.deserializeText(config->getFilepath())) {
+
+    ///////////////////////////////
+    // Test ///////////////////////
+    BinaryDeserializer des(path);
+    if (serializer.deserializeBinary(des)) {
         clearSelected();
-        data.config = config;
+        s_data.config = config;
         updateWindowTitle();
-    } else
+    } else {
         std::cout << "Could not deserialize file: "
                   << "" << std::endl;
+    }
 }
 
-static void save(std::shared_ptr<Config>& config, const std::filesystem::path& path)
+static void save(std::shared_ptr<Config>& config)
 {
     ConfigSerializer serializer(config);
-    serializer.serializeText(path);
+    auto configBinary = serializer.serializeBinary();
+    configBinary.writeToFile(config->getFilepath());
 }
 
 void saveConfig()
 {
-    if (data.config->getFilepath().empty())
+    if (s_data.config->getFilepath().empty())
         saveAsConfig();
     else
-        save(data.config, data.config->getFilepath());
+        save(s_data.config);
 }
 
 void saveAsConfig()
@@ -106,8 +158,8 @@ void saveAsConfig()
     if (path.extension().empty())
         path.replace_extension("btconfig");
 
-    save(data.config, path);
-    data.config->setFilepath(path);
+    s_data.config->setFilepath(path);
+    save(s_data.config);
 
     updateWindowTitle();
 }
@@ -118,21 +170,21 @@ void exit()
     // Check should close
     bool shouldClose = true;
     if (shouldClose)
-        glfwSetWindowShouldClose(data.GLFWWindow, GL_TRUE);
+        glfwSetWindowShouldClose(s_data.GLFWWindow, GL_TRUE);
     else
-        glfwSetWindowShouldClose(data.GLFWWindow, GL_FALSE);
+        glfwSetWindowShouldClose(s_data.GLFWWindow, GL_FALSE);
 }
 
 void updateWindowTitle()
 {
     std::string title = "Brytec Config - ";
 
-    if (!data.config->getFilepath().empty())
-        title.append(data.config->getFilepath().stem().string());
+    if (!s_data.config->getFilepath().empty())
+        title.append(s_data.config->getName());
     else
         title.append("Untitled");
 
-    glfwSetWindowTitle(data.GLFWWindow, title.c_str());
+    glfwSetWindowTitle(s_data.GLFWWindow, title.c_str());
 }
 
 void handleKeyEvents()
@@ -158,20 +210,20 @@ void handleKeyEvents()
 
     // Delete
     if (ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
-        if (!data.mainWindow->isNodeWindowFocused()) {
-            std::shared_ptr<Selectable> selected = data.SelectedItem.lock();
+        if (!s_data.mainWindow->isNodeWindowFocused()) {
+            std::shared_ptr<Selectable> selected = s_data.SelectedItem.lock();
             if (!selected)
                 return;
 
             if (auto module = std::dynamic_pointer_cast<Module>(selected)) {
                 clearSelected();
-                data.config->removeModule(module);
+                s_data.config->removeModule(module);
             }
 
             if (auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected)) {
                 clearSelected();
-                data.config->removeNodeGroup(nodeGroup);
-                data.mainWindow->removeNodeGroupContext(nodeGroup);
+                s_data.config->removeNodeGroup(nodeGroup);
+                s_data.mainWindow->removeNodeGroupContext(nodeGroup);
             }
         }
     }

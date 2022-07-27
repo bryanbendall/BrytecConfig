@@ -10,69 +10,117 @@ ConfigSerializer::ConfigSerializer(std::shared_ptr<Config>& config)
 {
 }
 
-void ConfigSerializer::serializeText(const std::filesystem::path& filepath)
+BinarySerializer ConfigSerializer::serializeBinary()
 {
-    YAML::Emitter out;
-    out << YAML::BeginMap;
-    out << YAML::Key << "Config" << YAML::Value << filepath.stem().string();
+    BinarySerializer ser;
 
-    { // Node Groups
-        out << YAML::Key << "Node Groups" << YAML::Value << YAML::BeginSeq;
-        for (auto nodeGroup : m_config->getNodeGroups()) {
-            out << YAML::BeginMap;
-            NodeGroupSerializer nodeGroupSerializer(nodeGroup);
-            nodeGroupSerializer.serializeTemplate(out);
-            out << YAML::EndMap;
-        }
-        out << YAML::EndSeq;
+    // Header
+    ser.writeRaw<char>('B');
+    ser.writeRaw<char>('r');
+    ser.writeRaw<char>('y');
+    ser.writeRaw<char>('t');
+    ser.writeRaw<char>('e');
+    ser.writeRaw<char>('c');
+
+    // Version
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Major);
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Minor);
+
+    // Config name
+    ser.writeRaw(m_config->getName());
+
+    // Module templates
+    ser.writeRaw<uint32_t>(m_config->getModules().size());
+    for (auto module : m_config->getModules()) {
+        ModuleSerializer moduleSer(module);
+        auto moduleBinary = moduleSer.serializeTemplateBinary();
+        ser.append(moduleBinary);
     }
 
-    { // Modules
-        out << YAML::Key << "Modules" << YAML::Value << YAML::BeginSeq;
-        for (auto module : m_config->getModules()) {
-            out << YAML::BeginMap;
-            ModuleSerializer moduleSerializer(m_config, module);
-            moduleSerializer.serializeTemplate(out);
-            out << YAML::EndMap;
-        }
-        out << YAML::EndSeq;
+    // Modules
+    ser.writeRaw<uint32_t>(m_config->getModules().size());
+    for (auto module : m_config->getModules()) {
+        ModuleSerializer moduleSer(module);
+        auto moduleBinary = moduleSer.serializeBinary();
+        ser.append(moduleBinary);
     }
 
-    out << YAML::EndMap;
-    std::ofstream fout(filepath);
-    fout << out.c_str();
+    // Unassigned node groups count
+    uint32_t unassignedNodeGroupCount = 0;
+    for (auto ng : m_config->getNodeGroups()) {
+        if (!ng->getAssigned())
+            unassignedNodeGroupCount++;
+    }
+    ser.writeRaw<uint32_t>(unassignedNodeGroupCount);
+
+    // Unassigned node groups
+    for (auto ng : m_config->getNodeGroups()) {
+        if (!ng->getAssigned()) {
+            NodeGroupSerializer nodeGroupSer(ng);
+            auto nodeGroupBinary = nodeGroupSer.serializeBinary();
+            ser.append(nodeGroupBinary);
+        }
+    }
+
+    // Footer
+    ser.writeRaw<char>('B');
+    ser.writeRaw<char>('T');
+
+    return ser;
 }
 
-bool ConfigSerializer::deserializeText(const std::filesystem::path& filepath)
+bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
 {
-    YAML::Node data = YAML::LoadFile(filepath.string());
-
-    if (!data["Config"]) {
-        assert(false);
+    // Header
+    char header[6];
+    header[0] = des.readRaw<char>();
+    header[1] = des.readRaw<char>();
+    header[2] = des.readRaw<char>();
+    header[3] = des.readRaw<char>();
+    header[4] = des.readRaw<char>();
+    header[5] = des.readRaw<char>();
+    if (memcmp(header, "Brytec", 6) != 0)
         return false;
+
+    uint8_t major = des.readRaw<uint8_t>();
+    uint8_t minor = des.readRaw<uint8_t>();
+
+    auto name = des.readRaw<std::string>();
+
+    // Module Templates
+    uint32_t moduleTemplateCount = des.readRaw<uint32_t>();
+    for (int i = 0; i < moduleTemplateCount; i++) {
+        std::shared_ptr<Module> module = std::make_shared<Module>();
+        ModuleSerializer serializer(m_config, module);
+        if (serializer.deserializeTemplateBinary(des))
+            m_config->addModule(module);
+        else
+            return false;
     }
 
-    auto nodeGroups = data["Node Groups"];
-    if (nodeGroups) {
-        for (auto nodeGroup : nodeGroups) {
-            UUID uuid = nodeGroup["Id"].as<uint64_t>();
-            auto newNodeGroup = m_config->addEmptyNodeGroup(uuid);
-            NodeGroupSerializer nodeGroupSerializer(newNodeGroup);
-            assert(nodeGroupSerializer.deserializeTemplate(nodeGroup));
-        }
+    // Modules
+    uint32_t moduleCount = des.readRaw<uint32_t>();
+    for (int i = 0; i < moduleCount; i++) {
+        std::shared_ptr<Module> module = m_config->getModules()[i];
+        ModuleSerializer serializer(m_config, module);
+        if (!serializer.deserializeBinary(des))
+            return false;
     }
 
-    auto modules = data["Modules"];
-    if (modules) {
-        for (auto module : modules) {
-            std::shared_ptr<Module> newModule = std::make_shared<Module>();
-            ModuleSerializer moduleSerializer(m_config, newModule);
-            if (moduleSerializer.deserializeTemplate(module))
-                m_config->addModule(newModule);
-        }
+    uint32_t unassignedNodeGroupCont = des.readRaw<uint32_t>();
+    for (int i = 0; i < unassignedNodeGroupCont; i++) {
+        std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
+        NodeGroupSerializer serializer(nodeGroup);
+        if (!serializer.deserializeBinary(des))
+            return false;
     }
 
-    m_config->setFilepath(filepath);
+    // Footer
+    char footer[2];
+    footer[0] = des.readRaw<char>();
+    footer[1] = des.readRaw<char>();
+    if (memcmp(footer, "BT", 2) != 0)
+        return false;
 
     return true;
 }

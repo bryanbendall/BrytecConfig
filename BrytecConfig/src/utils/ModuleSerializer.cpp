@@ -1,6 +1,7 @@
 #include "ModuleSerializer.h"
 
 #include "AppManager.h"
+#include "NodeGroupSerializer.h"
 #include "utils/DefaultPaths.h"
 #include <filesystem>
 #include <fstream>
@@ -17,38 +18,129 @@ ModuleSerializer::ModuleSerializer(std::shared_ptr<Config>& config, std::shared_
 {
 }
 
-void ModuleSerializer::serializeTemplateText(const std::filesystem::path& filepath)
+BinarySerializer ModuleSerializer::serializeTemplateBinary()
 {
-    YAML::Emitter out;
-    out << YAML::BeginMap;
+    BinarySerializer ser;
 
-    serializeTemplate(out);
+    // Header
+    ser.writeRaw<char>('T');
+    ser.writeRaw<char>('M');
 
-    out << YAML::EndMap;
+    // Version
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Major);
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Minor);
 
-    std::ofstream fout(filepath);
-    fout << out.c_str();
-}
+    // Basic info
+    // TODO
+    // manufacture name
+    // board name
+    // version
+    // default address
 
-bool ModuleSerializer::deserializeTemplateText(const std::filesystem::path& filepath)
-{
-    YAML::Node data = YAML::LoadFile(filepath.string());
-    if (!data["Name"]) {
-        assert(false);
-        return false;
+    // Prototype pins
+    ser.writeRaw<uint16_t>(m_module->getPins().size());
+    for (auto pin : m_module->getPins()) {
+        ser.writeRaw(pin->getPinoutName());
+        ser.writeRaw<uint8_t>(pin->getAvailableTypes().size());
+        for (auto type : pin->getAvailableTypes())
+            ser.writeRaw<uint8_t>((uint8_t)type);
     }
-    return deserializeTemplate(data);
+
+    return ser;
 }
 
-void ModuleSerializer::serializeTemplateBinary(const std::filesystem::path& filepath)
+bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
 {
-    assert(false);
+    des.readRaw<char>(); // T
+    des.readRaw<char>(); // M
+    // TODO check header
+
+    des.readRaw<uint8_t>(); // Major
+    des.readRaw<uint8_t>(); // Minor
+    // TODO check version
+
+    uint16_t pinCount = des.readRaw<uint16_t>();
+    for (int i = 0; i < pinCount; i++) {
+        std::string pinoutName = des.readRaw<std::string>();
+
+        std::vector<IOTypes::Types> availableTypesVec;
+        uint8_t typesCount = des.readRaw<uint8_t>();
+        for (int j = 0; j < typesCount; j++)
+            availableTypesVec.push_back((IOTypes::Types)des.readRaw<uint8_t>());
+
+        std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
+        m_module->getPins().push_back(newPin);
+    }
+
+    return true;
 }
 
-bool ModuleSerializer::deserializeTemplateBinary(const std::filesystem::path& filepath)
+BinarySerializer ModuleSerializer::serializeBinary()
 {
-    assert(false);
-    return false;
+    BinarySerializer ser;
+
+    // Header
+    ser.writeRaw<char>('M');
+    ser.writeRaw<char>('D');
+
+    // Version
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Major);
+    ser.writeRaw<uint8_t>(AppManager::getVersion().Minor);
+
+    // Basic info
+    ser.writeRaw<std::string>(m_module->getName());
+    ser.writeRaw<uint8_t>(m_module->getAddress());
+    ser.writeRaw<uint8_t>(m_module->getEnabled());
+
+    // Count Node Groups
+    uint16_t nodeGroupCount = 0;
+    for (auto pin : m_module->getPins()) {
+        if (auto nodeGroup = pin->getNodeGroup())
+            nodeGroupCount++;
+    }
+
+    // Node groups
+    ser.writeRaw<uint16_t>(nodeGroupCount);
+    for (int i = 0; i < m_module->getPins().size(); i++) {
+        if (auto nodeGroup = m_module->getPins()[i]->getNodeGroup()) {
+            ser.writeRaw<uint16_t>(i); // pin index
+            NodeGroupSerializer nodeGroupSer(nodeGroup);
+            auto nodeGroupBinary = nodeGroupSer.serializeBinary();
+            ser.append(nodeGroupBinary);
+        }
+    }
+
+    return ser;
+}
+
+bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
+{
+    des.readRaw<char>(); // M
+    des.readRaw<char>(); // D
+    // TODO check header
+
+    des.readRaw<uint8_t>(); // Major
+    des.readRaw<uint8_t>(); // Minor
+    // TODO check version
+
+    // Basic info
+    m_module->setName(des.readRaw<std::string>());
+    m_module->setAddress(des.readRaw<uint8_t>());
+    m_module->setEnabled(des.readRaw<uint8_t>());
+
+    // Node groups
+    uint16_t nodeGroupCount = des.readRaw<uint16_t>();
+    for (int i = 0; i < nodeGroupCount; i++) {
+        uint16_t pinIndex = des.readRaw<uint16_t>();
+        std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
+        NodeGroupSerializer serializer(nodeGroup);
+        if (serializer.deserializeBinary(des)) {
+            m_module->getPins()[pinIndex]->setNodeGroup(nodeGroup);
+        } else
+            return false;
+    }
+
+    return true;
 }
 
 std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
@@ -74,29 +166,4 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
     }
 
     return moduleList;
-}
-
-void ModuleSerializer::serializeTemplate(YAML::Emitter& out)
-{
-    out << YAML::Key << "Name" << YAML::Value << m_module->getName();
-    out << YAML::Key << "Address" << YAML::Value << (int)m_module->getAddress();
-    out << YAML::Key << "Enabled" << YAML::Value << m_module->getEnabled();
-
-    out << YAML::Key << "Pins" << YAML::Value << YAML::BeginSeq;
-    for (auto pin : m_module->getPins()) {
-        out << YAML::BeginMap;
-        out << YAML::Key << "Pinout Name" << YAML::Value << pin->getPinoutName();
-        out << YAML::Key << "Available Types" << YAML::Value << YAML::BeginSeq;
-        for (auto type : pin->getAvailableTypes())
-            out << (unsigned int)type << YAML::Comment(IOTypes::getString(type));
-        out << YAML::EndSeq;
-
-        if (m_config) {
-            if (auto nodeGroup = pin->getNodeGroup())
-                out << YAML::Key << "Node Group Id" << YAML::Value << nodeGroup->getId();
-        }
-
-        out << YAML::EndMap;
-    }
-    out << YAML::EndSeq;
 }

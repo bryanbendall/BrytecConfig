@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IOTypes.h"
+#include "BrytecConfigEmbedded/IOTypes.h"
 #include "Node.h"
 #include "Selectable.h"
 #include "utils/UUID.h"
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-class NodeGroup : public Selectable {
+class NodeGroup : public Selectable, public std::enable_shared_from_this<NodeGroup> {
 
 public:
     NodeGroup();
@@ -25,6 +25,7 @@ public:
     void setEnabled(bool state) { m_enabled = state; }
 
     const UUID& getId() { return m_uuid; }
+    void setId(const UUID& uuid) { m_uuid = uuid; }
 
     float getValue(int attributeIndex);
 
@@ -34,7 +35,7 @@ public:
     std::deque<std::shared_ptr<Node>>& getNodes() { return m_nodes; }
     std::shared_ptr<Node> getNode(int id);
     int getNodeIndex(std::shared_ptr<Node> node);
-    std::shared_ptr<Node> addNode(Embedded::NodeTypes type, ImVec2 position = { 0.0f, 0.0f });
+    std::shared_ptr<Node> addNode(NodeTypes type, ImVec2 position = { 0.0f, 0.0f });
     void deleteNode(int nodeId);
     void sortNodes();
     void evaluateAllNodes();

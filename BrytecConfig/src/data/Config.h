@@ -25,6 +25,7 @@ public:
 
     const std::filesystem::path& getFilepath() { return m_path; }
     void setFilepath(const std::filesystem::path& path) { m_path = path; }
+    std::string getName() { return m_path.stem().string(); }
 
 private:
     std::filesystem::path m_path;

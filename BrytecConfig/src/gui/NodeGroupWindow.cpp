@@ -46,11 +46,13 @@ void NodeGroupWindow::drawMenubar()
             if (!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
-
-                if (!serializer.deserializeTemplateText(path))
-                    std::cout << "Could not deserialize node group file" << std::endl;
-                else
+                BinaryDeserializer des(path);
+                if (serializer.deserializeBinary(des)) {
                     AppManager::setSelected(nodeGroup);
+                } else {
+                    std::cout << "Could not deserialize node group file" << std::endl;
+                    AppManager::getConfig()->removeNodeGroup(nodeGroup);
+                }
             }
         }
 
@@ -64,7 +66,8 @@ void NodeGroupWindow::drawMenubar()
 
                 if (!path.empty()) {
                     NodeGroupSerializer serializer(nodeGroup);
-                    serializer.serializeTemplateText(path);
+                    BinarySerializer binary = serializer.serializeBinary();
+                    binary.writeToFile(path);
                 }
             }
         }

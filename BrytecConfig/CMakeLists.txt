@@ -2,17 +2,64 @@ add_executable(BrytecConfig
                 src/main.cpp              
                 src/AppManager.cpp
                 src/AppManager.h
-                src/BrytecConfigEmbedded/Nodes.cpp
-                src/BrytecConfigEmbedded/Nodes.h
-                src/BrytecConfigEmbedded/NodesVector.h
-                src/BrytecConfigEmbedded/NodeVariant.cpp
-                src/BrytecConfigEmbedded/NodeVariant.h
+                src/BrytecConfigEmbedded/Boards/BrytecBoard.h
+                src/BrytecConfigEmbedded/Boards/BrytecPowerModuleV1.cpp
+                src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EAndNode.h
+                src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ECanBusNode.h
+                src/BrytecConfigEmbedded/Nodes/ECompareNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ECompareNode.h                
+                src/BrytecConfigEmbedded/Nodes/EConvertNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EConvertNode.h
+                src/BrytecConfigEmbedded/Nodes/ECurveNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ECurveNode.h
+                src/BrytecConfigEmbedded/Nodes/EDelayNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EDelayNode.h
+                src/BrytecConfigEmbedded/Nodes/EFinalValueNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EFinalValueNode.h
+                src/BrytecConfigEmbedded/Nodes/EInitialValueNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EInitialValueNode.h
+                src/BrytecConfigEmbedded/Nodes/EInvertNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EInvertNode.h
+                src/BrytecConfigEmbedded/Nodes/EMapValueNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EMapValueNode.h
+                src/BrytecConfigEmbedded/Nodes/EMathNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EMathNode.h
+                src/BrytecConfigEmbedded/Nodes/ENodeGroupNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ENodeGroupNode.h
+                src/BrytecConfigEmbedded/Nodes/EOnOffNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EOnOffNode.h
+                src/BrytecConfigEmbedded/Nodes/EOrNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EOrNode.h
+                src/BrytecConfigEmbedded/Nodes/EPushButtonNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EPushButtonNode.h
+                src/BrytecConfigEmbedded/Nodes/ESwitchNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ESwitchNode.h
+                src/BrytecConfigEmbedded/Nodes/EToggleNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EToggleNode.h
+                src/BrytecConfigEmbedded/Nodes/ETwoStageNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ETwoStageNode.h
+                src/BrytecConfigEmbedded/Nodes/EValueNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EValueNode.h
+                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.cpp
+                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.h
+                src/BrytecConfigEmbedded/Utils/ENodeConnection.h
+                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
+                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h
+                src/BrytecConfigEmbedded/Utils/ENodeGroup.cpp
+                src/BrytecConfigEmbedded/Utils/ENodeGroup.h
+                src/BrytecConfigEmbedded/Utils/NodesVector.h
+                src/BrytecConfigEmbedded/EBrytecApp.cpp
+                src/BrytecConfigEmbedded/EBrytecApp.h
+                src/BrytecConfigEmbedded/ENode.cpp
+                src/BrytecConfigEmbedded/ENode.h
+                src/BrytecConfigEmbedded/IOTypes.cpp
+                src/BrytecConfigEmbedded/IOTypes.h
                 src/data/CanBus.cpp
                 src/data/CanBus.h
                 src/data/Config.cpp
                 src/data/Config.h
-                src/data/IOTypes.cpp
-                src/data/IOTypes.h
                 src/data/Module.cpp
                 src/data/Module.h
                 src/data/Node.cpp
@@ -30,10 +77,14 @@ add_executable(BrytecConfig
                 src/gui/ModuleWindow.h
                 src/gui/NodeGroupWindow.cpp
                 src/gui/NodeGroupWindow.h
+                src/gui/NodeUI.cpp
+                src/gui/NodeUI.h
                 src/gui/NodeWindow.cpp
                 src/gui/NodeWindow.h
                 src/gui/PropertiesWindow.cpp
                 src/gui/PropertiesWindow.h
+                src/utils/BinarySerializer.cpp
+                src/utils/BinarySerializer.h
                 src/utils/ConfigSerializer.cpp
                 src/utils/ConfigSerializer.h
                 src/utils/DefaultPaths.h

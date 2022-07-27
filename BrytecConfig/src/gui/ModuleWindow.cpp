@@ -5,6 +5,13 @@
 #include <filesystem>
 #include <iostream>
 
+static constexpr ImU32 ColorStyle_Background = IM_COL32(50, 50, 50, 255);
+static constexpr ImU32 ColorStyle_BackgroundHovered = IM_COL32(75, 75, 75, 255);
+static constexpr ImU32 ColorStyle_Outline = IM_COL32(100, 100, 100, 255);
+static constexpr ImU32 ColorStyle_OutlineSelected = IM_COL32(100, 100, 100, 255);
+static constexpr ImU32 ColorStyle_TitleBar = IM_COL32(41, 74, 122, 255);
+static constexpr ImU32 ColorStyle_TitleBarHovered = IM_COL32(66, 150, 250, 255);
+
 ModuleWindow::ModuleWindow()
 {
 }
