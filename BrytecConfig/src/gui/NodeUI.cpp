@@ -174,7 +174,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 0, "Input");
         UI::ValueCombo(node, 0, s_curveNames, (int)CurveType::Count);
         UI::InputBool(node, 1, "Repeat");
-        UI::InputFloat(node, 2, "Time", 0.0f, 10.0f, 0.05f);
+        UI::InputFloat(node, 2, "Time", 2, 0.0f, 10.0f, 0.05f);
         UI::Ouput(node, 0, "Result", NodeWindow::zeroToOneColor);
         break;
 
