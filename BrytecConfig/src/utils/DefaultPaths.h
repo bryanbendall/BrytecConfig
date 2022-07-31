@@ -1,6 +1,12 @@
 #pragma once
 
 #ifdef _WIN32
+// Windows
+#define CONFIGS_PATH "C:\\Users\\Bendall\\Documents\\Brytec\\BrytecConfig\\BrytecConfig\\data\\configs\\"
+#define MODULES_PATH "C:\\Users\\Bendall\\Documents\\Brytec\\BrytecConfig\\BrytecConfig\\data\\modules\\"
+#define NODE_GROUPS_PATH "C:\\Users\\Bendall\\Documents\\Brytec\\BrytecConfig\\BrytecConfig\\data\\node groups\\"
+#define FONTS_PATH_DROID_SANS "C:\\Users\\Bendall\\Documents\\Brytec\\BrytecConfig\\BrytecConfig\\vendor\\imgui\\misc\\fonts\\DroidSans.ttf"
+#define FONTS_PATH_FONT_AWESOME "C:\\Users\\Bendall\\Documents\\Brytec\\BrytecConfig\\BrytecConfig\\vendor\\fontawesome\\fa-solid-900.ttf"
 
 #else
 // Linux
