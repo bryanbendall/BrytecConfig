@@ -3,7 +3,7 @@ add_executable(BrytecConfig
                 src/AppManager.cpp
                 src/AppManager.h
                 src/BrytecConfigEmbedded/Boards/BrytecBoard.h
-                src/BrytecConfigEmbedded/Boards/BrytecPowerModuleV1.cpp
+                src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
