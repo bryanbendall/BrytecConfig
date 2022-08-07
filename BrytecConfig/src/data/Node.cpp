@@ -75,7 +75,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
     case NodeTypes::Curve:
         m_inputs.push_back(NodeConnection()); // Input
         m_inputs.push_back(NodeConnection()); // Repeat
-        m_inputs.push_back(NodeConnection()); // Time
+        m_inputs.push_back(NodeConnection(1.0f)); // Time
         m_outputs.push_back(0.0f); // Output
         m_values.push_back(0.0f); // Curve type
         m_values.push_back(0.0f); // Internet time counter
