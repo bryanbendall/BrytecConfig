@@ -58,3 +58,27 @@ const std::shared_ptr<NodeGroup> Config::findNodeGroup(UUID uuid)
 
     return nullptr;
 }
+
+uint8_t Config::getAssignedModuleAddress(std::shared_ptr<NodeGroup> nodeGroup)
+{
+    for (auto module : m_modules) {
+        for (auto pin : module->getPins()) {
+            if (pin->getNodeGroup() == nodeGroup)
+                return module->getAddress();
+        }
+    }
+
+    return 0;
+}
+
+uint8_t Config::getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup)
+{
+    for (auto module : m_modules) {
+        for (int i = 0; i < module->getPins().size(); i++) {
+            if (module->getPins()[i]->getNodeGroup() == nodeGroup)
+                return i;
+        }
+    }
+
+    return 0;
+}

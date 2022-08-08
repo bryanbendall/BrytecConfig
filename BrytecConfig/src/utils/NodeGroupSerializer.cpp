@@ -50,7 +50,14 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
         // Node Group reference (special case for NodeGroup Node)
         if (node->getType() == NodeTypes::Node_Group) {
             ser.writeRaw<uint64_t>(node->getSelectedNodeGroup());
-            // TODO: save module address and pin number
+            std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+            if (selectedNodeGroup) {
+                ser.writeRaw<uint8_t>(AppManager::getConfig()->getAssignedModuleAddress(selectedNodeGroup)); // Module address
+                ser.writeRaw<uint8_t>(AppManager::getConfig()->getAssignedPinAddress(selectedNodeGroup)); // Pin index
+            } else {
+                ser.writeRaw<uint8_t>(0);
+                ser.writeRaw<uint8_t>(0);
+            }
         }
     }
 
@@ -117,6 +124,9 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
             // Special Node Groups
             if (type == NodeTypes::Node_Group) {
                 newNode->setSelectedNodeGroup(des.readRaw<uint64_t>());
+                // Not used because we will look up by UUID
+                des.readRaw<uint8_t>(); // Module address
+                des.readRaw<uint8_t>(); // Pin index
             }
         }
     }

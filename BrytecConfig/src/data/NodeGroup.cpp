@@ -151,7 +151,7 @@ void NodeGroup::evaluateAllNodes()
     EBrytecApp::deserializeModule(des);
     EBrytecApp::evaulateJustNodes(ImGui::GetIO().DeltaTime);
 
-    // TODO Extract output values
+    // Extract output values
     for (int index = 0; index < m_nodes.size(); index++) {
         auto node = m_nodes[index];
         auto eNode = EBrytecApp::getNode(index);
@@ -168,6 +168,10 @@ void NodeGroup::evaluateAllNodes()
             for (int i = 0; i < node->getValues().size(); i++) {
                 node->getValue(i) = eNode->GetValue(i + node->getInputs().size());
             }
+        }
+
+        if (node->getType() == NodeTypes::Node_Group) {
+            // TODO
         }
     }
 }

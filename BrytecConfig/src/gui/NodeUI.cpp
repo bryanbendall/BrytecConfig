@@ -84,7 +84,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         if (!nodeGroup.expired())
             thisNodeGroup = nodeGroup.lock();
 
-        static std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+        static std::shared_ptr<NodeGroup> selectedNodeGroup;
+        selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
 
         if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str())) {
 

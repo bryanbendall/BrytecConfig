@@ -45,7 +45,7 @@ private:
 
 private:
     std::string m_name = "Unnamed";
-    UUID m_uuid;
+    UUID m_uuid = 0;
     IOTypes::Types m_type = IOTypes::Types::Undefined;
     bool m_enabled = true;
     bool m_assignedToPin = false;

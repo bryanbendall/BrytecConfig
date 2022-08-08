@@ -27,6 +27,9 @@ public:
     void setFilepath(const std::filesystem::path& path) { m_path = path; }
     std::string getName() { return m_path.stem().string(); }
 
+    uint8_t getAssignedModuleAddress(std::shared_ptr<NodeGroup> nodeGroup);
+    uint8_t getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup);
+
 private:
     std::filesystem::path m_path;
     std::vector<std::shared_ptr<Module>> m_modules;

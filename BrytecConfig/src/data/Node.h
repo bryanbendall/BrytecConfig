@@ -90,5 +90,5 @@ protected:
     std::vector<NodeConnection> m_inputs;
     std::vector<float> m_values;
     bool m_loopFound = false;
-    UUID m_selectedNodeGroup;
+    UUID m_selectedNodeGroup = 0;
 };
