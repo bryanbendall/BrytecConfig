@@ -100,6 +100,7 @@ add_executable(BrytecConfig
 
 target_include_directories(BrytecConfig PUBLIC
                            "${CMAKE_CURRENT_SOURCE_DIR}/src"
+                           "${CMAKE_CURRENT_SOURCE_DIR}/src/BrytecConfigEmbedded"
                            "vendor/yaml-cpp/include"
                            "vendor/glfw/include"
                            "vendor/fontawesome"

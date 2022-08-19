@@ -150,6 +150,28 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_outputs.push_back(0.0f);
         break;
 
+    case NodeTypes::CanBus:
+        m_inputs.push_back(NodeConnection());
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::Convert:
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_values.push_back(0.0f);
+        m_values.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        break;
+
     case NodeTypes::Count:
     default:
         assert(false);
