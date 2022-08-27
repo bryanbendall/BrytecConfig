@@ -49,7 +49,7 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h
                 src/BrytecConfigEmbedded/Utils/ENodeGroup.cpp
                 src/BrytecConfigEmbedded/Utils/ENodeGroup.h
-                src/BrytecConfigEmbedded/Utils/NodesVector.h
+                src/BrytecConfigEmbedded/Utils/ENodesVector.h
                 src/BrytecConfigEmbedded/EBrytecApp.cpp
                 src/BrytecConfigEmbedded/EBrytecApp.h
                 src/BrytecConfigEmbedded/ENode.cpp
