@@ -51,22 +51,30 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
 
 bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
 {
-    des.readRaw<char>(); // T
-    des.readRaw<char>(); // M
+    char t, m;
+    des.readRaw<char>(&t); // T
+    des.readRaw<char>(&m); // M
     // TODO check header
 
-    des.readRaw<uint8_t>(); // Major
-    des.readRaw<uint8_t>(); // Minor
+    uint8_t major, minor;
+    des.readRaw<uint8_t>(&major);
+    des.readRaw<uint8_t>(&minor);
     // TODO check version
 
-    uint16_t pinCount = des.readRaw<uint16_t>();
+    uint16_t pinCount;
+    des.readRaw<uint16_t>(&pinCount);
     for (int i = 0; i < pinCount; i++) {
-        std::string pinoutName = des.readRaw<std::string>();
+        std::string pinoutName;
+        des.readRaw<std::string>(&pinoutName);
 
         std::vector<IOTypes::Types> availableTypesVec;
-        uint8_t typesCount = des.readRaw<uint8_t>();
-        for (int j = 0; j < typesCount; j++)
-            availableTypesVec.push_back((IOTypes::Types)des.readRaw<uint8_t>());
+        uint8_t typesCount;
+        des.readRaw<uint8_t>(&typesCount);
+        for (int j = 0; j < typesCount; j++) {
+            uint8_t type;
+            des.readRaw<uint8_t>(&type);
+            availableTypesVec.push_back((IOTypes::Types)type);
+        }
 
         std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
         m_module->getPins().push_back(newPin);
@@ -115,23 +123,35 @@ BinarySerializer ModuleSerializer::serializeBinary()
 
 bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
 {
-    des.readRaw<char>(); // M
-    des.readRaw<char>(); // D
+    char m, d;
+    des.readRaw<char>(&m); // M
+    des.readRaw<char>(&d); // D
     // TODO check header
 
-    des.readRaw<uint8_t>(); // Major
-    des.readRaw<uint8_t>(); // Minor
+    uint8_t major, minor;
+    des.readRaw<uint8_t>(&major);
+    des.readRaw<uint8_t>(&minor);
     // TODO check version
 
     // Basic info
-    m_module->setName(des.readRaw<std::string>());
-    m_module->setAddress(des.readRaw<uint8_t>());
-    m_module->setEnabled(des.readRaw<uint8_t>());
+    std::string name;
+    des.readRaw<std::string>(&name);
+    m_module->setName(name);
+
+    uint8_t address;
+    des.readRaw<uint8_t>(&address);
+    m_module->setAddress(address);
+
+    uint8_t enabled;
+    des.readRaw<uint8_t>(&enabled);
+    m_module->setEnabled(enabled);
 
     // Node groups
-    uint16_t nodeGroupCount = des.readRaw<uint16_t>();
+    uint16_t nodeGroupCount;
+    des.readRaw<uint16_t>(&nodeGroupCount);
     for (int i = 0; i < nodeGroupCount; i++) {
-        uint16_t pinIndex = des.readRaw<uint16_t>();
+        uint16_t pinIndex;
+        des.readRaw<uint16_t>(&pinIndex);
         std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
         NodeGroupSerializer serializer(nodeGroup);
         if (serializer.deserializeBinary(des)) {

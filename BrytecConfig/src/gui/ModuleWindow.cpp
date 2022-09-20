@@ -41,6 +41,32 @@ void ModuleWindow::drawMenubar()
             ImGui::EndMenu();
         }
 
+        if (ImGui::MenuItem("S")) {
+
+            std::shared_ptr<Module> module = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock());
+
+            if (module) {
+
+                std::cout << "print out module" << std::endl;
+                ModuleSerializer moduleSer(module);
+                BinarySerializer ser = moduleSer.serializeBinary();
+                BinaryDeserializer des;
+                des.setData(ser.getData().data(), ser.getData().size());
+
+                static bool wrote
+                    = false;
+                if (!wrote) {
+                    std::cout << "Data: " << std::endl;
+                    for (auto d : ser.getData()) {
+                        std::cout << std::showbase << std::hex << (int)d << "," << std::endl;
+                    }
+                    std::cout << std::endl
+                              << "End Data" << std::endl;
+                    wrote = true;
+                }
+            }
+        }
+
         ImGui::EndMenuBar();
     }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "data/Config.h"
 #include "data/Module.h"
 #include "utils/BinarySerializer.h"

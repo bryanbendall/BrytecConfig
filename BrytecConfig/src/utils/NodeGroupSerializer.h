@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AppManager.h"
-#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "data/NodeGroup.h"
 #include "utils/BinarySerializer.h"
 #include <filesystem>

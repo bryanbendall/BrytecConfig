@@ -1,7 +1,7 @@
 #include "AppManager.h"
 
+#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
-#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
 #include "utils/BinarySerializer.h"
 #include "utils/ConfigSerializer.h"
 #include "utils/DefaultPaths.h"
@@ -24,30 +24,6 @@ struct AppManagerData {
 };
 
 static AppManagerData s_data;
-
-void test()
-{
-    std::shared_ptr<Module> module = std::make_shared<Module>();
-
-    std::shared_ptr<NodeGroup> nodeGroup = std::make_shared<NodeGroup>();
-    nodeGroup->setType(IOTypes::Types::Input_12V);
-    auto n1 = nodeGroup->addNode(NodeTypes::Math);
-    nodeGroup->addNode(NodeTypes::Node_Group);
-
-    module->addPin("Pin1", { IOTypes::Types::Input_12V });
-    module->getPins()[0]->setNodeGroup(nodeGroup);
-
-    ModuleSerializer moduleSer(module);
-    auto moduleData = moduleSer.serializeBinary();
-    BinarySerializer ser(moduleData);
-
-    // ser.writeToFile("/home/bendall/Desktop/dump.hex");
-
-    BinaryDeserializer des(ser.getData().data());
-    EBrytecApp::deserializeModule(des);
-    EBrytecApp::setupPins();
-    EBrytecApp::update(2.0f);
-}
 
 void init(GLFWwindow* window)
 {
@@ -122,7 +98,8 @@ void openConfig()
 
     ///////////////////////////////
     // Test ///////////////////////
-    BinaryDeserializer des(path);
+    BinaryDeserializer des;
+    des.setDataFromPath(path);
     if (serializer.deserializeBinary(des)) {
         clearSelected();
         s_data.config = config;

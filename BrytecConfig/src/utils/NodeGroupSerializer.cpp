@@ -86,62 +86,99 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
 bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
 {
     // Header
-    des.readRaw<char>(); // N
-    des.readRaw<char>(); // G
+    char n, g;
+    des.readRaw<char>(&n); // N
+    des.readRaw<char>(&g); // G
 
     // Version
-    des.readRaw<uint8_t>(); // Major
-    des.readRaw<uint8_t>(); // Minor
+    uint8_t major, minor;
+    des.readRaw<uint8_t>(&major);
+    des.readRaw<uint8_t>(&minor);
 
     // Basic info
-    m_nodeGroup->setName(des.readRaw<std::string>());
-    m_nodeGroup->setId(des.readRaw<uint64_t>());
-    m_nodeGroup->setType((IOTypes::Types)des.readRaw<uint8_t>());
-    m_nodeGroup->setEnabled(des.readRaw<uint8_t>());
+    std::string name;
+    des.readRaw<std::string>(&name);
+    m_nodeGroup->setName(name);
+
+    uint64_t uuid;
+    des.readRaw<uint64_t>(&uuid);
+    m_nodeGroup->setId(uuid);
+
+    uint8_t type;
+    des.readRaw<uint8_t>(&type);
+    m_nodeGroup->setType((IOTypes::Types)type);
+
+    uint8_t enabled;
+    des.readRaw<uint8_t>(&enabled);
+    m_nodeGroup->setEnabled(enabled);
 
     {
-        uint16_t nodeCount = des.readRaw<uint16_t>();
+        uint16_t nodeCount;
+        des.readRaw<uint16_t>(&nodeCount);
         for (int i = 0; i < nodeCount; i++) {
-            std::string name = des.readRaw<std::string>();
-            NodeTypes type = (NodeTypes)des.readRaw<uint16_t>();
-            float x = des.readRaw<float>();
-            float y = des.readRaw<float>();
+            std::string name;
+            des.readRaw<std::string>(&name);
+
+            uint16_t tempType;
+            des.readRaw<uint16_t>(&tempType);
+            NodeTypes type = (NodeTypes)tempType;
+
+            float x, y;
+            des.readRaw<float>(&x);
+            des.readRaw<float>(&y);
 
             auto newNode = m_nodeGroup->addNode(type, { x, y });
             newNode->setName(name);
 
             // Inputs - skip till later
-            uint8_t inputCount = des.readRaw<uint8_t>();
+            uint8_t inputCount;
+            des.readRaw<uint8_t>(&inputCount);
             for (int j = 0; j < inputCount; j++) {
-                des.readRaw<int8_t>(); // Connection type
+                int8_t temp;
+                des.readRaw<int8_t>(&temp); // Connection type
             }
 
             // Values
-            uint8_t valueCount = des.readRaw<uint8_t>();
-            for (int valueIndex = 0; valueIndex < valueCount; valueIndex++)
-                newNode->setValue(valueIndex, des.readRaw<float>());
+            uint8_t valueCount;
+            des.readRaw<uint8_t>(&valueCount);
+            for (int valueIndex = 0; valueIndex < valueCount; valueIndex++) {
+                float value;
+                des.readRaw<float>(&value);
+                newNode->setValue(valueIndex, value);
+            }
 
             // Special Node Groups
             if (type == NodeTypes::Node_Group) {
-                newNode->setSelectedNodeGroup(des.readRaw<uint64_t>());
+                uint64_t uuid;
+                des.readRaw<uint64_t>(&uuid);
+                newNode->setSelectedNodeGroup(uuid);
                 // Not used because we will look up by UUID
-                des.readRaw<uint8_t>(); // Module address
-                des.readRaw<uint8_t>(); // Pin index
+
+                uint8_t address, index;
+                des.readRaw<uint8_t>(&address); // Module address
+                des.readRaw<uint8_t>(&index); // Pin index
             }
         }
     }
 
     // Connect inputs to already added nodes
     {
-        uint16_t nodeCount = des.readRaw<uint16_t>();
+        uint16_t nodeCount;
+        des.readRaw<uint16_t>(&nodeCount);
         for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
 
             // Inputs
-            uint8_t inputCount = des.readRaw<uint8_t>();
+            uint8_t inputCount;
+            des.readRaw<uint8_t>(&inputCount);
             for (int inputIndex = 0; inputIndex < inputCount; inputIndex++) {
-                auto connectionNodeIndex = des.readRaw<int8_t>();
-                auto outputIndex = des.readRaw<int8_t>();
-                auto defaultValue = des.readRaw<float>();
+                int8_t connectionNodeIndex;
+                des.readRaw<int8_t>(&connectionNodeIndex);
+
+                int8_t outputIndex;
+                des.readRaw<int8_t>(&outputIndex);
+
+                float defaultValue;
+                des.readRaw<float>(&defaultValue);
                 if (connectionNodeIndex > -1 && outputIndex > -1) {
                     // Has connection
                     NodeConnection nodeConnection = { m_nodeGroup->getNodes()[connectionNodeIndex], outputIndex, defaultValue };

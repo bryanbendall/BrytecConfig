@@ -10,8 +10,8 @@
 #include <iostream>
 #include <misc/cpp/imgui_stdlib.h>
 
+#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
-#include "BrytecConfigEmbedded/Utils/BinaryDeserializer.h"
 #include "utils/BinarySerializer.h"
 
 NodeWindow::NodeWindow()
@@ -32,38 +32,6 @@ NodeWindow::NodeWindow()
     style.colors[imnodes::ColorStyle_Pin] = anyValueColor;
     style.colors[imnodes::ColorStyle_PinHovered] = grayColor;
     style.colors[imnodes::ColorStyle_Link] = grayColor;
-
-    BinarySerializer ser;
-    ser.writeRaw<uint32_t>(123456);
-    ser.writeRaw<uint32_t>(8888);
-    ser.writeRaw<uint8_t>(125);
-    ser.writeRaw<uint8_t>(125);
-    ser.writeRaw<uint8_t>(125);
-
-    ser.writeRaw<std::string>("hello");
-
-    ser.writeRaw<float>(1234.5);
-
-    ////////////////////////////////////////////////
-
-    BinaryDeserializer des(ser.getData().data());
-
-    uint32_t read = des.readRaw<uint32_t>();
-    uint32_t eight = des.readRaw<uint32_t>();
-    uint32_t test = des.readRaw<uint8_t>();
-    uint32_t test1 = des.readRaw<uint8_t>();
-    uint32_t test2 = des.readRaw<uint8_t>();
-
-    std::string text = des.readRaw<std::string>();
-
-    float f = des.readRaw<float>();
-
-    //////////////////////////////////
-
-    // uint8_t buff[100];
-    // auto mathNode = EMathNode::DeserializeInPlace(des, buff);
-
-    int i = 0;
 }
 
 NodeWindow::~NodeWindow()

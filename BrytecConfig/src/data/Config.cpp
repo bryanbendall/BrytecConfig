@@ -12,7 +12,8 @@ void Config::addModule(std::filesystem::path modulePath)
 {
     std::shared_ptr<Module> module = std::make_shared<Module>();
     ModuleSerializer serializer(module);
-    BinaryDeserializer des(modulePath);
+    BinaryDeserializer des;
+    des.setDataFromPath(modulePath);
     if (serializer.deserializeTemplateBinary(des)) {
         m_modules.push_back(module);
     }

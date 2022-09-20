@@ -4,6 +4,8 @@ add_executable(BrytecConfig
                 src/AppManager.h
                 src/BrytecConfigEmbedded/Boards/BrytecBoard.h
                 src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
@@ -42,8 +44,6 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/ETwoStageNode.h
                 src/BrytecConfigEmbedded/Nodes/EValueNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
-                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.cpp
-                src/BrytecConfigEmbedded/Utils/BinaryDeserializer.h
                 src/BrytecConfigEmbedded/Utils/ENodeConnection.h
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h

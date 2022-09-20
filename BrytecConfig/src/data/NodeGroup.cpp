@@ -146,7 +146,8 @@ void NodeGroup::evaluateAllNodes()
 
     ModuleSerializer moduleSer(module);
     BinarySerializer ser = moduleSer.serializeBinary();
-    BinaryDeserializer des(ser.getData().data());
+    BinaryDeserializer des;
+    des.setData(ser.getData().data(), ser.getData().size());
 
     EBrytecApp::deserializeModule(des);
     EBrytecApp::evaulateJustNodes(ImGui::GetIO().DeltaTime);

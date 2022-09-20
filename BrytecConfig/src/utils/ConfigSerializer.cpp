@@ -73,22 +73,25 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
 {
     // Header
     char header[6];
-    header[0] = des.readRaw<char>();
-    header[1] = des.readRaw<char>();
-    header[2] = des.readRaw<char>();
-    header[3] = des.readRaw<char>();
-    header[4] = des.readRaw<char>();
-    header[5] = des.readRaw<char>();
+    des.readRaw<char>(&header[0]);
+    des.readRaw<char>(&header[1]);
+    des.readRaw<char>(&header[2]);
+    des.readRaw<char>(&header[3]);
+    des.readRaw<char>(&header[4]);
+    des.readRaw<char>(&header[5]);
     if (memcmp(header, "Brytec", 6) != 0)
         return false;
 
-    uint8_t major = des.readRaw<uint8_t>();
-    uint8_t minor = des.readRaw<uint8_t>();
+    uint8_t major, minor;
+    des.readRaw<uint8_t>(&major);
+    des.readRaw<uint8_t>(&minor);
 
-    auto name = des.readRaw<std::string>();
+    std::string name;
+    des.readRaw<std::string>(&name);
 
     // Module Templates
-    uint32_t moduleTemplateCount = des.readRaw<uint32_t>();
+    uint32_t moduleTemplateCount;
+    des.readRaw<uint32_t>(&moduleTemplateCount);
     for (int i = 0; i < moduleTemplateCount; i++) {
         std::shared_ptr<Module> module = std::make_shared<Module>();
         ModuleSerializer serializer(m_config, module);
@@ -99,7 +102,8 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
     }
 
     // Modules
-    uint32_t moduleCount = des.readRaw<uint32_t>();
+    uint32_t moduleCount;
+    des.readRaw<uint32_t>(&moduleCount);
     for (int i = 0; i < moduleCount; i++) {
         std::shared_ptr<Module> module = m_config->getModules()[i];
         ModuleSerializer serializer(m_config, module);
@@ -107,7 +111,8 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
             return false;
     }
 
-    uint32_t unassignedNodeGroupCont = des.readRaw<uint32_t>();
+    uint32_t unassignedNodeGroupCont;
+    des.readRaw<uint32_t>(&unassignedNodeGroupCont);
     for (int i = 0; i < unassignedNodeGroupCont; i++) {
         std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
         NodeGroupSerializer serializer(nodeGroup);
@@ -117,8 +122,8 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
 
     // Footer
     char footer[2];
-    footer[0] = des.readRaw<char>();
-    footer[1] = des.readRaw<char>();
+    des.readRaw<char>(&footer[0]);
+    des.readRaw<char>(&footer[1]);
     if (memcmp(footer, "BT", 2) != 0)
         return false;
 
