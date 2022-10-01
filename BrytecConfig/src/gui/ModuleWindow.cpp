@@ -1,8 +1,11 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
+#include "utils/DefaultPaths.h"
+#include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <IconsFontAwesome5.h>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 
 static constexpr ImU32 ColorStyle_Background = IM_COL32(50, 50, 50, 255);
@@ -41,30 +44,48 @@ void ModuleWindow::drawMenubar()
             ImGui::EndMenu();
         }
 
-        if (ImGui::MenuItem("S")) {
-
-            std::shared_ptr<Module> module = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock());
-
+        std::shared_ptr<Module> module = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock());
+        bool moduleSelected = module != nullptr;
+        // Save
+        if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
             if (module) {
+                auto path = MODULE_SAVE_MEGA_PATH;
 
-                std::cout << "print out module" << std::endl;
+                std::ofstream fout(path);
+
                 ModuleSerializer moduleSer(module);
                 BinarySerializer ser = moduleSer.serializeBinary();
                 BinaryDeserializer des;
                 des.setData(ser.getData().data(), ser.getData().size());
 
-                static bool wrote
-                    = false;
-                if (!wrote) {
-                    std::cout << "Data: " << std::endl;
-                    for (auto d : ser.getData()) {
-                        std::cout << std::showbase << std::hex << (int)d << "," << std::endl;
-                    }
-                    std::cout << std::endl
-                              << "End Data" << std::endl;
-                    wrote = true;
+                fout << "const uint8_t progmem_data[] PROGMEM = {" << std::endl;
+                for (auto d : ser.getData()) {
+                    fout << std::showbase << std::hex << (int)d << ",";
                 }
+                fout << std::endl
+                     << "};" << std::endl;
+
+                fout.close();
+
+                ImGui::OpenPopup("Saved");
             }
+        }
+
+        // Always center this window when appearing
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+        if (ImGui::BeginPopupModal("Saved", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+            ImGui::Text("Module was saved!");
+
+            static float timeout = 0.0f;
+            timeout += ImGui::GetIO().DeltaTime;
+            if (timeout > 0.8f) {
+                timeout = 0.0f;
+                ImGui::CloseCurrentPopup();
+            }
+
+            ImGui::EndPopup();
         }
 
         ImGui::EndMenuBar();
