@@ -44,7 +44,7 @@ void ModuleWindow::drawMenubar()
             ImGui::EndMenu();
         }
 
-        std::shared_ptr<Module> module = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock());
+        std::shared_ptr<Module> module = AppManager::getSelected<Module>();
         bool moduleSelected = module != nullptr;
         // Save
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
@@ -118,7 +118,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 {
     unsigned int numPins = m->getPins().size();
 
-    bool selected = std::dynamic_pointer_cast<Module>(AppManager::getSelectedItem().lock()) == m;
+    bool selected = AppManager::isSelected(m);
 
     // Split output to draw background after
     ImDrawList* drawList = ImGui::GetWindowDrawList();
@@ -176,7 +176,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         }
 
         // Selection boarder
-        if (pin == std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock())) {
+        if (pin == AppManager::getSelected<Pin>()) {
             ImVec2 rectMin = ImGui::GetItemRectMin();
             ImVec2 rectMax = ImGui::GetItemRectMax();
             drawList->AddRect(rectMin, rectMax, IM_COL32_WHITE, 4.0f);

@@ -33,6 +33,9 @@ NodeGroup::NodeGroup(const NodeGroup& other)
         auto& newNode = m_nodes[nodeIndex];
         auto& oldNode = other.m_nodes[nodeIndex];
 
+        // Name
+        newNode->setName(oldNode->getName());
+
         // Copy node connections
         for (size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
             if (auto oldConnectedNode = oldNode->getInputs()[inputIndex].ConnectedNode.lock()) {
@@ -40,12 +43,18 @@ NodeGroup::NodeGroup(const NodeGroup& other)
                     if (other.m_nodes[oldConnectedNodeIndex] == oldConnectedNode)
                         newNode->setInput(inputIndex, { m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].OutputIndex, oldNode->getInputs()[inputIndex].DefaultValue });
                 }
-            }
+            } else
+                newNode->setInput(inputIndex, { std::weak_ptr<Node>(), -1, oldNode->getInputs()[inputIndex].DefaultValue });
         }
 
         // Copy node values
-        for (size_t valueIndex = 0; valueIndex < oldNode->getValues().size(); valueIndex++)
-            newNode->getValue(valueIndex) = oldNode->getValue(valueIndex);
+        newNode->getValues() = oldNode->getValues();
+
+        // Copy node outputs
+        newNode->getOutputs() = oldNode->getOutputs();
+
+        // Node group node
+        newNode->setSelectedNodeGroup(oldNode->getSelectedNodeGroup());
     }
 }
 

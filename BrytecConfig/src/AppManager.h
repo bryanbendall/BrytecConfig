@@ -21,9 +21,23 @@ Version getVersion();
 
 std::shared_ptr<Config>& getConfig();
 
+// Selection ////////////////////////////////
 std::weak_ptr<Selectable> getSelectedItem();
 void setSelected(std::weak_ptr<Selectable> sel);
 void clearSelected();
+
+template <typename T>
+std::shared_ptr<T> getSelected()
+{
+    return std::dynamic_pointer_cast<T>(getSelectedItem().lock());
+}
+
+template <typename T>
+bool isSelected(std::shared_ptr<T> other)
+{
+    return getSelected<T>() == other;
+}
+/////////////////////////////////////////////
 
 void setBigIconFont(ImFont* font);
 ImFont* getBigIconFont();

@@ -18,17 +18,17 @@ void PropertiesWindow::drawWindow()
     std::shared_ptr<Selectable> selected = AppManager::getSelectedItem().lock();
     if (selected) {
 
-        if (auto module = std::dynamic_pointer_cast<Module>(selected))
+        if (auto module = AppManager::getSelected<Module>())
             drawModuleProps(module);
 
-        if (auto pin = std::dynamic_pointer_cast<Pin>(selected)) {
+        if (auto pin = AppManager::getSelected<Pin>()) {
             drawPinProps(pin);
 
             if (auto nodeGroup = pin->getNodeGroup())
                 drawNodeGroupProps(nodeGroup);
         }
 
-        if (auto nodeGroup = std::dynamic_pointer_cast<NodeGroup>(selected))
+        if (auto nodeGroup = AppManager::getSelected<NodeGroup>())
             drawNodeGroupProps(nodeGroup);
     }
 

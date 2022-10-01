@@ -33,7 +33,7 @@ void NodeGroupWindow::drawMenubar()
 {
     if (ImGui::BeginMenuBar()) {
 
-        std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
+        std::shared_ptr<NodeGroup> nodeGroup = AppManager::getSelected<NodeGroup>();
         bool nodeGroupSelected = nodeGroup != nullptr;
 
         // Add blank
@@ -152,7 +152,7 @@ void NodeGroupWindow::drawNodeGroups()
 
         ImGui::PushID(i);
 
-        bool selected = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock()) == nodeGroup;
+        bool selected = AppManager::isSelected(nodeGroup);
 
         if (selected) {
             ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 255));

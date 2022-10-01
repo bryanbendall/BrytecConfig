@@ -52,13 +52,13 @@ void NodeWindow::drawWindow()
 
     m_nodeGroup.reset();
 
-    std::shared_ptr<NodeGroup> nodeGroup = std::dynamic_pointer_cast<NodeGroup>(AppManager::getSelectedItem().lock());
+    std::shared_ptr<NodeGroup> nodeGroup = AppManager::getSelected<NodeGroup>();
     if (nodeGroup) {
         imnodes::EditorContextSet(getContext(nodeGroup));
         m_nodeGroup = nodeGroup;
     }
 
-    auto pin = std::dynamic_pointer_cast<Pin>(AppManager::getSelectedItem().lock());
+    auto pin = AppManager::getSelected<Pin>();
     if (pin && pin->getNodeGroup()) {
         nodeGroup = pin->getNodeGroup();
         imnodes::EditorContextSet(getContext(nodeGroup));
