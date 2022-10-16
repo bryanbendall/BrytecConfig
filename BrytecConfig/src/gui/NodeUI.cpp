@@ -4,6 +4,7 @@
 #include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
+#include "utils/Colors.h"
 #include <bitset>
 #include <imnodes.h>
 #include <iomanip>
@@ -16,7 +17,7 @@ static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string l
 static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);
-static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = NodeWindow::anyValueColor);
+static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = Colors::NodeConnections::AnyValue);
 static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
 }
 
@@ -145,7 +146,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 2, "Input");
         UI::InputBool(node, 3, "Input");
         UI::InputBool(node, 4, "Input");
-        UI::Ouput(node, 0, "Result", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Or:
@@ -154,7 +155,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 2, "Input");
         UI::InputBool(node, 3, "Input");
         UI::InputBool(node, 4, "Input");
-        UI::Ouput(node, 0, "Result", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Two_Stage:
@@ -176,7 +177,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::ValueCombo(node, 0, s_curveNames, (int)CurveType::Count);
         UI::InputBool(node, 1, "Repeat");
         UI::InputFloat(node, 2, "Time", 2, 0.0f, 10.0f, 0.05f);
-        UI::Ouput(node, 0, "Result", NodeWindow::zeroToOneColor);
+        UI::Ouput(node, 0, "Result", Colors::NodeConnections::ZeroToOne);
         break;
 
     case NodeTypes::Compare:
@@ -191,23 +192,23 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 0, "Value 1");
         UI::InputFloat(node, 1, "Value 2");
         UI::ValueCombo(node, 0, s_compareNames, (int)CompareType::Count);
-        UI::Ouput(node, 0, "Result", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::On_Off:
         UI::InputBool(node, 0, "On");
         UI::InputBool(node, 1, "Off");
-        UI::Ouput(node, 0, "Output", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Invert:
         UI::InputBool(node, 0, "Input");
-        UI::Ouput(node, 0, "Output", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Toggle:
         UI::InputBool(node, 0, "Input");
-        UI::Ouput(node, 0, "Output", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Delay:
@@ -220,8 +221,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 0, "Button");
         UI::InputBool(node, 1, "Neutral Safety");
         UI::InputBool(node, 2, "Enging Running");
-        UI::Ouput(node, 0, "Ignition", NodeWindow::boolColor);
-        UI::Ouput(node, 1, "Starter", NodeWindow::boolColor);
+        UI::Ouput(node, 0, "Ignition", Colors::NodeConnections::Boolean);
+        UI::Ouput(node, 1, "Starter", Colors::NodeConnections::Boolean);
         break;
 
     case NodeTypes::Map_Value:
@@ -333,7 +334,7 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
 
 void UI::InputBool(std::shared_ptr<Node>& node, int attribute, std::string label)
 {
-    imnodes::PushColorStyle(imnodes::ColorStyle_Pin, NodeWindow::boolColor);
+    imnodes::PushColorStyle(imnodes::ColorStyle_Pin, Colors::NodeConnections::Boolean);
     imnodes::BeginInputAttribute(node->getIntputId(attribute));
 
     if (node->getInput(attribute).ConnectedNode.expired()) {

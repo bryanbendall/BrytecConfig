@@ -3,6 +3,7 @@
 #include "AppManager.h"
 #include "NodeUI.h"
 #include "data/Selectable.h"
+#include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <bitset>
 #include <imgui.h>
@@ -24,14 +25,14 @@ NodeWindow::NodeWindow()
     imnodes::SetNodeGridSpacePos(1, ImVec2(10.0f, 10.0f));
 
     imnodes::Style& style = imnodes::GetStyle();
-    style.colors[imnodes::ColorStyle_NodeBackground] = IM_COL32(50, 50, 50, 230);
-    style.colors[imnodes::ColorStyle_TitleBarSelected] = IM_COL32(66, 150, 250, 230);
-    style.colors[imnodes::ColorStyle_TitleBarHovered] = IM_COL32(53, 118, 200, 230);
+    style.colors[imnodes::ColorStyle_NodeBackground] = Colors::Node::NodeBackground;
+    style.colors[imnodes::ColorStyle_TitleBarSelected] = Colors::Node::TitleBarSelected;
+    style.colors[imnodes::ColorStyle_TitleBarHovered] = Colors::Node::TitleBarHovered;
     style.colors[imnodes::ColorStyle_NodeBackgroundSelected] = style.colors[imnodes::ColorStyle_NodeBackground];
     style.colors[imnodes::ColorStyle_NodeBackgroundHovered] = style.colors[imnodes::ColorStyle_NodeBackground];
-    style.colors[imnodes::ColorStyle_Pin] = anyValueColor;
-    style.colors[imnodes::ColorStyle_PinHovered] = grayColor;
-    style.colors[imnodes::ColorStyle_Link] = grayColor;
+    style.colors[imnodes::ColorStyle_Pin] = Colors::NodeConnections::AnyValue;
+    style.colors[imnodes::ColorStyle_PinHovered] = Colors::NodeConnections::Gray;
+    style.colors[imnodes::ColorStyle_Link] = Colors::NodeConnections::Gray;
 }
 
 NodeWindow::~NodeWindow()
@@ -180,12 +181,12 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
 
     // Style for nodes
     if (node->getLoopFound()) {
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, IM_COL32(204, 25, 25, 204));
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundHovered, IM_COL32(204, 25, 25, 204));
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundSelected, IM_COL32(204, 25, 25, 204));
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBar, IM_COL32(255, 25, 25, 204));
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarHovered, IM_COL32(255, 25, 25, 204));
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarSelected, IM_COL32(255, 25, 25, 204));
+        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, Colors::Node::Error);
+        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundHovered, Colors::Node::Error);
+        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundSelected, Colors::Node::Error);
+        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBar, Colors::Node::Error);
+        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarHovered, Colors::Node::Error);
+        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarSelected, Colors::Node::Error);
     }
 
     imnodes::BeginNode(node->getId());
@@ -265,10 +266,9 @@ void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup)
                 if (m_mode == Mode::Simulation) {
                     float outputValue = fromNode->getInput(fromLinkAttribute).ConnectedNode.lock()->getOutput(fromNode->getInput(fromLinkAttribute).OutputIndex);
                     if (outputValue > 0.0f) {
-                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, IM_COL32(20, 200, 20, 255));
+                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, Colors::NodeConnections::LinkOn);
                     } else {
-                        //imnodes::PushColorStyle(imnodes::ColorStyle_Link, IM_COL32(200, 20, 20, 255));
-                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, grayColor);
+                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, Colors::NodeConnections::Gray);
                     }
                 }
 

@@ -1,6 +1,7 @@
 #include "NodeGroupWindow.h"
 
 #include "AppManager.h"
+#include "utils/Colors.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/NodeGroupSerializer.h"
@@ -155,7 +156,15 @@ void NodeGroupWindow::drawNodeGroups()
         bool selected = AppManager::isSelected(nodeGroup);
 
         if (selected) {
-            ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(255, 255, 255, 255));
+            ImGui::PushStyleColor(ImGuiCol_Border, Colors::PrimarySelection);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
+        }
+
+        bool pinSelected = false;
+        auto pin = AppManager::getSelected<Pin>();
+        if (pin && pin->getNodeGroup() == nodeGroup) {
+            pinSelected = true;
+            ImGui::PushStyleColor(ImGuiCol_Border, Colors::SecondarySelection);
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
         }
 
@@ -174,7 +183,7 @@ void NodeGroupWindow::drawNodeGroups()
             }
         }
 
-        if (selected) {
+        if (selected || pinSelected) {
             ImGui::PopStyleVar();
             ImGui::PopStyleColor();
         }

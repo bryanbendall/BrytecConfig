@@ -38,10 +38,6 @@ public:
         Simulation
     };
 
-    static unsigned int const boolColor = IM_COL32(99, 99, 200, 255); // blue
-    static unsigned int const zeroToOneColor = IM_COL32(200, 200, 36, 255); // yellow
-    static unsigned int const anyValueColor = IM_COL32(99, 200, 99, 255); // green
-    static unsigned int const grayColor = IM_COL32(162, 163, 162, 255); // gray
     static inline const float nodeWidth = 140.0f;
 
 private:

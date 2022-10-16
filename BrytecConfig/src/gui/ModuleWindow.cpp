@@ -1,5 +1,6 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
+#include "utils/Colors.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
@@ -7,13 +8,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-
-static constexpr ImU32 ColorStyle_Background = IM_COL32(50, 50, 50, 255);
-static constexpr ImU32 ColorStyle_BackgroundHovered = IM_COL32(75, 75, 75, 255);
-static constexpr ImU32 ColorStyle_Outline = IM_COL32(100, 100, 100, 255);
-static constexpr ImU32 ColorStyle_OutlineSelected = IM_COL32(100, 100, 100, 255);
-static constexpr ImU32 ColorStyle_TitleBar = IM_COL32(41, 74, 122, 255);
-static constexpr ImU32 ColorStyle_TitleBarHovered = IM_COL32(66, 150, 250, 255);
 
 ModuleWindow::ModuleWindow()
 {
@@ -176,10 +170,15 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         }
 
         // Selection boarder
+        ImVec2 rectMin = ImGui::GetItemRectMin();
+        ImVec2 rectMax = ImGui::GetItemRectMax();
+
         if (pin == AppManager::getSelected<Pin>()) {
-            ImVec2 rectMin = ImGui::GetItemRectMin();
-            ImVec2 rectMax = ImGui::GetItemRectMax();
-            drawList->AddRect(rectMin, rectMax, IM_COL32_WHITE, 4.0f);
+            drawList->AddRect(rectMin, rectMax, Colors::PrimarySelection, 4.0f);
+        }
+
+        if (pin->getNodeGroup() && AppManager::isSelected(pin->getNodeGroup())) {
+            drawList->AddRect(rectMin, rectMax, Colors::SecondarySelection, 4.0f);
         }
 
         // Drop Node Group
@@ -225,20 +224,20 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     drawList->AddRectFilled(
         rectMin,
         rectMax,
-        ColorStyle_Background,
+        Colors::Module::Background,
         4);
     // title bar:
     drawList->AddRectFilled(
         rectMin,
         { rectMax.x, rectMin.y + titleBarHeight },
-        titleHovered ? ColorStyle_TitleBarHovered : ColorStyle_TitleBar,
+        titleHovered ? Colors::Module::TitleBarHovered : Colors::Module::TitleBar,
         4,
         ImDrawCornerFlags_Top);
     // outline
     drawList->AddRect(
         rectMin,
         rectMax,
-        selected ? IM_COL32_WHITE : ColorStyle_Outline,
+        selected ? Colors::PrimarySelection : Colors::Module::Outline,
         4);
 
     drawList->ChannelsMerge();

@@ -85,6 +85,7 @@ add_executable(BrytecConfig
                 src/gui/PropertiesWindow.h
                 src/utils/BinarySerializer.cpp
                 src/utils/BinarySerializer.h
+                src/utils/Colors.h
                 src/utils/ConfigSerializer.cpp
                 src/utils/ConfigSerializer.h
                 src/utils/DefaultPaths.h
