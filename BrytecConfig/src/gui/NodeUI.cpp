@@ -286,6 +286,13 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::Ouput(node, 0, "Output");
         break;
 
+    case NodeTypes::PinCurrent:
+        if (mode == NodeWindow::Mode::Simulation) {
+            UI::ValueFloat(node, 0, "Value", 0.0f, 30.0f, 0.1f);
+        }
+        UI::Ouput(node, 0, "Value");
+        break;
+
     default:
         drawUnimplimentedNode(node);
         break;

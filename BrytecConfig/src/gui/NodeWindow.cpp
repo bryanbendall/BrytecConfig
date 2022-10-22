@@ -159,7 +159,12 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
         ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
         for (int i = (int)NodeTypes::Initial_Value; i < (int)NodeTypes::Count; i++) {
-            if (ImGui::MenuItem(Node::s_nodeName[i], NULL, false)) {
+
+            // Can only have one of these nodes
+            bool enabled = !(i == (int)NodeTypes::PinCurrent && nodeGroup->hasNodeType(NodeTypes::PinCurrent));
+            enabled &= !(i == (int)NodeTypes::Initial_Value && nodeGroup->hasNodeType(NodeTypes::Initial_Value));
+
+            if (ImGui::MenuItem(Node::s_nodeName[i], NULL, false, enabled)) {
                 nodeGroup->addNode((NodeTypes)i);
                 imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }

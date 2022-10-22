@@ -21,7 +21,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Value",
     "Switch",
     "Can Bus",
-    "Convert"
+    "Convert",
+    "Pin Current"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -168,6 +169,11 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection());
         m_inputs.push_back(NodeConnection());
         m_values.push_back(0.0f);
+        m_values.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::PinCurrent:
         m_values.push_back(0.0f);
         m_outputs.push_back(0.0f);
         break;

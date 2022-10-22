@@ -186,6 +186,16 @@ void NodeGroup::evaluateAllNodes()
     }
 }
 
+bool NodeGroup::hasNodeType(NodeTypes type)
+{
+    for (auto& node : m_nodes) {
+        if (node->getType() == type)
+            return true;
+    }
+
+    return false;
+}
+
 void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck)
 {
     if (std::find(m_nodes.begin(), m_nodes.end(), node) == m_nodes.end())

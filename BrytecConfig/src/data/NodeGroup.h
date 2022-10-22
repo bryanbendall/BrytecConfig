@@ -39,6 +39,7 @@ public:
     void deleteNode(int nodeId);
     void sortNodes();
     void evaluateAllNodes();
+    bool hasNodeType(NodeTypes type);
 
 private:
     void traverseConnections(std::shared_ptr<Node> node, std::deque<std::shared_ptr<Node>>& newDeque, std::deque<std::shared_ptr<Node>>& loopCheck);
