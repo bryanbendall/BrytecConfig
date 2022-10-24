@@ -120,7 +120,9 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // Engine running
         m_outputs.push_back(0.0f); // Ignition output
         m_outputs.push_back(0.0f); // Starter output
-        m_values.push_back(0.0f); // Internal state
+        m_values.push_back(0.0f); // Last button state
+        m_values.push_back(0.0f); // Ignition out state
+        m_values.push_back(0.0f); // Starter out state
         break;
 
     case NodeTypes::Map_Value:
