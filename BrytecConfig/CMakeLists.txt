@@ -4,6 +4,10 @@ add_executable(BrytecConfig
                 src/AppManager.h
                 src/BrytecConfigEmbedded/Boards/BrytecBoard.h
                 src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
+                src/BrytecConfigEmbedded/Can/EBrytecCan.h
+                src/BrytecConfigEmbedded/Can/EBrytecCan.cpp
+                src/BrytecConfigEmbedded/Can/EPinStatusQueue.cpp
+                src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.cpp
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
