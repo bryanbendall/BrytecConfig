@@ -106,13 +106,14 @@ void ModuleBuilderWindow::drawModuleTable()
             ImGui::TableNextColumn();
             if (ImGui::TreeNodeEx("Pins", nodeFlags)) {
 
-                for (auto& pin : m_module->getPins()) {
+                for (int i = 0; i < m_module->getPins().size(); i++) {
+                    auto& pin = m_module->getPins()[i];
 
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
-                    ImGui::PushID(&pin);
+                    ImGui::PushID(i);
 
-                    if (ImGui::TreeNodeEx("###PinoutName", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding, pin->getPinoutName().c_str(), "")) {
+                    if (ImGui::TreeNodeEx("###PinoutName", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding, "%s%d%s %s", "(", i, ")", pin->getPinoutName().c_str())) {
 
                         ImGui::TableNextColumn();
                         ImGui::SetNextItemWidth(-FLT_MIN);
@@ -147,6 +148,18 @@ void ModuleBuilderWindow::drawModuleTable()
                         }
 
                         ImGui::TreePop();
+                    } else {
+                        // Up and down arrows
+                        ImGui::TableNextColumn();
+                        if (ImGui::Button(ICON_FA_ARROW_UP)) {
+                            if (i != 0)
+                                std::swap(pin, m_module->getPins()[i - 1]);
+                        }
+                        ImGui::SameLine();
+                        if (ImGui::Button(ICON_FA_ARROW_DOWN)) {
+                            if (i != m_module->getPins().size() - 1)
+                                std::swap(pin, m_module->getPins()[i + 1]);
+                        }
                     }
                     ImGui::PopID();
                 }
