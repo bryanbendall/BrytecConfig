@@ -50,6 +50,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                     break;
                 case IOTypes::Types::Input_5V_Variable:
                 case IOTypes::Types::Input_Can:
+                case IOTypes::Types::Internal:
                     floatValue = true;
                     break;
                 }

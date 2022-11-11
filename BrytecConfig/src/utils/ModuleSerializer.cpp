@@ -38,8 +38,8 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     // default address
 
     // Prototype pins
-    ser.writeRaw<uint16_t>(m_module->getPins().size());
-    for (auto pin : m_module->getPins()) {
+    ser.writeRaw<uint16_t>(m_module->getPhysicalPins().size());
+    for (auto pin : m_module->getPhysicalPins()) {
         ser.writeRaw(pin->getPinoutName());
         ser.writeRaw<uint8_t>(pin->getAvailableTypes().size());
         for (auto type : pin->getAvailableTypes())
@@ -76,8 +76,8 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
             availableTypesVec.push_back((IOTypes::Types)type);
         }
 
-        std::shared_ptr<Pin> newPin = std::make_shared<Pin>(pinoutName, availableTypesVec);
-        m_module->getPins().push_back(newPin);
+        std::shared_ptr<PhysicalPin> newPin = std::make_shared<PhysicalPin>(pinoutName, availableTypesVec);
+        m_module->getPhysicalPins().push_back(newPin);
     }
 
     return true;
@@ -100,21 +100,44 @@ BinarySerializer ModuleSerializer::serializeBinary()
     ser.writeRaw<uint8_t>(m_module->getAddress());
     ser.writeRaw<uint8_t>(m_module->getEnabled());
 
-    // Count Node Groups
-    uint16_t nodeGroupCount = 0;
-    for (auto pin : m_module->getPins()) {
+    // Node Group Count
+    uint16_t physicalNodeGroupCount = 0;
+    for (auto pin : m_module->getPhysicalPins()) {
         if (auto nodeGroup = pin->getNodeGroup())
-            nodeGroupCount++;
+            physicalNodeGroupCount++;
     }
 
-    // Node groups
-    ser.writeRaw<uint16_t>(nodeGroupCount);
-    for (int i = 0; i < m_module->getPins().size(); i++) {
-        if (auto nodeGroup = m_module->getPins()[i]->getNodeGroup()) {
-            ser.writeRaw<uint16_t>(i); // pin index
-            NodeGroupSerializer nodeGroupSer(nodeGroup);
-            auto nodeGroupBinary = nodeGroupSer.serializeBinary();
-            ser.append(nodeGroupBinary);
+    uint16_t internalNodeGroupCount = 0;
+    for (auto pin : m_module->getInternalPins()) {
+        if (auto nodeGroup = pin->getNodeGroup())
+            internalNodeGroupCount++;
+    }
+
+    ser.writeRaw<uint16_t>(physicalNodeGroupCount + internalNodeGroupCount);
+
+    // Physical Pin Node Groups
+    {
+        ser.writeRaw<uint16_t>(physicalNodeGroupCount);
+        for (int i = 0; i < m_module->getPhysicalPins().size(); i++) {
+            if (auto nodeGroup = m_module->getPhysicalPins()[i]->getNodeGroup()) {
+                ser.writeRaw<uint16_t>(i); // pin index
+                NodeGroupSerializer nodeGroupSer(nodeGroup);
+                auto nodeGroupBinary = nodeGroupSer.serializeBinary();
+                ser.append(nodeGroupBinary);
+            }
+        }
+    }
+
+    // Internal Pin Node Groups
+    {
+        ser.writeRaw<uint16_t>(internalNodeGroupCount);
+        for (int i = 0; i < m_module->getInternalPins().size(); i++) {
+            if (auto nodeGroup = m_module->getInternalPins()[i]->getNodeGroup()) {
+                ser.writeRaw<uint16_t>(i + m_module->getPhysicalPins().size()); // pin index
+                NodeGroupSerializer nodeGroupSer(nodeGroup);
+                auto nodeGroupBinary = nodeGroupSer.serializeBinary();
+                ser.append(nodeGroupBinary);
+            }
         }
     }
 
@@ -146,18 +169,40 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
     des.readRaw<uint8_t>(&enabled);
     m_module->setEnabled(enabled);
 
-    // Node groups
-    uint16_t nodeGroupCount;
-    des.readRaw<uint16_t>(&nodeGroupCount);
-    for (int i = 0; i < nodeGroupCount; i++) {
-        uint16_t pinIndex;
-        des.readRaw<uint16_t>(&pinIndex);
-        std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
-        NodeGroupSerializer serializer(nodeGroup);
-        if (serializer.deserializeBinary(des)) {
-            m_module->getPins()[pinIndex]->setNodeGroup(nodeGroup);
-        } else
-            return false;
+    uint16_t totalNodeGroups;
+    des.readRaw<uint16_t>(&totalNodeGroups);
+
+    // Physical Pin Node Groups
+    {
+        uint16_t nodeGroupCount;
+        des.readRaw<uint16_t>(&nodeGroupCount);
+        for (int i = 0; i < nodeGroupCount; i++) {
+            uint16_t pinIndex;
+            des.readRaw<uint16_t>(&pinIndex);
+            std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
+            NodeGroupSerializer serializer(nodeGroup);
+            if (serializer.deserializeBinary(des)) {
+                m_module->getPhysicalPins()[pinIndex]->setNodeGroup(nodeGroup);
+            } else
+                return false;
+        }
+    }
+
+    // Internal Pin Node Groups
+    {
+        uint16_t nodeGroupCount;
+        des.readRaw<uint16_t>(&nodeGroupCount);
+        for (int i = 0; i < nodeGroupCount; i++) {
+            uint16_t pinIndex;
+            des.readRaw<uint16_t>(&pinIndex);
+            std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
+            NodeGroupSerializer serializer(nodeGroup);
+            if (serializer.deserializeBinary(des)) {
+                m_module->addInternalPin();
+                m_module->getInternalPins()[pinIndex - m_module->getPhysicalPins().size()]->setNodeGroup(nodeGroup);
+            } else
+                return false;
+        }
     }
 
     return true;

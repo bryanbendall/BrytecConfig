@@ -150,8 +150,8 @@ void NodeGroup::evaluateAllNodes()
     std::shared_ptr<NodeGroup> thisNodeGroup = shared_from_this();
 
     std::shared_ptr<Module> module = std::make_shared<Module>();
-    module->addPin();
-    module->getPins()[0]->setNodeGroup(thisNodeGroup, true);
+    module->addPhysicalPin();
+    module->getPhysicalPins()[0]->setNodeGroup(thisNodeGroup, true);
 
     ModuleSerializer moduleSer(module);
     BinarySerializer ser = moduleSer.serializeBinary();

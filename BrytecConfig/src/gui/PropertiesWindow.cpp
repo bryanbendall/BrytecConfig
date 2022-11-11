@@ -48,7 +48,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Name");
+            ImGui::TextUnformatted("Name");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::InputText("###MouduleName", &module->getName(), ImGuiInputTextFlags_AutoSelectAll);
@@ -57,7 +57,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Address");
+            ImGui::TextUnformatted("Address");
             ImGui::TableNextColumn();
             static bool showButtons = true;
             ImGui::SetNextItemWidth(-FLT_MIN);
@@ -67,7 +67,7 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Enabled");
+            ImGui::TextUnformatted("Enabled");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Checkbox("###MouduleEnabled", &module->getEnabled());
@@ -76,11 +76,15 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Total Nodes");
+            ImGui::TextUnformatted("Total Nodes");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             int totalNodes = 0;
-            for (auto& pin : module->getPins()) {
+            for (auto& pin : module->getPhysicalPins()) {
+                if (auto ng = pin->getNodeGroup())
+                    totalNodes += ng->getNodes().size();
+            }
+            for (auto& pin : module->getInternalPins()) {
                 if (auto ng = pin->getNodeGroup())
                     totalNodes += ng->getNodes().size();
             }
@@ -131,7 +135,7 @@ void PropertiesWindow::drawCanBus(CanBus& can)
             // Can Type
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::Text("Type");
+            ImGui::TextUnformatted("Type");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Combo("###CanType", (int*)&can.type, CanTypes::Strings, IM_ARRAYSIZE(CanTypes::Strings));
@@ -141,7 +145,7 @@ void PropertiesWindow::drawCanBus(CanBus& can)
                 // Can Speed
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
-                ImGui::Text("Speed");
+                ImGui::TextUnformatted("Speed");
                 ImGui::TableNextColumn();
                 ImGui::SetNextItemWidth(-FLT_MIN);
                 ImGui::Combo("###CanSpeed", (int*)&can.speed, CanSpeed::Strings, IM_ARRAYSIZE(CanSpeed::Strings));
@@ -149,7 +153,7 @@ void PropertiesWindow::drawCanBus(CanBus& can)
                 // Can Format
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
-                ImGui::Text("Format");
+                ImGui::TextUnformatted("Format");
                 ImGui::TableNextColumn();
                 ImGui::SetNextItemWidth(-FLT_MIN);
                 ImGui::Combo("###CanFormat", (int*)&can.format, CanFormat::Strings, IM_ARRAYSIZE(CanFormat::Strings));
@@ -168,33 +172,46 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 
             ImGui::TableSetupColumn("Pin", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
-            // Name
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Pinout Name");
-            ImGui::TableNextColumn();
-            ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::Text(pin->getPinoutName().c_str(), "");
+            auto physicalPin = std::dynamic_pointer_cast<PhysicalPin>(pin);
+            if (physicalPin) {
 
-            // Current Limit
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            ImGui::AlignTextToFramePadding();
-            ImGui::Text("Current Limit");
-            ImGui::TableNextColumn();
-            ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::Combo("###Current Limit", (int*)&pin->getCurrentLimit(), Pin::currentNames, IM_ARRAYSIZE(Pin::currentNames));
+                // Name
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted("Pinout Name");
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::TextUnformatted(physicalPin->getPinoutName().c_str());
+
+                // Current Limit
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted("Current Limit");
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::Combo("###Current Limit", (int*)&physicalPin->getCurrentLimit(), PhysicalPin::currentNames, IM_ARRAYSIZE(PhysicalPin::currentNames));
+            } else {
+                // Name
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted("Pinout Name");
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::TextUnformatted("Internal");
+            }
 
             // Node Group
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Node Group");
+            ImGui::TextUnformatted("Node Group");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             if (pin->getNodeGroup())
-                ImGui::Text(pin->getNodeGroup()->getName().c_str(), "");
+                ImGui::TextUnformatted(pin->getNodeGroup()->getName().c_str());
             else {
                 // Show combo if there is none selected
                 if (ImGui::BeginCombo("###pinsCombo", "")) {
@@ -255,7 +272,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Name");
+            ImGui::TextUnformatted("Name");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::InputText("###pinName", &nodeGroup->getName(), ImGuiInputTextFlags_AutoSelectAll);
@@ -264,7 +281,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Id");
+            ImGui::TextUnformatted("Id");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Text("%llu", (unsigned long long)nodeGroup->getId());
@@ -273,7 +290,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Enabled");
+            ImGui::TextUnformatted("Enabled");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Checkbox("###MouduleEnabled", &nodeGroup->getEnabled());
@@ -282,11 +299,11 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Type");
+            ImGui::TextUnformatted("Type");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             if (nodeGroup->getAssigned()) {
-                ImGui::Text("%s %s", IOTypes::getString(nodeGroup->getType()), ICON_FA_LOCK);
+                ImGui::Text("%s %s", ICON_FA_LOCK, IOTypes::getString(nodeGroup->getType()));
             } else {
                 ImGui::Combo("###Node Group Type", (int*)&nodeGroup->getType(), IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
             }
@@ -295,7 +312,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             ImGui::AlignTextToFramePadding();
-            ImGui::Text("Total Nodes");
+            ImGui::TextUnformatted("Total Nodes");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Text("%d", (int)nodeGroup->getNodes().size());

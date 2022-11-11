@@ -66,12 +66,16 @@ add_executable(BrytecConfig
                 src/data/CanBus.h
                 src/data/Config.cpp
                 src/data/Config.h
+                src/data/InternalPin.cpp
+                src/data/InternalPin.h
                 src/data/Module.cpp
                 src/data/Module.h
                 src/data/Node.cpp
                 src/data/Node.h
                 src/data/NodeGroup.cpp
                 src/data/NodeGroup.h
+                src/data/PhysicalPin.cpp
+                src/data/PhysicalPin.h
                 src/data/Pin.cpp
                 src/data/Pin.h
                 src/data/Selectable.h

@@ -66,7 +66,7 @@ void ModuleBuilderWindow::drawMenubar()
 
         // Add Pin
         if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
-            m_module->addPin();
+            m_module->addPhysicalPin();
 
         ImGui::EndMenuBar();
     }
@@ -106,8 +106,8 @@ void ModuleBuilderWindow::drawModuleTable()
             ImGui::TableNextColumn();
             if (ImGui::TreeNodeEx("Pins", nodeFlags)) {
 
-                for (int i = 0; i < m_module->getPins().size(); i++) {
-                    auto& pin = m_module->getPins()[i];
+                for (int i = 0; i < m_module->getPhysicalPins().size(); i++) {
+                    auto& pin = m_module->getPhysicalPins()[i];
 
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -153,12 +153,12 @@ void ModuleBuilderWindow::drawModuleTable()
                         ImGui::TableNextColumn();
                         if (ImGui::Button(ICON_FA_ARROW_UP)) {
                             if (i != 0)
-                                std::swap(pin, m_module->getPins()[i - 1]);
+                                std::swap(pin, m_module->getPhysicalPins()[i - 1]);
                         }
                         ImGui::SameLine();
                         if (ImGui::Button(ICON_FA_ARROW_DOWN)) {
-                            if (i != m_module->getPins().size() - 1)
-                                std::swap(pin, m_module->getPins()[i + 1]);
+                            if (i != m_module->getPhysicalPins().size() - 1)
+                                std::swap(pin, m_module->getPhysicalPins()[i + 1]);
                         }
                     }
                     ImGui::PopID();

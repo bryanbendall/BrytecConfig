@@ -3,6 +3,7 @@
 #include "data/Module.h"
 #include <imgui.h>
 #include <memory>
+#include <string>
 #include <vector>
 
 class ModuleWindow {
@@ -18,6 +19,7 @@ private:
     void drawMenubar();
     void drawModules();
     void drawModule(std::shared_ptr<Module>& m);
+    void drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin> pin, const std::string& name);
 
 private:
     bool m_opened = true;

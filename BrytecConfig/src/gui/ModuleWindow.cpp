@@ -9,6 +9,8 @@
 #include <fstream>
 #include <iostream>
 
+static bool shouldUpdateInternalPins = false;
+
 ModuleWindow::ModuleWindow()
 {
 }
@@ -110,7 +112,7 @@ void ModuleWindow::drawModules()
 
 void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 {
-    unsigned int numPins = m->getPins().size();
+    unsigned int numPins = m->getPhysicalPins().size();
 
     bool selected = AppManager::isSelected(m);
 
@@ -148,64 +150,24 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImGui::Indent(5.0f);
     ImGui::SetNextItemWidth(130.0f);
 
-    // Draw Pin buttons
+    // Draw Physical Pin buttons
     for (unsigned int i = 0; i < numPins; i++) {
         ImGui::PushID(i);
-        auto pin = m->getPins()[i];
-        bool enabled = pin->getNodeGroup() ? pin->getNodeGroup()->getEnabled() : false;
+        auto pin = m->getPhysicalPins()[i];
+
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : pin->getPinoutName();
-        if (!enabled)
-            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-        if (ImGui::Button(buttonText.c_str(), { 140, 0 }))
-            AppManager::setSelected(pin);
-        if (!enabled)
-            ImGui::PopStyleColor();
+        drawPinButton(m, std::static_pointer_cast<Pin>(pin), buttonText);
 
-        if (pin->getNodeGroup()) {
-            if (ImGui::BeginPopupContextItem()) {
-                if (ImGui::MenuItem("Remove Node Group", NULL, false))
-                    pin->setNodeGroup(nullptr);
-                ImGui::EndPopup();
-            }
-        }
+        ImGui::PopID();
+    }
 
-        // Selection boarder
-        ImVec2 rectMin = ImGui::GetItemRectMin();
-        ImVec2 rectMax = ImGui::GetItemRectMax();
+    // Draw Internal Pin buttons
+    for (unsigned int j = 0; j < m->getInternalPins().size(); j++) {
+        ImGui::PushID(m->getPhysicalPins().size() + j);
+        auto pin = m->getInternalPins()[j];
 
-        if (pin == AppManager::getSelected<Pin>()) {
-            drawList->AddRect(rectMin, rectMax, Colors::PrimarySelection, 4.0f);
-        }
-
-        if (pin->getNodeGroup() && AppManager::isSelected(pin->getNodeGroup())) {
-            drawList->AddRect(rectMin, rectMax, Colors::SecondarySelection, 4.0f);
-        }
-
-        // Drop Node Group
-        if (ImGui::BeginDragDropTarget()) {
-
-            // Check type to do the outline for drop
-            bool accepted = false;
-            if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
-                int nodeGroupIndex = *(int*)tempPayload->Data;
-                auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
-                if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
-                    accepted = true;
-                }
-            }
-
-            // Recieve the data if it is a compatible type
-            if (accepted) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
-
-                    // TODO: check if it is right type?
-                    int nodeGroupIndex = *(int*)payload->Data;
-                    auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
-                    pin->setNodeGroup(nodeGroup);
-                }
-            }
-            ImGui::EndDragDropTarget();
-        }
+        std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Internal";
+        drawPinButton(m, std::static_pointer_cast<Pin>(pin), buttonText);
 
         ImGui::PopID();
     }
@@ -241,4 +203,71 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         4);
 
     drawList->ChannelsMerge();
+
+    if (shouldUpdateInternalPins) {
+        m->updateInternalPins();
+        shouldUpdateInternalPins = false;
+    }
+}
+
+void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin> pin, const std::string& name)
+{
+    ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+    bool enabled = pin->getNodeGroup() ? pin->getNodeGroup()->getEnabled() : false;
+    if (!enabled)
+        ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
+    if (ImGui::Button(name.c_str(), { 140, 0 }))
+        AppManager::setSelected(pin);
+    if (!enabled)
+        ImGui::PopStyleColor();
+
+    if (pin->getNodeGroup()) {
+        if (ImGui::BeginPopupContextItem()) {
+            if (ImGui::MenuItem("Remove Node Group", NULL, false)) {
+                pin->setNodeGroup(nullptr);
+                shouldUpdateInternalPins = true;
+            }
+            ImGui::EndPopup();
+        }
+    }
+
+    // Selection boarder
+    ImVec2 rectMin = ImGui::GetItemRectMin();
+    ImVec2 rectMax = ImGui::GetItemRectMax();
+
+    if (pin == AppManager::getSelected<Pin>()) {
+        drawList->AddRect(rectMin, rectMax, Colors::PrimarySelection, 4.0f);
+    }
+
+    if (pin->getNodeGroup() && AppManager::isSelected(pin->getNodeGroup())) {
+        drawList->AddRect(rectMin, rectMax, Colors::SecondarySelection, 4.0f);
+    }
+
+    // Drop Node Group
+    if (ImGui::BeginDragDropTarget()) {
+
+        // Check type to do the outline for drop
+        bool accepted = false;
+        if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
+            int nodeGroupIndex = *(int*)tempPayload->Data;
+            auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
+            if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
+                accepted = true;
+            }
+        }
+
+        // Recieve the data if it is a compatible type
+        if (accepted) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
+
+                // TODO: check if it is right type?
+                int nodeGroupIndex = *(int*)payload->Data;
+                auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
+                pin->setNodeGroup(nodeGroup);
+                shouldUpdateInternalPins = true;
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 }
