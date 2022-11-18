@@ -91,6 +91,8 @@ add_executable(BrytecConfig
                 src/gui/NodeUI.h
                 src/gui/NodeWindow.cpp
                 src/gui/NodeWindow.h
+                src/gui/NotificationWindow.cpp
+                src/gui/NotificationWindow.h
                 src/gui/PropertiesWindow.cpp
                 src/gui/PropertiesWindow.h
                 src/utils/BinarySerializer.cpp

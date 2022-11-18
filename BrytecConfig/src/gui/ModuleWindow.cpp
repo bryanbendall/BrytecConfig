@@ -1,5 +1,6 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
+#include "NotificationWindow.h"
 #include "utils/Colors.h"
 #include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
@@ -19,7 +20,7 @@ void ModuleWindow::drawWindow()
 {
     if (!m_opened)
         return;
-    ImGui::Begin(ICON_FA_DICE_D6 " Modules", &m_opened, ImGuiWindowFlags_MenuBar);
+    ImGui::Begin(ICON_FA_HDD " Modules", &m_opened, ImGuiWindowFlags_MenuBar);
     drawMenubar();
     if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered())
         AppManager::setSelected(std::weak_ptr<Selectable>());
@@ -63,25 +64,8 @@ void ModuleWindow::drawMenubar()
 
                 fout.close();
 
-                ImGui::OpenPopup("Saved");
+                NotificationWindow::add({ "Saved module - " + module->getName(), NotificationType::Success });
             }
-        }
-
-        // Always center this window when appearing
-        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-        ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-        if (ImGui::BeginPopupModal("Saved", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-            ImGui::Text("Module was saved!");
-
-            static float timeout = 0.0f;
-            timeout += ImGui::GetIO().DeltaTime;
-            if (timeout > 0.8f) {
-                timeout = 0.0f;
-                ImGui::CloseCurrentPopup();
-            }
-
-            ImGui::EndPopup();
         }
 
         ImGui::EndMenuBar();

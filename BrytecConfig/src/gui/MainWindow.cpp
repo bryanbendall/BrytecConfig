@@ -3,6 +3,7 @@
 #include <imgui.h>
 //#include <misc/freetype/imgui_freetype.h>
 #include "AppManager.h"
+#include "NotificationWindow.h"
 #include "utils/DefaultPaths.h"
 #include <IconsFontAwesome5.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -116,6 +117,8 @@ void MainWindow::drawWindow()
     m_propertiesWindow.drawWindow();
     m_nodeGroupWindow.drawWindow();
     m_moduleBuilderWindow.drawWindow();
+
+    NotificationWindow::drawWindow();
 
     ImGui::End();
 }

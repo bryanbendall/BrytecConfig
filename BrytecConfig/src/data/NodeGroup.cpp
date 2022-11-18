@@ -1,6 +1,7 @@
 #include "NodeGroup.h"
 
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "gui/NotificationWindow.h"
 #include "utils/ModuleSerializer.h"
 
 NodeGroup::NodeGroup()
@@ -203,6 +204,7 @@ void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::
 
     if (std::find(loopCheck.begin(), loopCheck.end(), node) != loopCheck.end()) {
         node->setLoopFound(true);
+        NotificationWindow::add({ "Loop Found!", NotificationType::Error });
         return;
     }
     loopCheck.push_back(node);

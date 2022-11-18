@@ -2,6 +2,7 @@
 
 #include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "gui/NotificationWindow.h"
 #include "utils/BinarySerializer.h"
 #include "utils/ConfigSerializer.h"
 #include "utils/DefaultPaths.h"
@@ -34,8 +35,6 @@ void init(GLFWwindow* window)
     s_data.mainWindow->setupFonts();
     s_data.mainWindow->setupStyle();
     newConfig();
-
-    // test();
 }
 
 void update()
@@ -49,8 +48,7 @@ Version getVersion()
     return s_data.version;
 }
 
-std::shared_ptr<Config>&
-getConfig()
+std::shared_ptr<Config>& getConfig()
 {
     return s_data.config;
 }
@@ -85,6 +83,7 @@ void newConfig()
     clearSelected();
     s_data.config = std::make_shared<Config>("");
     updateWindowTitle();
+    NotificationWindow::add({ "New Configuration", NotificationType::Info });
 }
 
 void openConfig()
@@ -96,17 +95,15 @@ void openConfig()
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
 
-    ///////////////////////////////
-    // Test ///////////////////////
     BinaryDeserializer des;
     des.setDataFromPath(path);
     if (serializer.deserializeBinary(des)) {
         clearSelected();
         s_data.config = config;
         updateWindowTitle();
+        NotificationWindow::add({ "Loaded file - " + path.filename().string(), NotificationType::Success });
     } else {
-        std::cout << "Could not deserialize file: "
-                  << "" << std::endl;
+        NotificationWindow::add({ "Failed to load file - " + path.filename().string(), NotificationType::Error });
     }
 }
 
@@ -115,6 +112,8 @@ static void save(std::shared_ptr<Config>& config)
     ConfigSerializer serializer(config);
     auto configBinary = serializer.serializeBinary();
     configBinary.writeToFile(config->getFilepath());
+
+    NotificationWindow::add({ "Saved - " + config->getFilepath().filename().string(), NotificationType::Success });
 }
 
 void saveConfig()
