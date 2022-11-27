@@ -7,6 +7,7 @@ class NodeGroupWindow {
 public:
     NodeGroupWindow();
     void drawWindow();
+    bool getOpenedState() { return m_opened; }
     void setOpenedState(bool state) { m_opened = state; }
 
 private:

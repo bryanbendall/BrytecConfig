@@ -150,6 +150,8 @@ void MainWindow::drawMenu()
         if (ImGui::BeginMenu("View")) {
             if (ImGui::MenuItem("Module Window", "", m_moduleWindow.getOpenedState()))
                 m_moduleWindow.setOpenedState(true);
+            if (ImGui::MenuItem("Node Group Window", "", m_nodeGroupWindow.getOpenedState()))
+                m_nodeGroupWindow.setOpenedState(true);
             if (ImGui::MenuItem("Node Window", "", m_nodeWindow.getOpenedState()))
                 m_nodeWindow.setOpenedState(true);
             if (ImGui::MenuItem("Properties Window", "", m_propertiesWindow.getOpenedState()))

@@ -55,7 +55,6 @@ void NotificationWindow::drawWindow()
         }
 
         ImGui::SetNextWindowPos(ImVec2(vp_size.x - s_padding, vp_size.y - s_padding - accumulatedHeight), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(300.0f, -1), ImVec2(300.0f, -1));
         if (notification.timeout < 0.5f) {
             ImGui::SetNextWindowBgAlpha(notification.timeout * 2.0f);
             textCol.w = notification.timeout * 2.0f;
@@ -65,11 +64,13 @@ void NotificationWindow::drawWindow()
         char window_name[50];
         sprintf(window_name, "##Notification%d", i);
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f); // Round borders
+        // Round borders
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
 
         ImGui::Begin(window_name, NULL, flags);
 
-        ImGui::PushTextWrapPos();
+        // Wrap the text after 1/3 of the screen width
+        ImGui::PushTextWrapPos(vp_size.x / 3.0f);
 
         if (iconText != "") {
             ImGui::TextColored(iconCol, "%s", iconText.c_str());
