@@ -24,6 +24,16 @@ public:
     bool& getEnabled() { return m_enabled; }
     void setEnabled(bool state) { m_enabled = state; }
 
+    uint8_t& getCurrentLimit() { return m_currentLimit; }
+    void setCurrentLimit(uint8_t currentLimit) { m_currentLimit = currentLimit; }
+
+    bool& getAlwaysRetry() { return m_alwaysRetry; }
+
+    uint8_t& getMaxRetries() { return m_maxRetries; }
+    void setMaxRetries(uint8_t maxRetries) { m_maxRetries = maxRetries; }
+
+    float& getRetryDelay() { return m_retryDelay; }
+
     const UUID& getId() { return m_uuid; }
     void setId(const UUID& uuid) { m_uuid = uuid; }
 
@@ -49,6 +59,10 @@ private:
     UUID m_uuid = 0;
     IOTypes::Types m_type = IOTypes::Types::Undefined;
     bool m_enabled = true;
+    uint8_t m_currentLimit = 0;
+    bool m_alwaysRetry = false;
+    uint8_t m_maxRetries = 0;
+    float m_retryDelay = 1.0f;
     bool m_assignedToPin = false;
     std::deque<std::shared_ptr<Node>> m_nodes;
     int m_nodesIds = 0;

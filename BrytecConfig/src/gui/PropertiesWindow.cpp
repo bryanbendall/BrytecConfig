@@ -233,6 +233,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                 }
             }
 
+            // Remove button
             if (pin->getNodeGroup()) {
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
@@ -241,6 +242,7 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                     pin->setNodeGroup(nullptr);
             }
 
+            // Type select
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             if (ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen)) {
@@ -310,6 +312,48 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             } else {
                 ImGui::Combo("###Node Group Type", (int*)&nodeGroup->getType(), IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
             }
+
+            // Current limit
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Current Limit");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            int current = nodeGroup->getCurrentLimit();
+            if (ImGui::DragInt("###current", &current, 1.0f, 0, 255, "%d Amps"))
+                nodeGroup->setCurrentLimit(std::clamp(current, 0, 255));
+
+            // Always Retry
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Always Retry");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::Checkbox("###AlwayRetry", &nodeGroup->getAlwaysRetry());
+
+            // Maximum Retries
+            if (!nodeGroup->getAlwaysRetry()) {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted("Retries");
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                int retries = nodeGroup->getMaxRetries();
+                if (ImGui::DragInt("###MaximumRetries", &retries, 1.0f, 0, 255))
+                    nodeGroup->setMaxRetries(std::clamp(retries, 0, 255));
+            }
+
+            // Retry delay
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Retry Delay");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::DragFloat("##RetryDelay", &nodeGroup->getRetryDelay(), 0.1f, 0.1f, 10.0f, "%.1f Sec");
 
             // Total Nodes
             ImGui::TableNextRow();
