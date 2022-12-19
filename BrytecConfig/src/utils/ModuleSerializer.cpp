@@ -40,10 +40,14 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     // Prototype pins
     ser.writeRaw<uint16_t>(m_module->getPhysicalPins().size());
     for (auto pin : m_module->getPhysicalPins()) {
+        // Name
         ser.writeRaw(pin->getPinoutName());
+        // Types
         ser.writeRaw<uint8_t>(pin->getAvailableTypes().size());
         for (auto type : pin->getAvailableTypes())
             ser.writeRaw<uint8_t>((uint8_t)type);
+        // Max Current
+        ser.writeRaw<uint8_t>(pin->getMaxCurrent());
     }
 
     return ser;
@@ -64,9 +68,11 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
     uint16_t pinCount;
     des.readRaw<uint16_t>(&pinCount);
     for (int i = 0; i < pinCount; i++) {
+        // Name
         std::string pinoutName;
         des.readRaw<std::string>(&pinoutName);
 
+        // Types
         std::vector<IOTypes::Types> availableTypesVec;
         uint8_t typesCount;
         des.readRaw<uint8_t>(&typesCount);
@@ -76,7 +82,12 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
             availableTypesVec.push_back((IOTypes::Types)type);
         }
 
-        std::shared_ptr<PhysicalPin> newPin = std::make_shared<PhysicalPin>(pinoutName, availableTypesVec);
+        // Max Current
+        uint8_t maxCurrent;
+        des.readRaw<uint8_t>(&maxCurrent);
+
+        // Make pin
+        std::shared_ptr<PhysicalPin> newPin = std::make_shared<PhysicalPin>(pinoutName, availableTypesVec, maxCurrent);
         m_module->getPhysicalPins().push_back(newPin);
     }
 

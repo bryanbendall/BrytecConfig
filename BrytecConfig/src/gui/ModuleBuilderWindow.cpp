@@ -119,6 +119,16 @@ void ModuleBuilderWindow::drawModuleTable()
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         ImGui::InputText("###PinoutNameInput", &pin->getPinoutName());
 
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::TreeNodeEx("Max Current", leafNodeFlags);
+                        ImGui::TableNextColumn();
+                        static bool showButtons = true;
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        uint8_t maxCurrent = pin->getMaxCurrent();
+                        if (ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &maxCurrent, &showButtons))
+                            pin->setMaxCurrent(maxCurrent);
+
                         // Start at 1 to ignore undefined type
                         for (int j = 1; j < (int)IOTypes::Types::Count; j++) {
                             ImGui::PushID(j);

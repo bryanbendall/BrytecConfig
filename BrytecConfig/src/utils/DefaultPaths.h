@@ -15,5 +15,5 @@
 #define NODE_GROUPS_PATH "/home/bendall/Documents/BrytecCmake/BrytecConfig/BrytecConfig/data/node groups/"
 #define FONTS_PATH_DROID_SANS "/home/bendall/Documents/BrytecCmake/BrytecConfig/BrytecConfig/vendor/imgui/misc/fonts/DroidSans.ttf"
 #define FONTS_PATH_FONT_AWESOME "/home/bendall/Documents/BrytecCmake/BrytecConfig/BrytecConfig/vendor/fontawesome/fa-solid-900.ttf"
-#define MODULE_SAVE_MEGA_PATH "/home/bendall/Documents/PlatformIO/Projects/Brytec Test/.pio/libdeps/env1/BrytecConfigEmbedded/Deserializer/Program.h"
+#define MODULE_SAVE_MEGA_PATH "/home/bendall/Documents/PlatformIO/Projects/Brytec Test/.pio/libdeps/mega/BrytecConfigEmbedded/Deserializer/Program.h"
 #endif

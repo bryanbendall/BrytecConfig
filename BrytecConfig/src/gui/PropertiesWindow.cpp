@@ -188,10 +188,13 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 ImGui::AlignTextToFramePadding();
-                ImGui::TextUnformatted("Current Limit");
+                ImGui::TextUnformatted("Max Current");
                 ImGui::TableNextColumn();
                 ImGui::SetNextItemWidth(-FLT_MIN);
-                ImGui::Combo("###Current Limit", (int*)&physicalPin->getCurrentLimit(), PhysicalPin::currentNames, IM_ARRAYSIZE(PhysicalPin::currentNames));
+                if (physicalPin->getMaxCurrent() > 0)
+                    ImGui::Text("%i Amps", physicalPin->getMaxCurrent());
+                else
+                    ImGui::TextUnformatted("N/A");
             } else {
                 // Name
                 ImGui::TableNextRow();

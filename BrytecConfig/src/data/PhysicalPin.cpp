@@ -1,17 +1,8 @@
 #include "PhysicalPin.h"
 
-const char* PhysicalPin::currentNames[] = {
-    "5 Amps",
-    "7 Amps",
-    "9 Amps",
-    "11 Amps",
-    "13 Amps",
-    "15 Amps",
-    "17 Amps"
-};
-
-PhysicalPin::PhysicalPin(const std::string& pinoutName, const std::vector<IOTypes::Types>& availableTypes)
+PhysicalPin::PhysicalPin(const std::string& pinoutName, const std::vector<IOTypes::Types>& availableTypes, uint8_t maxCurrent)
     : m_pinoutName(pinoutName)
+    , m_maxCurrent(maxCurrent)
 {
     setAvailableTypes(availableTypes);
 }
