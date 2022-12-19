@@ -1,5 +1,6 @@
 #include "NotificationWindow.h"
 
+#include "utils/Colors.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -37,19 +38,19 @@ void NotificationWindow::drawWindow()
         std::string iconText = "";
         switch (notification.type) {
         case NotificationType::Success:
-            iconCol = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+            iconCol = ImColor(Colors::Notifications::Success);
             iconText = ICON_FA_CHECK_CIRCLE;
             break;
         case NotificationType::Warning:
-            iconCol = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+            iconCol = ImColor(Colors::Notifications::Warning);
             iconText = ICON_FA_EXCLAMATION_TRIANGLE;
             break;
         case NotificationType::Error:
-            iconCol = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
+            iconCol = ImColor(Colors::Notifications::Error);
             iconText = ICON_FA_TIMES_CIRCLE;
             break;
         case NotificationType::Info:
-            iconCol = ImVec4(0.0f, 0.5f, 1.0f, 1.0f);
+            iconCol = ImColor(Colors::Notifications::Info);
             iconText = ICON_FA_INFO_CIRCLE;
             break;
         }
