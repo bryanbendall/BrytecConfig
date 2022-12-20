@@ -28,11 +28,13 @@ public:
     void setCurrentLimit(uint8_t currentLimit) { m_currentLimit = currentLimit; }
 
     bool& getAlwaysRetry() { return m_alwaysRetry; }
+    void setAlwaysRetry(bool alwaysRetry) { m_alwaysRetry = alwaysRetry; }
 
     uint8_t& getMaxRetries() { return m_maxRetries; }
     void setMaxRetries(uint8_t maxRetries) { m_maxRetries = maxRetries; }
 
     float& getRetryDelay() { return m_retryDelay; }
+    void setRetryDelay(float retryDealy) { m_retryDelay = retryDealy; }
 
     const UUID& getId() { return m_uuid; }
     void setId(const UUID& uuid) { m_uuid = uuid; }

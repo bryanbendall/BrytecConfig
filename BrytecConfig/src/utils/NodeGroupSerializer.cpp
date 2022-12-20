@@ -25,6 +25,12 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
     ser.writeRaw<uint8_t>((uint8_t)m_nodeGroup->getType());
     ser.writeRaw<uint8_t>(m_nodeGroup->getEnabled());
 
+    // Current limit
+    ser.writeRaw<uint8_t>(m_nodeGroup->getCurrentLimit());
+    ser.writeRaw<uint8_t>(m_nodeGroup->getAlwaysRetry());
+    ser.writeRaw<uint8_t>(m_nodeGroup->getMaxRetries());
+    ser.writeRaw<float>(m_nodeGroup->getRetryDelay());
+
     // Nodes
     ser.writeRaw<uint16_t>(m_nodeGroup->getNodes().size());
     for (auto node : m_nodeGroup->getNodes()) {
@@ -112,6 +118,24 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
     des.readRaw<uint8_t>(&enabled);
     m_nodeGroup->setEnabled(enabled);
 
+    // Current limit
+    uint8_t currentLimit;
+    des.readRaw<uint8_t>(&currentLimit);
+    m_nodeGroup->setCurrentLimit(currentLimit);
+
+    uint8_t alwaysRetry;
+    des.readRaw<uint8_t>(&alwaysRetry);
+    m_nodeGroup->setAlwaysRetry(alwaysRetry);
+
+    uint8_t maxRetries;
+    des.readRaw<uint8_t>(&maxRetries);
+    m_nodeGroup->setMaxRetries(maxRetries);
+
+    float retryDelay;
+    des.readRaw<float>(&retryDelay);
+    m_nodeGroup->setRetryDelay(retryDelay);
+
+    // Nodes
     {
         uint16_t nodeCount;
         des.readRaw<uint16_t>(&nodeCount);
