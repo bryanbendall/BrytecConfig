@@ -65,7 +65,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 stream << std::fixed << std::setprecision(2) << value;
                 UI::SameHeightText(stream.str());
             } else if (percentValue) {
-                ImGui::ProgressBar(value / 100.0f, ImVec2(NodeWindow::nodeWidth, 0.0f));
+                ImGui::ProgressBar(value, ImVec2(NodeWindow::nodeWidth, 0.0f));
             }
         }
         break;
