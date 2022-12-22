@@ -20,9 +20,10 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Math",
     "Value",
     "Switch",
-    "Can Bus",
-    "Convert",
-    "Pin Current"
+    "Can Bus (Experamental)",
+    "Convert (Experamental)",
+    "Pin Current",
+    "PID (Experamental)"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -177,6 +178,17 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 
     case NodeTypes::PinCurrent:
         m_values.push_back(0.0f);
+        m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::PID:
+        m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Target
+        m_inputs.push_back(NodeConnection()); // P
+        m_inputs.push_back(NodeConnection()); // I
+        m_inputs.push_back(NodeConnection()); // D
+        m_values.push_back(0.0f); // previous error
+        m_values.push_back(0.0f); // integral
         m_outputs.push_back(0.0f);
         break;
 

@@ -294,6 +294,15 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::Ouput(node, 0, "Value");
         break;
 
+    case NodeTypes::PID:
+        UI::InputFloat(node, 0, "Input");
+        UI::InputFloat(node, 1, "Target");
+        UI::InputFloat(node, 2, "P");
+        UI::InputFloat(node, 3, "I");
+        UI::InputFloat(node, 4, "D");
+        UI::Ouput(node, 0, "Value");
+        break;
+
     default:
         drawUnimplimentedNode(node);
         break;
