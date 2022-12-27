@@ -137,9 +137,13 @@ void ModuleBuilderWindow::drawModuleTable()
                             ImGui::TreeNodeEx(IOTypes::Strings[j], leafNodeFlags);
                             ImGui::TableNextColumn();
 
-                            bool containsType = std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j) != pin->getAvailableTypes().end();
-                            if (ImGui::Checkbox("###checkbox", &containsType)) {
-                                pin->getAvailableTypes().push_back((IOTypes::Types)j);
+                            bool checkState = std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j) != pin->getAvailableTypes().end();
+                            if (ImGui::Checkbox("###checkbox", &checkState)) {
+                                bool containsType = std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j) != pin->getAvailableTypes().end();
+                                if (!containsType)
+                                    pin->getAvailableTypes().push_back((IOTypes::Types)j);
+                                else
+                                    pin->getAvailableTypes().erase(std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j));
                             }
                             ImGui::PopID();
                         }
