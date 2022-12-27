@@ -31,11 +31,11 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     ser.writeRaw<uint8_t>(AppManager::getVersion().Minor);
 
     // Basic info
+    ser.writeRaw<std::string>(m_module->getName());
+    ser.writeRaw<uint8_t>(m_module->getAddress());
     // TODO
     // manufacture name
-    // board name
     // version
-    // default address
 
     // Prototype pins
     ser.writeRaw<uint16_t>(m_module->getPhysicalPins().size());
@@ -65,6 +65,16 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
     des.readRaw<uint8_t>(&minor);
     // TODO check version
 
+    // Basic Info
+    std::string name;
+    des.readRaw<std::string>(&name);
+    m_module->setName(name);
+
+    uint8_t address;
+    des.readRaw<uint8_t>(&address);
+    m_module->setAddress(address);
+
+    // Pins
     uint16_t pinCount;
     des.readRaw<uint16_t>(&pinCount);
     for (int i = 0; i < pinCount; i++) {
