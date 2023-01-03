@@ -32,6 +32,7 @@ void ModuleWindow::drawMenubar()
 {
     if (ImGui::BeginMenuBar()) {
 
+        // Add
         if (ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
             auto moduleList = ModuleSerializer::readModulesFromDisk();
             for (auto& modulePath : moduleList) {
@@ -41,9 +42,16 @@ void ModuleWindow::drawMenubar()
             ImGui::EndMenu();
         }
 
+        // Open
+        if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
+            auto modulePath = FileDialogs::OpenFile("btmodule", MODULES_PATH);
+            if (!modulePath.empty())
+                AppManager::getConfig()->addModule(modulePath);
+        }
+
+        // Save
         std::shared_ptr<Module> module = AppManager::getSelected<Module>();
         bool moduleSelected = module != nullptr;
-        // Save
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
             if (module) {
                 auto path = MODULE_SAVE_MEGA_PATH;
