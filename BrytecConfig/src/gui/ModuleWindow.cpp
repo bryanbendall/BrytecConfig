@@ -54,25 +54,28 @@ void ModuleWindow::drawMenubar()
         bool moduleSelected = module != nullptr;
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
             if (module) {
-                auto path = MODULE_SAVE_MEGA_PATH;
 
-                std::ofstream fout(path);
+                auto path = FileDialogs::SaveFile("h");
+                if (!path.empty()) {
 
-                ModuleSerializer moduleSer(module);
-                BinarySerializer ser = moduleSer.serializeBinary();
-                BinaryDeserializer des;
-                des.setData(ser.getData().data(), ser.getData().size());
+                    std::ofstream fout(path);
 
-                fout << "const uint8_t progmem_data[] PROGMEM = {" << std::endl;
-                for (auto d : ser.getData()) {
-                    fout << std::showbase << std::hex << (int)d << ",";
-                }
+                    ModuleSerializer moduleSer(module);
+                    BinarySerializer ser = moduleSer.serializeBinary();
+                    BinaryDeserializer des;
+                    des.setData(ser.getData().data(), ser.getData().size());
+
+                    fout << "const uint8_t progmem_data[] PROGMEM = {" << std::endl;
+                    for (auto d : ser.getData()) {
+                        fout << std::showbase << std::hex << (int)d << ",";
+                    }
                 fout << std::endl
                      << "};" << std::endl;
 
                 fout.close();
 
                 NotificationWindow::add({ "Saved module - " + module->getName(), NotificationType::Success });
+                }
             }
         }
 
