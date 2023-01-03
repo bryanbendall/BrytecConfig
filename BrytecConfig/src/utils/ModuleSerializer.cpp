@@ -98,7 +98,7 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
         uint8_t maxCurrent;
         des.readRaw<uint8_t>(&maxCurrent);
 
-        // Max Current
+        // Pwm
         uint8_t pwm;
         des.readRaw<uint8_t>(&pwm);
 
