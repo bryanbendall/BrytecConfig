@@ -250,6 +250,10 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
 
                     for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
 
+                        // Don't show if node group type is not compatable
+                        if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) == pin->getAvailableTypes().end())
+                            continue;
+
                         ImGui::PushID(nodeGroup.get());
                         bool selected = false;
                         if (!nodeGroup->getAssigned()) {
