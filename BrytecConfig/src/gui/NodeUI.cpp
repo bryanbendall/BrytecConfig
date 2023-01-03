@@ -37,19 +37,19 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 auto ng = nodeGroup.lock();
                 auto type = ng->getType();
                 switch (type) {
-                case IOTypes::Types::Output_12V_Pwm:
+                case IOTypes::Types::Output_5V:
+                case IOTypes::Types::Output_Batt:
+                case IOTypes::Types::Output_Ground:
                     percentValue = true;
                     break;
-                case IOTypes::Types::Output_12V:
-                case IOTypes::Types::Output_12V_Low_Current:
-                case IOTypes::Types::Output_Ground:
-                case IOTypes::Types::Input_12V:
+
+                case IOTypes::Types::Input_Batt:
                 case IOTypes::Types::Input_Ground:
                 case IOTypes::Types::Input_5V:
                     onOff = true;
                     break;
                 case IOTypes::Types::Input_5V_Variable:
-                case IOTypes::Types::Input_Can:
+                case IOTypes::Types::Input_20V_Variable:
                 case IOTypes::Types::Internal:
                     floatValue = true;
                     break;

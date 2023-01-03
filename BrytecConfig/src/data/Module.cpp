@@ -20,7 +20,6 @@ void Module::deletePin(std::shared_ptr<PhysicalPin>& pin)
 void Module::addInternalPin()
 {
     std::vector<IOTypes::Types> types = {
-        IOTypes::Types::Input_Can,
         IOTypes::Types::Internal
     };
     m_internalPins.push_back(std::make_shared<InternalPin>(types));

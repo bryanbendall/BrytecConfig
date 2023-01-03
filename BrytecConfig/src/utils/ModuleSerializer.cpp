@@ -48,6 +48,8 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
             ser.writeRaw<uint8_t>((uint8_t)type);
         // Max Current
         ser.writeRaw<uint8_t>(pin->getMaxCurrent());
+        // Pwm
+        ser.writeRaw<uint8_t>(pin->getPwm());
     }
 
     return ser;
@@ -96,8 +98,12 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
         uint8_t maxCurrent;
         des.readRaw<uint8_t>(&maxCurrent);
 
+        // Max Current
+        uint8_t pwm;
+        des.readRaw<uint8_t>(&pwm);
+
         // Make pin
-        std::shared_ptr<PhysicalPin> newPin = std::make_shared<PhysicalPin>(pinoutName, availableTypesVec, maxCurrent);
+        std::shared_ptr<PhysicalPin> newPin = std::make_shared<PhysicalPin>(pinoutName, availableTypesVec, maxCurrent, pwm);
         m_module->getPhysicalPins().push_back(newPin);
     }
 

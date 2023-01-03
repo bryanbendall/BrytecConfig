@@ -115,10 +115,12 @@ void ModuleBuilderWindow::drawModuleTable()
 
                     if (ImGui::TreeNodeEx("###PinoutName", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding, "%s%d%s %s", "(", i, ")", pin->getPinoutName().c_str())) {
 
+                        // Name
                         ImGui::TableNextColumn();
                         ImGui::SetNextItemWidth(-FLT_MIN);
                         ImGui::InputText("###PinoutNameInput", &pin->getPinoutName());
 
+                        // Current
                         ImGui::TableNextRow();
                         ImGui::TableNextColumn();
                         ImGui::TreeNodeEx("Max Current", leafNodeFlags);
@@ -128,6 +130,16 @@ void ModuleBuilderWindow::drawModuleTable()
                         uint8_t maxCurrent = pin->getMaxCurrent();
                         if (ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &maxCurrent, &showButtons))
                             pin->setMaxCurrent(maxCurrent);
+
+                        // Pwm
+                        ImGui::TableNextRow();
+                        ImGui::TableNextColumn();
+                        ImGui::TreeNodeEx("Pwm", leafNodeFlags);
+                        ImGui::TableNextColumn();
+                        ImGui::SetNextItemWidth(-FLT_MIN);
+                        bool pwm = pin->getPwm();
+                        if (ImGui::Checkbox("###Pwm", &pwm))
+                            pin->setPwm(pwm);
 
                         // Start at 1 to ignore undefined type
                         for (int j = 1; j < (int)IOTypes::Types::Count; j++) {

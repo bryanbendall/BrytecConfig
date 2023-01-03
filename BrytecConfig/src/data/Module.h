@@ -23,9 +23,7 @@ public:
     bool& getEnabled() { return m_enabled; }
     void setEnabled(bool state) { m_enabled = state; }
 
-    void addPhysicalPin() { m_physicalPins.push_back(std::make_shared<PhysicalPin>("Unnamed", std::vector<IOTypes::Types>(), 0)); }
-    void addPhysicalPin(std::shared_ptr<PhysicalPin>& pin) { m_physicalPins.push_back(pin); }
-    void addPhysicalPin(std::string name, std::initializer_list<IOTypes::Types> types, uint8_t maxCurrent) { m_physicalPins.push_back(std::make_shared<PhysicalPin>(name, types, maxCurrent)); }
+    void addPhysicalPin() { m_physicalPins.push_back(std::make_shared<PhysicalPin>("Unnamed", std::vector<IOTypes::Types>(), 0, false)); }
     void deletePin(std::shared_ptr<PhysicalPin>& pin);
     std::vector<std::shared_ptr<PhysicalPin>>& getPhysicalPins() { return m_physicalPins; }
 

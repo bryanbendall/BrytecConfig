@@ -195,6 +195,16 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                     ImGui::Text("%i Amps", physicalPin->getMaxCurrent());
                 else
                     ImGui::TextUnformatted("N/A");
+
+                // Pwm
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::TextUnformatted("Pwm");
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                ImGui::TextUnformatted(physicalPin->getPwm() ? "Yes" : "No");
+
             } else {
                 // Name
                 ImGui::TableNextRow();
@@ -204,6 +214,25 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                 ImGui::TableNextColumn();
                 ImGui::SetNextItemWidth(-FLT_MIN);
                 ImGui::TextUnformatted("Internal");
+            }
+
+            // Type select
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            if (ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen)) {
+
+                for (auto& type : pin->getAvailableTypes()) {
+                    ImGui::PushID((int)type);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::TableNextColumn();
+                    ImGui::AlignTextToFramePadding();
+                    ImGui::Text(IOTypes::getString(type), "");
+
+                    ImGui::PopID();
+                }
+
+                ImGui::TreePop();
             }
 
             // Node Group
@@ -240,25 +269,6 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                 ImGui::TableNextColumn();
                 if (ImGui::Button("Remove Node Group"))
                     pin->setNodeGroup(nullptr);
-            }
-
-            // Type select
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            if (ImGui::TreeNodeEx("Types", ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen)) {
-
-                for (auto& type : pin->getAvailableTypes()) {
-                    ImGui::PushID((int)type);
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    ImGui::TableNextColumn();
-                    ImGui::AlignTextToFramePadding();
-                    ImGui::Text(IOTypes::getString(type), "");
-
-                    ImGui::PopID();
-                }
-
-                ImGui::TreePop();
             }
 
             ImGui::EndTable();
