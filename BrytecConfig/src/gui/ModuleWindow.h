@@ -23,4 +23,5 @@ private:
 
 private:
     bool m_opened = true;
+    bool m_simulateModule = false;
 };

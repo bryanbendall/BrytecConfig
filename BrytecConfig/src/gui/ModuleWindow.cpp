@@ -1,5 +1,6 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "NotificationWindow.h"
 #include "utils/Colors.h"
 #include "utils/DefaultPaths.h"
@@ -32,6 +33,10 @@ void ModuleWindow::drawMenubar()
 {
     if (ImGui::BeginMenuBar()) {
 
+        // Selected variables
+        std::shared_ptr<Module> module = AppManager::getSelected<Module>();
+        bool moduleSelected = module != nullptr;
+
         // Add
         if (ImGui::BeginMenu(ICON_FA_PLUS_CIRCLE)) {
             auto moduleList = ModuleSerializer::readModulesFromDisk();
@@ -49,9 +54,9 @@ void ModuleWindow::drawMenubar()
                 AppManager::getConfig()->addModule(modulePath);
         }
 
+        ImGui::TextDisabled("|");
+
         // Save
-        std::shared_ptr<Module> module = AppManager::getSelected<Module>();
-        bool moduleSelected = module != nullptr;
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
             if (module) {
 
@@ -62,8 +67,6 @@ void ModuleWindow::drawMenubar()
 
                     ModuleSerializer moduleSer(module);
                     BinarySerializer ser = moduleSer.serializeBinary();
-                    BinaryDeserializer des;
-                    des.setData(ser.getData().data(), ser.getData().size());
 
                     fout << "const uint8_t progmem_data[] PROGMEM = {" << std::endl;
                     for (auto d : ser.getData()) {
@@ -77,6 +80,46 @@ void ModuleWindow::drawMenubar()
                 NotificationWindow::add({ "Saved module - " + module->getName(), NotificationType::Success });
                 }
             }
+        }
+
+        // Start Simulation
+        if (!m_simulateModule) {
+            if (ImGui::MenuItem(ICON_FA_PLAY, NULL, false, moduleSelected)) {
+                if (module) {
+                m_simulateModule = false;
+
+                ModuleSerializer moduleSer(module);
+                BinarySerializer ser = moduleSer.serializeBinary();
+                BinaryDeserializer des;
+                des.setData(ser.getData().data(), ser.getData().size());
+
+                EBrytecApp::deserializeModule(des);
+
+                if (EBrytecApp::isDeserializeOk())
+                        std::cout << "Deserialize completed succesfully" << std::endl;
+                else
+                        std::cout << "Deserialize failed!!!!" << std::endl;
+
+                EBrytecApp::setupModule();
+                EBrytecApp::setupPins();
+
+                std::cout << "Done setup" << std::endl;
+
+                m_simulateModule = true;
+                }
+            }
+
+        } else {
+            // Stop simualation
+            if (ImGui::MenuItem(ICON_FA_STOP, NULL, false, m_simulateModule))
+                m_simulateModule = false;
+        }
+
+        // Do simulation, should be moved
+        if (m_simulateModule) {
+            float deltaTime = ImGui::GetIO().DeltaTime;
+            EBrytecApp::update(deltaTime);
+            // checkCan();
         }
 
         ImGui::EndMenuBar();
