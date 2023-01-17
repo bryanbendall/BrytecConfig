@@ -13,8 +13,10 @@ public:
 private:
     void drawMenubar();
     void drawModuleTable();
+    void drawPinDialog(std::shared_ptr<PhysicalPin>& pin);
 
 private:
     bool m_opened = false;
     std::shared_ptr<Module> m_module;
+    std::shared_ptr<PhysicalPin> m_editPin;
 };

@@ -12,6 +12,13 @@ Module::Module()
     addInternalPin();
 }
 
+std::shared_ptr<PhysicalPin> Module::addPhysicalPin()
+{
+    std::shared_ptr<PhysicalPin> pin = std::make_shared<PhysicalPin>("Unnamed", std::vector<IOTypes::Types>(), 0, false);
+    m_physicalPins.push_back(pin);
+    return pin;
+}
+
 void Module::deletePin(std::shared_ptr<PhysicalPin>& pin)
 {
     m_physicalPins.erase(std::find(m_physicalPins.begin(), m_physicalPins.end(), pin));

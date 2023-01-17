@@ -65,8 +65,11 @@ void ModuleBuilderWindow::drawMenubar()
         }
 
         // Add Pin
-        if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
-            m_module->addPhysicalPin();
+        if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE)) {
+            m_editPin = m_module->addPhysicalPin();
+            ImGui::OpenPopup("Pin Dialog");
+        }
+        drawPinDialog(m_editPin);
 
         ImGui::EndMenuBar();
     }
@@ -186,6 +189,12 @@ void ModuleBuilderWindow::drawModuleTable()
                             if (i != m_module->getPhysicalPins().size() - 1)
                                 std::swap(pin, m_module->getPhysicalPins()[i + 1]);
                         }
+                        ImGui::SameLine();
+                        if (ImGui::Button("Edit")) {
+                            m_editPin = pin;
+                            ImGui::OpenPopup("Pin Dialog");
+                        }
+                        drawPinDialog(m_editPin);
                     }
                     ImGui::PopID();
                 }
@@ -197,5 +206,72 @@ void ModuleBuilderWindow::drawModuleTable()
         }
 
         ImGui::EndTable();
+    }
+}
+
+void ModuleBuilderWindow::drawPinDialog(std::shared_ptr<PhysicalPin>& pin)
+{
+
+    static ImGuiTableFlags flags = ImGuiTableFlags_BordersV | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_NoBordersInBody;
+    static ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_FramePadding;
+    bool open = true;
+    if (ImGui::BeginPopupModal("Pin Dialog", &open, ImGuiWindowFlags_AlwaysAutoResize)) {
+        if (ImGui::BeginTable("3ways", 2, flags, ImVec2(500.0f, 0.0f))) {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 200.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableHeadersRow();
+
+            // Name
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TreeNodeEx("Pinout", leafNodeFlags);
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputText("###PinoutNameInput", &pin->getPinoutName(), ImGuiInputTextFlags_AutoSelectAll);
+
+            // Current
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TreeNodeEx("Max Current", leafNodeFlags);
+            ImGui::TableNextColumn();
+            static bool showButtons = true;
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            uint8_t maxCurrent = pin->getMaxCurrent();
+            if (ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &maxCurrent, &showButtons))
+                pin->setMaxCurrent(maxCurrent);
+
+            // Pwm
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::TreeNodeEx("Pwm", leafNodeFlags);
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            bool pwm = pin->getPwm();
+            if (ImGui::Checkbox("###Pwm", &pwm))
+                pin->setPwm(pwm);
+
+            // Start at 1 to ignore undefined type
+            for (int j = 1; j < (int)IOTypes::Types::Count; j++) {
+                ImGui::PushID(j);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::TreeNodeEx(IOTypes::Strings[j], leafNodeFlags);
+                ImGui::TableNextColumn();
+
+                bool checkState = std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j) != pin->getAvailableTypes().end();
+                if (ImGui::Checkbox("###checkbox", &checkState)) {
+                    bool containsType = std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j) != pin->getAvailableTypes().end();
+                    if (!containsType)
+                        pin->getAvailableTypes().push_back((IOTypes::Types)j);
+                    else
+                        pin->getAvailableTypes().erase(std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), (IOTypes::Types)j));
+                }
+                ImGui::PopID();
+            }
+
+            ImGui::EndTable();
+
+            ImGui::EndPopup();
+        }
     }
 }
