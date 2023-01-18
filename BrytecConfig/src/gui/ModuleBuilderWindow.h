@@ -1,6 +1,7 @@
 #pragma once
 
 #include "data/Module.h"
+#include <filesystem>
 #include <memory>
 
 class ModuleBuilderWindow {
@@ -14,6 +15,7 @@ private:
     void drawMenubar();
     void drawModuleTable();
     void drawPinDialog(std::shared_ptr<PhysicalPin>& pin);
+    void writeDefineFile(const std::filesystem::path& path);
 
 private:
     bool m_opened = false;

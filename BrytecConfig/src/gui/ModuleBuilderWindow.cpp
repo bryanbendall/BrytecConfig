@@ -5,6 +5,7 @@
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <IconsFontAwesome5.h>
+#include <fstream>
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
@@ -70,6 +71,17 @@ void ModuleBuilderWindow::drawMenubar()
             ImGui::OpenPopup("Pin Dialog");
         }
         drawPinDialog(m_editPin);
+
+        // Pin assignment defines
+        if (ImGui::MenuItem("Save Defines")) {
+            auto path = FileDialogs::SaveFile("h");
+
+            if (path.extension().empty())
+                path.replace_extension("h");
+
+            if (!path.empty())
+                writeDefineFile(path);
+        }
 
         ImGui::EndMenuBar();
     }
@@ -273,5 +285,18 @@ void ModuleBuilderWindow::drawPinDialog(std::shared_ptr<PhysicalPin>& pin)
 
             ImGui::EndPopup();
         }
+    }
+}
+
+void ModuleBuilderWindow::writeDefineFile(const std::filesystem::path& path)
+{
+    std::ofstream fout(path, std::ios::trunc);
+    fout << "#pragma once\n\n";
+
+    for (int i = 0; i < m_module->getPhysicalPins().size(); i++) {
+        auto& pin = m_module->getPhysicalPins()[i];
+        std::string pinout = pin->getPinoutName();
+        std::replace(pinout.begin(), pinout.end(), ' ', '_');
+        fout << "#define BT_PIN_" << pinout << " " << i << "\n";
     }
 }
