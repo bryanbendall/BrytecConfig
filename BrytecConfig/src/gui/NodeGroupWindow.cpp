@@ -27,6 +27,8 @@ void NodeGroupWindow::drawWindow()
 
     drawNodeGroups();
 
+    handleDragDrop();
+
     ImGui::End();
 }
 
@@ -118,7 +120,7 @@ void NodeGroupWindow::drawNodeGroups()
     m_shownNodeGroups = 0;
 
     for (int i = 0; i < nodeGroupCount; i++) {
-        auto& nodeGroup = nodeGroups[i];
+        std::shared_ptr<NodeGroup> nodeGroup = nodeGroups[i];
 
         switch (m_filter) {
         case FilterType::All:
@@ -168,13 +170,19 @@ void NodeGroupWindow::drawNodeGroups()
             ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
         }
 
-        if (ImGui::Button(nodeGroup->getName().c_str(), { buttonWidth, 0 })) {
+        std::string displayName = nodeGroup->getName();
+        if (nodeGroup->getAssigned()) {
+            displayName += " ";
+            displayName += ICON_FA_LOCK;
+        }
+        if (ImGui::Button(displayName.c_str(), { buttonWidth, 0 })) {
             AppManager::setSelected(nodeGroup);
         }
 
         if (!nodeGroup->getAssigned()) {
             if (ImGui::BeginDragDropSource()) {
-                ImGui::SetDragDropPayload("NodeGroup", &i, sizeof(int));
+                uint64_t id = nodeGroup->getId();
+                ImGui::SetDragDropPayload("NodeGroup", &id, sizeof(uint64_t));
 
                 ImGui::Text(nodeGroup->getName().c_str(), "");
                 ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
@@ -199,4 +207,38 @@ void NodeGroupWindow::drawNodeGroups()
     }
 
     ImGui::PopStyleVar();
+}
+
+void NodeGroupWindow::handleDragDrop()
+{
+    ImGui::SetCursorPos(ImGui::GetCursorStartPos());
+    ImGui::Dummy(ImGui::GetContentRegionAvail());
+
+    // Drop Node Group
+    if (ImGui::BeginDragDropTarget()) {
+
+        // Check type to do the outline for drop
+        bool accepted = false;
+        if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
+            uint64_t uuid = *(uint64_t*)tempPayload->Data;
+            std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+            if (nodeGroup) {
+                accepted = true;
+            }
+        }
+
+        // Recieve the data if it is a compatible type
+        if (accepted) {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
+
+                uint64_t uuid = *(uint64_t*)payload->Data;
+                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+
+                std::shared_ptr<Pin> oldPin = AppManager::getConfig()->getAssignedPin(nodeGroup);
+                if (oldPin)
+                    oldPin->setNodeGroup(nullptr);
+            }
+        }
+        ImGui::EndDragDropTarget();
+    }
 }

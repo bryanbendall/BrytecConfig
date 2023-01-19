@@ -96,3 +96,22 @@ uint8_t Config::getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup)
 
     return 0;
 }
+
+std::shared_ptr<Pin> Config::getAssignedPin(std::shared_ptr<NodeGroup> nodeGroup)
+{
+    for (auto module : m_modules) {
+
+        for (int i = 0; i < module->getPhysicalPins().size(); i++) {
+            if (module->getPhysicalPins()[i]->getNodeGroup() == nodeGroup)
+                return module->getPhysicalPins()[i];
+        }
+
+        for (int i = 0; i < module->getInternalPins().size(); i++) {
+
+            if (module->getInternalPins()[i]->getNodeGroup() == nodeGroup)
+                return module->getInternalPins()[i];
+        }
+    }
+
+    return nullptr;
+}

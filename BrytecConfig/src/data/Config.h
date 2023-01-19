@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "NodeGroup.h"
+#include "Pin.h"
 #include <filesystem>
 #include <memory>
 #include <vector>
@@ -29,6 +30,7 @@ public:
 
     uint8_t getAssignedModuleAddress(std::shared_ptr<NodeGroup> nodeGroup);
     uint8_t getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup);
+    std::shared_ptr<Pin> getAssignedPin(std::shared_ptr<NodeGroup> nodeGroup);
 
 private:
     std::filesystem::path m_path;

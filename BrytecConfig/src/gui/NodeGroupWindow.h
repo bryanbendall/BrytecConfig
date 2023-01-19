@@ -13,6 +13,7 @@ public:
 private:
     void drawMenubar();
     void drawNodeGroups();
+    void handleDragDrop();
 
 private:
     enum class FilterType {

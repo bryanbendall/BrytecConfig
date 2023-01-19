@@ -260,7 +260,18 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
     if (!enabled)
         ImGui::PopStyleColor();
 
-    if (pin->getNodeGroup()) {
+    if (std::shared_ptr<NodeGroup> nodeGroup = pin->getNodeGroup()) {
+
+        if (ImGui::BeginDragDropSource()) {
+            uint64_t id = nodeGroup->getId();
+            ImGui::SetDragDropPayload("NodeGroup", &id, sizeof(uint64_t));
+
+            ImGui::Text(nodeGroup->getName().c_str(), "");
+            ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
+
+            ImGui::EndDragDropSource();
+        }
+
         if (ImGui::BeginPopupContextItem()) {
             if (ImGui::MenuItem("Remove Node Group", NULL, false)) {
                 pin->setNodeGroup(nullptr);
@@ -288,10 +299,12 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
         // Check type to do the outline for drop
         bool accepted = false;
         if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
-            int nodeGroupIndex = *(int*)tempPayload->Data;
-            auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
-            if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
+            uint64_t uuid = *(uint64_t*)tempPayload->Data;
+            std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+            if (nodeGroup) {
+                if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
                 accepted = true;
+                }
             }
         }
 
@@ -299,9 +312,13 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
         if (accepted) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
 
-                // TODO: check if it is right type?
-                int nodeGroupIndex = *(int*)payload->Data;
-                auto& nodeGroup = AppManager::getConfig()->getNodeGroups()[nodeGroupIndex];
+                uint64_t uuid = *(uint64_t*)payload->Data;
+                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+
+                std::shared_ptr<Pin> oldPin = AppManager::getConfig()->getAssignedPin(nodeGroup);
+                if (oldPin)
+                oldPin->setNodeGroup(nullptr);
+
                 pin->setNodeGroup(nodeGroup);
                 shouldUpdateInternalPins = true;
             }
