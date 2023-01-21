@@ -76,6 +76,7 @@ void NodeGroupWindow::drawMenubar()
             }
         }
 
+        // Copy Node Group
         if (ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
             // Copy Constructor
             auto newNodeGroup = std::make_shared<NodeGroup>(*nodeGroup.get());

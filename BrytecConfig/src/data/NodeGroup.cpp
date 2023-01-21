@@ -23,6 +23,10 @@ NodeGroup::NodeGroup(const NodeGroup& other)
     m_name = other.m_name;
     m_type = other.m_type;
     m_enabled = other.m_enabled;
+    m_currentLimit = other.m_currentLimit;
+    m_alwaysRetry = other.m_alwaysRetry;
+    m_maxRetries = other.m_maxRetries;
+    m_retryDelay = other.m_retryDelay;
 
     // Copy nodes
     for (auto oldNode : other.m_nodes) {
