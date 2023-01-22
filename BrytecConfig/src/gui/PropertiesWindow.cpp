@@ -53,6 +53,24 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::InputText("###MouduleName", &module->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
+            // Manufacturer Name
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Manufacturer");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::TextUnformatted(module->getManufacturerName().c_str());
+
+            // Board Name
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Board");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::TextUnformatted(module->getBoardName().c_str());
+
             // Address
             ImGui::TableNextRow();
             ImGui::TableNextColumn();

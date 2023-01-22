@@ -17,6 +17,12 @@ public:
     std::string& getName() { return m_name; }
     void setName(const std::string& name) { m_name = name; }
 
+    std::string& getManufacturerName() { return m_manufacturer; }
+    void setManufacturerName(const std::string& name) { m_manufacturer = name; }
+
+    std::string& getBoardName() { return m_boardName; }
+    void setBoardName(const std::string& name) { m_boardName = name; }
+
     uint8_t& getAddress() { return m_address; }
     void setAddress(const uint8_t& address) { m_address = address; }
 
@@ -39,6 +45,8 @@ private:
     std::vector<std::shared_ptr<PhysicalPin>> m_physicalPins;
     std::vector<std::shared_ptr<InternalPin>> m_internalPins;
     std::string m_name = "Unnamed";
+    std::string m_manufacturer = "None";
+    std::string m_boardName = "None";
     uint8_t m_address = 2;
     bool m_enabled = true;
     std::vector<CanBus> m_canBus;

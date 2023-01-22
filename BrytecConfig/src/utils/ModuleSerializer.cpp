@@ -32,10 +32,9 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
 
     // Basic info
     ser.writeRaw<std::string>(m_module->getName());
+    ser.writeRaw<std::string>(m_module->getManufacturerName());
+    ser.writeRaw<std::string>(m_module->getBoardName());
     ser.writeRaw<uint8_t>(m_module->getAddress());
-    // TODO
-    // manufacture name
-    // version
 
     // Prototype pins
     ser.writeRaw<uint16_t>(m_module->getPhysicalPins().size());
@@ -71,6 +70,14 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
     std::string name;
     des.readRaw<std::string>(&name);
     m_module->setName(name);
+
+    std::string manufacturer;
+    des.readRaw<std::string>(&manufacturer);
+    m_module->setManufacturerName(manufacturer);
+
+    std::string board;
+    des.readRaw<std::string>(&board);
+    m_module->setBoardName(board);
 
     uint8_t address;
     des.readRaw<uint8_t>(&address);
@@ -124,6 +131,8 @@ BinarySerializer ModuleSerializer::serializeBinary()
 
     // Basic info
     ser.writeRaw<std::string>(m_module->getName());
+    ser.writeRaw<std::string>(m_module->getManufacturerName());
+    ser.writeRaw<std::string>(m_module->getBoardName());
     ser.writeRaw<uint8_t>(m_module->getAddress());
     ser.writeRaw<uint8_t>(m_module->getEnabled());
 
@@ -187,6 +196,14 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
     std::string name;
     des.readRaw<std::string>(&name);
     m_module->setName(name);
+
+    std::string manufacturer;
+    des.readRaw<std::string>(&manufacturer);
+    m_module->setManufacturerName(manufacturer);
+
+    std::string board;
+    des.readRaw<std::string>(&board);
+    m_module->setBoardName(board);
 
     uint8_t address;
     des.readRaw<uint8_t>(&address);
