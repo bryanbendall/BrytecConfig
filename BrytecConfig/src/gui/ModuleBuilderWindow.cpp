@@ -107,7 +107,7 @@ void ModuleBuilderWindow::drawModuleTable()
             ImGui::TreeNodeEx("Name", leafNodeFlags);
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputText("###MouduleName", &m_module->getName()), ImGuiInputTextFlags_AutoSelectAll;
+            ImGui::InputText("###MouduleName", &m_module->getName(), ImGuiInputTextFlags_AutoSelectAll);
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
