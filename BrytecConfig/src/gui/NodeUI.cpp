@@ -109,7 +109,12 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             }
             ImGui::EndCombo();
         }
+        imnodes::EndStaticAttribute();
 
+        UI::InputFloat(node, 0, "Default Value");
+        UI::InputFloat(node, 1, "Timeout", 2, 0.01f, 1000.0f, 0.01f);
+
+        imnodes::BeginStaticAttribute(node->getValueId(1));
         if (mode == NodeWindow::Mode::Simulation) {
 
             ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 10000.0f, "%.2f");

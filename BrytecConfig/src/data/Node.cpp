@@ -44,8 +44,10 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         break;
 
     case NodeTypes::Node_Group:
-        m_outputs.push_back(0.0f);
-        m_values.push_back(0.0f);
+        m_inputs.push_back(NodeConnection(1.0f)); // Default Value
+        m_inputs.push_back(NodeConnection(1.0f)); // Timeout
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Used for simulation
         break;
 
     case NodeTypes::And:
