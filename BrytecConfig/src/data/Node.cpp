@@ -23,7 +23,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Can Bus (Experamental)",
     "Convert (Experamental)",
     "Pin Current",
-    "PID (Experamental)"
+    "PID (Experamental)",
+    "Counter"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -192,6 +193,17 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // previous error
         m_values.push_back(0.0f); // integral
         m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::Counter:
+        m_inputs.push_back(NodeConnection()); // Up
+        m_inputs.push_back(NodeConnection()); // Down
+        m_inputs.push_back(NodeConnection()); // Min
+        m_inputs.push_back(NodeConnection(1.0f)); // Max
+        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f); // Last up
+        m_values.push_back(0.0f); // Last down
+        m_values.push_back(0.0f); // Output value
         break;
 
     case NodeTypes::Count:

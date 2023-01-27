@@ -18,6 +18,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/ECompareNode.h                
                 src/BrytecConfigEmbedded/Nodes/EConvertNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EConvertNode.h
+                src/BrytecConfigEmbedded/Nodes/ECounterNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ECounterNode.h
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.h
                 src/BrytecConfigEmbedded/Nodes/EDelayNode.cpp

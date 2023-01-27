@@ -308,6 +308,14 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::Ouput(node, 0, "Value");
         break;
 
+    case NodeTypes::Counter:
+        UI::InputFloat(node, 0, "Up");
+        UI::InputFloat(node, 1, "Down");
+        UI::InputFloat(node, 2, "Min");
+        UI::InputFloat(node, 3, "Max");
+        UI::Ouput(node, 0, "Value");
+        break;
+
     default:
         drawUnimplimentedNode(node);
         break;
