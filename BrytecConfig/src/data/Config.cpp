@@ -40,6 +40,12 @@ std::shared_ptr<NodeGroup> Config::addEmptyNodeGroup(UUID uuid)
 
 void Config::removeModule(std::shared_ptr<Module>& module)
 {
+    // Unassign all node groups
+    for (auto pin : module->getPhysicalPins())
+        pin->setNodeGroup(nullptr);
+    for (auto pin : module->getInternalPins())
+        pin->setNodeGroup(nullptr);
+
     auto it = std::find(m_modules.begin(), m_modules.end(), module);
     m_modules.erase(it);
 }
