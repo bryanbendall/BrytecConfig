@@ -56,6 +56,14 @@ void ModuleWindow::drawMenubar()
 
         ImGui::TextDisabled("|");
 
+        // Filter
+        ImGui::Text(ICON_FA_FILTER " Filter");
+        ImGui::SetNextItemWidth(110);
+        static const char* items[] = { "All", "Assigned", "Unassigned" };
+        ImGui::Combo("##Filter", (int*)&m_filter, items, 3);
+
+        ImGui::TextDisabled("|");
+
         // Save
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, moduleSelected)) {
             if (module) {
@@ -194,7 +202,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         auto pin = m->getPhysicalPins()[i];
 
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : pin->getPinoutName();
-        drawPinButton(m, std::static_pointer_cast<Pin>(pin), buttonText);
+        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText);
 
         ImGui::PopID();
     }
@@ -205,7 +213,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         auto pin = m->getInternalPins()[j];
 
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Internal";
-        drawPinButton(m, std::static_pointer_cast<Pin>(pin), buttonText);
+        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText);
 
         ImGui::PopID();
     }
@@ -248,11 +256,26 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     }
 }
 
-void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin> pin, const std::string& name)
+void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& name)
 {
+    std::shared_ptr<NodeGroup> nodeGroup = pin->getNodeGroup();
+
+    switch (m_filter) {
+    case FilterType::All:
+        break;
+    case FilterType::Assigned:
+        if (!nodeGroup)
+            return;
+        break;
+    case FilterType::Unassigned:
+        if (nodeGroup)
+            return;
+        break;
+    }
+
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-    bool enabled = pin->getNodeGroup() ? pin->getNodeGroup()->getEnabled() : false;
+    bool enabled = nodeGroup ? nodeGroup->getEnabled() : false;
     if (!enabled)
         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
     if (ImGui::Button(name.c_str(), { 140, 0 }))
@@ -260,7 +283,7 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
     if (!enabled)
         ImGui::PopStyleColor();
 
-    if (std::shared_ptr<NodeGroup> nodeGroup = pin->getNodeGroup()) {
+    if (nodeGroup) {
 
         if (ImGui::BeginDragDropSource()) {
             uint64_t id = nodeGroup->getId();
@@ -289,7 +312,7 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
         drawList->AddRect(rectMin, rectMax, Colors::PrimarySelection, 4.0f);
     }
 
-    if (pin->getNodeGroup() && AppManager::isSelected(pin->getNodeGroup())) {
+    if (nodeGroup && AppManager::isSelected(nodeGroup)) {
         drawList->AddRect(rectMin, rectMax, Colors::SecondarySelection, 4.0f);
     }
 
@@ -300,9 +323,9 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
         bool accepted = false;
         if (const ImGuiPayload* tempPayload = ImGui::AcceptDragDropPayload("NodeGroup", ImGuiDragDropFlags_AcceptPeekOnly)) {
             uint64_t uuid = *(uint64_t*)tempPayload->Data;
-            std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
-            if (nodeGroup) {
-                if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), nodeGroup->getType()) != pin->getAvailableTypes().end()) {
+            std::shared_ptr<NodeGroup> dragNodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+            if (dragNodeGroup) {
+                if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), dragNodeGroup->getType()) != pin->getAvailableTypes().end()) {
                 accepted = true;
                 }
             }
@@ -313,13 +336,13 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("NodeGroup")) {
 
                 uint64_t uuid = *(uint64_t*)payload->Data;
-                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
+                std::shared_ptr<NodeGroup> dragNodeGroup = AppManager::getConfig()->findNodeGroup(uuid);
 
-                std::shared_ptr<Pin> oldPin = AppManager::getConfig()->getAssignedPin(nodeGroup);
+                std::shared_ptr<Pin> oldPin = AppManager::getConfig()->getAssignedPin(dragNodeGroup);
                 if (oldPin)
                 oldPin->setNodeGroup(nullptr);
 
-                pin->setNodeGroup(nodeGroup);
+                pin->setNodeGroup(dragNodeGroup);
                 shouldUpdateInternalPins = true;
             }
         }

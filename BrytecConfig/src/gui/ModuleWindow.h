@@ -19,9 +19,17 @@ private:
     void drawMenubar();
     void drawModules();
     void drawModule(std::shared_ptr<Module>& m);
-    void drawPinButton(std::shared_ptr<Module>& m, std::shared_ptr<Pin> pin, const std::string& name);
+    void drawPinButton(std::shared_ptr<Pin> pin, const std::string& name);
+
+private:
+    enum class FilterType {
+        All,
+        Assigned,
+        Unassigned
+    };
 
 private:
     bool m_opened = true;
+    FilterType m_filter = FilterType::All;
     bool m_simulateModule = false;
 };
