@@ -5,10 +5,12 @@
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
 #include "utils/Colors.h"
+#include <IconsFontAwesome5.h>
 #include <bitset>
 #include <imnodes.h>
 #include <iomanip>
 #include <iostream>
+#include <misc/cpp/imgui_stdlib.h>
 #include <sstream>
 
 namespace UI {
@@ -23,6 +25,8 @@ static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact
 
 void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup)
 {
+    static bool focus = false;
+
     switch (node->getType()) {
 
     case NodeTypes::Final_Value:
@@ -89,25 +93,50 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         static std::shared_ptr<NodeGroup> selectedNodeGroup;
         selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
 
-        if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str())) {
+        if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
 
-            for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
+            // if (ImGui::IsWindowAppearing())
+            //     ImGui::SetKeyboardFocusHere(0);
 
-                // Skip if it is this node group
-                if (thisNodeGroup && thisNodeGroup == nodeGroup)
-                    continue;
-
-                ImGui::PushID(nodeGroup.get());
-                bool isSelected = nodeGroup == selectedNodeGroup;
-                if (ImGui::Selectable(nodeGroup->getName().c_str(), isSelected)) {
-                    node->setSelectedNodeGroup(nodeGroup->getId());
-                }
-                ImGui::PopID();
-
-                if (isSelected)
-                    ImGui::SetItemDefaultFocus();
+            if (!focus) {
+                ImGui::SetKeyboardFocusHere();
+                focus = true;
             }
+
+            static std::string text = "";
+            ImGui::InputText("###pinName", &text, ImGuiInputTextFlags_AutoSelectAll);
+            // ImGui::SameLine();
+            // ImGui::TextUnformatted(ICON_FA_SEARCH);
+
+            if (ImGui::BeginListBox("##listbox")) {
+
+                for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
+
+                    // Skip if it is this node group
+                    if (thisNodeGroup && thisNodeGroup == nodeGroup)
+                        continue;
+
+                    if (nodeGroup->getName().find(text) == std::string::npos)
+                        continue;
+
+                    ImGui::PushID(nodeGroup.get());
+                    bool isSelected = nodeGroup == selectedNodeGroup;
+                    if (ImGui::Selectable(nodeGroup->getName().c_str(), isSelected)) {
+                        node->setSelectedNodeGroup(nodeGroup->getId());
+                        ImGui::CloseCurrentPopup();
+                    }
+                    ImGui::PopID();
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndListBox();
+            }
+
             ImGui::EndCombo();
+        } else {
+            focus = false;
         }
         imnodes::EndStaticAttribute();
 
