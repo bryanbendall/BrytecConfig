@@ -7,6 +7,7 @@
 #include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <bitset>
+#include <imgui_internal.h>
 #include <imnodes.h>
 #include <iomanip>
 #include <iostream>
@@ -95,20 +96,26 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
         if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
 
-            // if (ImGui::IsWindowAppearing())
-            //     ImGui::SetKeyboardFocusHere(0);
-
-            if (!focus) {
+            if (ImGui::IsWindowAppearing() && !focus) {
                 ImGui::SetKeyboardFocusHere();
                 focus = true;
+            } else {
+                focus = false;
             }
+
+            ImGui::SetCursorPosX(5.0f);
 
             static std::string text = "";
             ImGui::InputText("###pinName", &text, ImGuiInputTextFlags_AutoSelectAll);
-            // ImGui::SameLine();
-            // ImGui::TextUnformatted(ICON_FA_SEARCH);
+            ImGui::SameLine();
+            ImGui::TextUnformatted(ICON_FA_SEARCH);
 
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
+            ImGui::PushItemWidth(-FLT_MIN);
+
+            ImGui::SetCursorPosX(0.0f);
             if (ImGui::BeginListBox("##listbox")) {
+                // if (ImGui::BeginChild("##listbox", ImVec2(0.0f, 200.0f))) {
 
                 for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
 
@@ -133,10 +140,12 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
                 ImGui::EndListBox();
             }
+            // ImGui::EndChild();
+
+            ImGui::PopStyleColor();
+            ImGui::PopItemWidth();
 
             ImGui::EndCombo();
-        } else {
-            focus = false;
         }
         imnodes::EndStaticAttribute();
 
