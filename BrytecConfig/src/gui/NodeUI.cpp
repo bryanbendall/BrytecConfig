@@ -26,7 +26,7 @@ static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact
 
 void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup)
 {
-    static bool focus = false;
+    static bool nodeGroupSearchFocus = false;
 
     switch (node->getType()) {
 
@@ -91,21 +91,20 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         if (!nodeGroup.expired())
             thisNodeGroup = nodeGroup.lock();
 
-        static std::shared_ptr<NodeGroup> selectedNodeGroup;
-        selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
-
+        static std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
         if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
 
-            if (ImGui::IsWindowAppearing() && !focus) {
+            // Auto select search box
+            if (ImGui::IsWindowAppearing() && !nodeGroupSearchFocus) {
                 ImGui::SetKeyboardFocusHere();
-                focus = true;
+                nodeGroupSearchFocus = true;
             } else {
-                focus = false;
+                nodeGroupSearchFocus = false;
             }
 
-            ImGui::SetCursorPosX(5.0f);
-
+            // Filter search box
             static std::string text = "";
+            ImGui::SetCursorPosX(5.0f);
             ImGui::InputText("###pinName", &text, ImGuiInputTextFlags_AutoSelectAll);
             ImGui::SameLine();
             ImGui::TextUnformatted(ICON_FA_SEARCH);
@@ -116,28 +115,30 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
             ImGui::SetCursorPosX(0.0f);
             if (ImGui::BeginListBox("##listbox")) {
-                for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
+                for (auto& nodeGroupInstance : AppManager::getConfig()->getNodeGroups()) {
 
                     // Skip if it is this node group
-                    if (thisNodeGroup && thisNodeGroup == nodeGroup)
+                    if (thisNodeGroup && thisNodeGroup == nodeGroupInstance)
                         continue;
 
                     // Filter - not case sensitive
                     auto it = std::search(
-                        nodeGroup->getName().begin(), nodeGroup->getName().end(),
+                        nodeGroupInstance->getName().begin(), nodeGroupInstance->getName().end(),
                         text.begin(), text.end(),
                         [](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); });
-                    if (it == nodeGroup->getName().end())
+                    if (it == nodeGroupInstance->getName().end())
                         continue;
 
-                    ImGui::PushID(nodeGroup.get());
-                    bool isSelected = nodeGroup == selectedNodeGroup;
-                    if (ImGui::Selectable(nodeGroup->getName().c_str(), isSelected)) {
-                        node->setSelectedNodeGroup(nodeGroup->getId());
+                    // Selectable NodeGroups
+                    ImGui::PushID(nodeGroupInstance.get());
+                    bool isSelected = (nodeGroupInstance == selectedNodeGroup);
+                    if (ImGui::Selectable(nodeGroupInstance->getName().c_str(), isSelected)) {
+                        node->setSelectedNodeGroup(nodeGroupInstance->getId());
                         ImGui::CloseCurrentPopup();
                     }
                     ImGui::PopID();
 
+                    // Already selected NodeGroup
                     if (isSelected)
                         ImGui::SetItemDefaultFocus();
                 }
