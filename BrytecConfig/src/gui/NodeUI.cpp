@@ -111,19 +111,23 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             ImGui::TextUnformatted(ICON_FA_SEARCH);
 
             ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImVec4)ImColor(0, 0, 0, 0));
+            ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, (ImVec4)ImColor(0, 0, 0, 0));
             ImGui::PushItemWidth(-FLT_MIN);
 
             ImGui::SetCursorPosX(0.0f);
             if (ImGui::BeginListBox("##listbox")) {
-                // if (ImGui::BeginChild("##listbox", ImVec2(0.0f, 200.0f))) {
-
                 for (auto& nodeGroup : AppManager::getConfig()->getNodeGroups()) {
 
                     // Skip if it is this node group
                     if (thisNodeGroup && thisNodeGroup == nodeGroup)
                         continue;
 
-                    if (nodeGroup->getName().find(text) == std::string::npos)
+                    // Filter - not case sensitive
+                    auto it = std::search(
+                        nodeGroup->getName().begin(), nodeGroup->getName().end(),
+                        text.begin(), text.end(),
+                        [](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); });
+                    if (it == nodeGroup->getName().end())
                         continue;
 
                     ImGui::PushID(nodeGroup.get());
@@ -140,8 +144,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
                 ImGui::EndListBox();
             }
-            // ImGui::EndChild();
 
+            ImGui::PopStyleColor();
             ImGui::PopStyleColor();
             ImGui::PopItemWidth();
 

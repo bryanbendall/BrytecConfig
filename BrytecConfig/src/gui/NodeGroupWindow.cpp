@@ -137,19 +137,13 @@ void NodeGroupWindow::drawNodeGroups()
         }
 
         if (!m_search.empty()) {
-            // To Lower Case
-            std::string name = nodeGroup->getName();
-            std::transform(name.begin(), name.end(), name.begin(),
-                [](unsigned char c) { return std::tolower(c); });
-
-            // To Lower Case
-            std::string search = m_search;
-            std::transform(search.begin(), search.end(), search.begin(),
-                [](unsigned char c) { return std::tolower(c); });
-
-            if (name.find(search) > name.length()) {
+            // Filter - not case sensitive
+            auto it = std::search(
+                nodeGroup->getName().begin(), nodeGroup->getName().end(),
+                m_search.begin(), m_search.end(),
+                [](unsigned char ch1, unsigned char ch2) { return std::toupper(ch1) == std::toupper(ch2); });
+            if (it == nodeGroup->getName().end())
                 continue;
-            }
         }
 
         m_shownNodeGroups++;
