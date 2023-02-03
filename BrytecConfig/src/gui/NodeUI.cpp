@@ -7,6 +7,7 @@
 #include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <bitset>
+#include <imgui_internal.h>
 #include <imnodes.h>
 #include <iomanip>
 #include <iostream>
@@ -143,7 +144,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                     if (isSelected)
                         ImGui::SetItemDefaultFocus();
 
-                    if (ImGui::IsItemHovered()) {
+                    // Tooltip
+                    if (ImGui::IsItemHovered() && GImGui->HoveredIdTimer > 0.5f) {
                         std::string moduleName;
                         std::string pinoutName;
                         std::string typeString;
