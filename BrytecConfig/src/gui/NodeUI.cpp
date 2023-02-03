@@ -7,7 +7,6 @@
 #include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <bitset>
-#include <imgui_internal.h>
 #include <imnodes.h>
 #include <iomanip>
 #include <iostream>
@@ -91,7 +90,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         if (!nodeGroup.expired())
             thisNodeGroup = nodeGroup.lock();
 
-        static std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+        static std::shared_ptr<NodeGroup> selectedNodeGroup;
+        selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
+
         if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
 
             // Auto select search box
@@ -141,6 +142,24 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                     // Already selected NodeGroup
                     if (isSelected)
                         ImGui::SetItemDefaultFocus();
+
+                    if (ImGui::IsItemHovered()) {
+                        std::string moduleName;
+                        std::string pinoutName;
+                        std::string typeString;
+                        if (nodeGroupInstance->getAssigned()) {
+                            auto module = AppManager::getConfig()->getAssignedModule(nodeGroupInstance);
+                            if (module)
+                                moduleName = module->getName();
+                            auto pin = std::dynamic_pointer_cast<PhysicalPin>(AppManager::getConfig()->getAssignedPin(nodeGroupInstance));
+                            if (pin)
+                                pinoutName = pin->getPinoutName();
+                            typeString = IOTypes::getString(nodeGroupInstance->getType());
+                            ImGui::SetTooltip("Module: %s\nPin: %s\nType: %s", moduleName.c_str(), pinoutName.c_str(), typeString.c_str());
+                        } else {
+                            ImGui::SetTooltip("%s", "Not Assigned");
+                        }
+                    }
                 }
 
                 ImGui::EndListBox();
