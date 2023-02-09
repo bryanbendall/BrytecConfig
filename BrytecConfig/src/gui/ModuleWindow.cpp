@@ -292,6 +292,8 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& na
             ImGui::Text(nodeGroup->getName().c_str(), "");
             ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
 
+            AppManager::setDragType(nodeGroup->getType());
+
             ImGui::EndDragDropSource();
         }
 
@@ -307,14 +309,19 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& na
     // Selection boarder
     ImVec2 rectMin = ImGui::GetItemRectMin();
     ImVec2 rectMax = ImGui::GetItemRectMax();
+    ImU32 rectColor = 0;
 
-    if (pin == AppManager::getSelected<Pin>()) {
-        drawList->AddRect(rectMin, rectMax, Colors::PrimarySelection, 4.0f);
-    }
+    if (pin == AppManager::getSelected<Pin>())
+        rectColor = Colors::PrimarySelection;
 
-    if (nodeGroup && AppManager::isSelected(nodeGroup)) {
-        drawList->AddRect(rectMin, rectMax, Colors::SecondarySelection, 4.0f);
-    }
+    if (nodeGroup && AppManager::isSelected(nodeGroup))
+        rectColor = Colors::SecondarySelection;
+
+    if (std::find(pin->getAvailableTypes().begin(), pin->getAvailableTypes().end(), AppManager::getDragType()) != pin->getAvailableTypes().end())
+        rectColor = Colors::DragHighlight;
+
+    if (rectColor)
+        drawList->AddRect(rectMin, rectMax, rectColor, 4.0f);
 
     // Drop Node Group
     if (ImGui::BeginDragDropTarget()) {

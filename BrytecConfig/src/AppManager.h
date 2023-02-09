@@ -39,6 +39,10 @@ bool isSelected(std::shared_ptr<T> other)
 }
 /////////////////////////////////////////////
 
+void setDragType(IOTypes::Types type);
+IOTypes::Types getDragType();
+void clearDragType();
+
 void setBigIconFont(ImFont* font);
 ImFont* getBigIconFont();
 

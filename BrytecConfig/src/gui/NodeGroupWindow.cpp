@@ -182,6 +182,8 @@ void NodeGroupWindow::drawNodeGroups()
                 ImGui::Text(nodeGroup->getName().c_str(), "");
                 ImGui::TextDisabled("%s", IOTypes::getString(nodeGroup->getType()));
 
+                AppManager::setDragType(nodeGroup->getType());
+
                 ImGui::EndDragDropSource();
             }
         }

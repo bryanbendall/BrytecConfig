@@ -120,6 +120,10 @@ void MainWindow::drawWindow()
 
     NotificationWindow::drawWindow();
 
+    // Clear drag type
+    if (!ImGui::IsMouseDragging(0))
+        AppManager::setDragType(IOTypes::Types::Undefined);
+
     ImGui::End();
 }
 

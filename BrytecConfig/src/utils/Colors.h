@@ -6,6 +6,7 @@ namespace Colors {
 
 static constexpr ImU32 PrimarySelection = IM_COL32(255, 255, 255, 255);
 static constexpr ImU32 SecondarySelection = IM_COL32(255, 255, 100, 255);
+static constexpr ImU32 DragHighlight = IM_COL32(100, 255, 100, 255);
 
 namespace Module {
     static constexpr ImU32 Background = IM_COL32(50, 50, 50, 255);

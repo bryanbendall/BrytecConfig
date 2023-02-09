@@ -22,6 +22,7 @@ struct AppManagerData {
     std::unique_ptr<MainWindow> mainWindow;
     ImFont* BigIcons = nullptr;
     Version version;
+    IOTypes::Types dragType = IOTypes::Types::Output_Batt;
 };
 
 static AppManagerData s_data;
@@ -66,6 +67,21 @@ void setSelected(std::weak_ptr<Selectable> sel)
 void clearSelected()
 {
     setSelected(std::weak_ptr<Selectable>());
+}
+
+void setDragType(IOTypes::Types type)
+{
+    s_data.dragType = type;
+}
+
+IOTypes::Types getDragType()
+{
+    return s_data.dragType;
+}
+
+void clearDragType()
+{
+    s_data.dragType = IOTypes::Types::Undefined;
 }
 
 void setBigIconFont(ImFont* font)
