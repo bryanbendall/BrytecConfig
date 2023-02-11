@@ -90,6 +90,27 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Checkbox("###MouduleEnabled", &module->getEnabled());
 
+            // Node and NodeGroup Statistics
+            int totalNodes = 0;
+            int totalNodeGroups = 0;
+            int enabledNodeGroups = 0;
+            for (auto& pin : module->getPhysicalPins()) {
+                if (auto ng = pin->getNodeGroup()) {
+                    totalNodes += ng->getNodes().size();
+                    totalNodeGroups++;
+                    if (ng->getEnabled())
+                        enabledNodeGroups++;
+                }
+            }
+            for (auto& pin : module->getInternalPins()) {
+                if (auto ng = pin->getNodeGroup()) {
+                    totalNodes += ng->getNodes().size();
+                    totalNodeGroups++;
+                    if (ng->getEnabled())
+                        enabledNodeGroups++;
+                }
+            }
+
             // Total Nodes
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -97,40 +118,25 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
             ImGui::TextUnformatted("Total Nodes");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
-            int totalNodes = 0;
-            for (auto& pin : module->getPhysicalPins()) {
-                if (auto ng = pin->getNodeGroup())
-                    totalNodes += ng->getNodes().size();
-            }
-            for (auto& pin : module->getInternalPins()) {
-                if (auto ng = pin->getNodeGroup())
-                    totalNodes += ng->getNodes().size();
-            }
             ImGui::Text("%d", totalNodes);
 
-            // ImGui::TableNextRow();
-            // ImGui::TableNextColumn();
-            // ImGui::AlignTextToFramePadding();
-            // ImGui::Text("Can 0");
+            // Total NodeGroups
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Node Groups");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::Text("%d", totalNodeGroups);
 
-            // ImGui::TableNextColumn();
-
-            // ImGui::SetNextItemWidth(-FLT_MIN);
-            // const char* items[] = { "Disabled", "Brytec", "Custom" };
-            // static int item_current_idx = 1; // Here we store our selection data as an index.
-            // const char* combo_preview_value = items[item_current_idx]; // Pass in the preview value visible before opening the combo (it could be anything)
-            // if (ImGui::BeginCombo("###combo 1", combo_preview_value)) {
-            //     for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
-            //         const bool is_selected = (item_current_idx == n);
-            //         if (ImGui::Selectable(items[n], is_selected))
-            //             item_current_idx = n;
-
-            //         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-            //         if (is_selected)
-            //             ImGui::SetItemDefaultFocus();
-            //     }
-            //     ImGui::EndCombo();
-            // }
+            // Total Enabled NodeGroups
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Enabled Node Groups");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::Text("%d", enabledNodeGroups);
 
             ImGui::EndTable();
 
