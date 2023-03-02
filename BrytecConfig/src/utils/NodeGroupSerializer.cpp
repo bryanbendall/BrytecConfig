@@ -24,6 +24,7 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
     ser.writeRaw<uint64_t>(m_nodeGroup->getId());
     ser.writeRaw<uint8_t>((uint8_t)m_nodeGroup->getType());
     ser.writeRaw<uint8_t>(m_nodeGroup->getEnabled());
+    ser.writeRaw<uint8_t>(AppManager::getConfig()->getUsedOnBus(m_nodeGroup));
 
     // Current limit
     ser.writeRaw<uint8_t>(m_nodeGroup->getCurrentLimit());
@@ -117,6 +118,10 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
     uint8_t enabled;
     des.readRaw<uint8_t>(&enabled);
     m_nodeGroup->setEnabled(enabled);
+
+    uint8_t usedOnBus;
+    des.readRaw<uint8_t>(&usedOnBus);
+    // Not used because it is calculated not stored
 
     // Current limit
     uint8_t currentLimit;

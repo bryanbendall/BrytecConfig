@@ -338,6 +338,16 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::Checkbox("###MouduleEnabled", &nodeGroup->getEnabled());
 
+            // Used on bus indicator
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Used On Bus");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (AppManager::getConfig()->getUsedOnBus(nodeGroup))
+                ImGui::TextUnformatted(ICON_FA_CHECK);
+
             // Type
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -345,11 +355,10 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::TextUnformatted("Type");
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
-            if (nodeGroup->getAssigned()) {
+            if (nodeGroup->getAssigned())
                 ImGui::Text("%s %s", ICON_FA_LOCK, IOTypes::getString(nodeGroup->getType()));
-            } else {
+            else
                 ImGui::Combo("###Node Group Type", (int*)&nodeGroup->getType(), IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
-            }
 
             // Current limit
             ImGui::TableNextRow();

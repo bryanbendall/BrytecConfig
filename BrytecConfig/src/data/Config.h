@@ -32,6 +32,7 @@ public:
     uint8_t getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup);
     std::shared_ptr<Pin> getAssignedPin(std::shared_ptr<NodeGroup> nodeGroup);
     std::shared_ptr<Module> getAssignedModule(std::shared_ptr<NodeGroup> nodeGroup);
+    bool getUsedOnBus(std::shared_ptr<NodeGroup> nodeGroup);
 
 private:
     std::filesystem::path m_path;

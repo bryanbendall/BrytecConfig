@@ -131,3 +131,26 @@ std::shared_ptr<Module> Config::getAssignedModule(std::shared_ptr<NodeGroup> nod
 
     return nullptr;
 }
+
+bool Config::getUsedOnBus(std::shared_ptr<NodeGroup> nodeGroup)
+{
+    std::shared_ptr<Module> assignedToModule = getAssignedModule(nodeGroup);
+
+    for (auto ng : m_nodeGroups) {
+
+        if (!ng->getEnabled())
+            continue;
+
+        if (!ng->getAssigned())
+            continue;
+
+        for (auto node : ng->getNodes()) {
+            if (node->getSelectedNodeGroup() == nodeGroup->getId()) {
+                if (getAssignedModule(ng) != assignedToModule)
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
