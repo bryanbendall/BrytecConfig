@@ -60,10 +60,10 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
             std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
             if (selectedNodeGroup) {
                 ser.writeRaw<uint8_t>(AppManager::getConfig()->getAssignedModuleAddress(selectedNodeGroup)); // Module address
-                ser.writeRaw<uint8_t>(AppManager::getConfig()->getAssignedPinAddress(selectedNodeGroup)); // Pin index
+                ser.writeRaw<uint16_t>(AppManager::getConfig()->getAssignedPinAddress(selectedNodeGroup)); // Pin index
             } else {
                 ser.writeRaw<uint8_t>(0);
-                ser.writeRaw<uint8_t>(0);
+                ser.writeRaw<uint16_t>(0);
             }
         }
     }
@@ -76,11 +76,11 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
         ser.writeRaw<uint8_t>(node->getInputs().size());
         for (auto input : node->getInputs()) {
             if (!input.ConnectedNode.expired()) {
-                ser.writeRaw<int8_t>(m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()));
+                ser.writeRaw<int16_t>(m_nodeGroup->getNodeIndex(input.ConnectedNode.lock()));
                 ser.writeRaw<int8_t>(input.OutputIndex);
                 ser.writeRaw<float>(input.DefaultValue);
             } else {
-                ser.writeRaw<int8_t>(-1);
+                ser.writeRaw<int16_t>(-1);
                 ser.writeRaw<int8_t>(-1);
                 ser.writeRaw<float>(input.DefaultValue);
             }
@@ -183,9 +183,10 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
                 newNode->setSelectedNodeGroup(uuid);
                 // Not used because we will look up by UUID
 
-                uint8_t address, index;
+                uint8_t address;
+                uint16_t index;
                 des.readRaw<uint8_t>(&address); // Module address
-                des.readRaw<uint8_t>(&index); // Pin index
+                des.readRaw<uint16_t>(&index); // Pin index
             }
         }
     }
@@ -200,8 +201,8 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
             uint8_t inputCount;
             des.readRaw<uint8_t>(&inputCount);
             for (int inputIndex = 0; inputIndex < inputCount; inputIndex++) {
-                int8_t connectionNodeIndex;
-                des.readRaw<int8_t>(&connectionNodeIndex);
+                int16_t connectionNodeIndex;
+                des.readRaw<int16_t>(&connectionNodeIndex);
 
                 int8_t outputIndex;
                 des.readRaw<int8_t>(&outputIndex);
