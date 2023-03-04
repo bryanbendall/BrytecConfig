@@ -11,7 +11,7 @@ class MainWindow {
 
 public:
     MainWindow();
-    void setupFonts();
+    void setupFonts(int size, int iconSize);
     void setupStyle();
     void loadLayout();
     void drawWindow();

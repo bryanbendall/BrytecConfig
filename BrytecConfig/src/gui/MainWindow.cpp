@@ -13,22 +13,31 @@ MainWindow::MainWindow()
 {
 }
 
-void MainWindow::setupFonts()
+void MainWindow::setupFonts(int size, int iconSize)
 {
+    static int s_fontSize = 0;
+    static int s_iconSize = 0;
+    if (s_fontSize == size && s_iconSize == iconSize)
+        return;
+
+    s_fontSize = size;
+    s_iconSize = iconSize;
+
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF(FONTS_PATH_DROID_SANS, 16.0f);
+    io.Fonts->Clear();
+    io.Fonts->AddFontFromFileTTF(FONTS_PATH_DROID_SANS, s_fontSize);
 
     static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, 14.0f, &icons_config, icons_ranges);
+    io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, (s_fontSize - 2), &icons_config, icons_ranges);
     //ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::ForceAutoHint | ImGuiFreeType::MonoHinting);
 
     ImFontConfig icons_config2;
     icons_config2.PixelSnapH = true;
-    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, 20.0f, &icons_config2, icons_ranges));
+    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, s_iconSize, &icons_config2, icons_ranges));
 
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
@@ -152,6 +161,11 @@ void MainWindow::drawMenu()
         }
 
         if (ImGui::BeginMenu("View")) {
+            if (ImGui::MenuItem("Zoom +", "Ctrl++"))
+                AppManager::zoom(true);
+            if (ImGui::MenuItem("Zoom -", "Ctrl+-"))
+                AppManager::zoom(false);
+            ImGui::Separator();
             if (ImGui::MenuItem("Module Window", "", m_moduleWindow.getOpenedState()))
                 m_moduleWindow.setOpenedState(true);
             if (ImGui::MenuItem("Node Group Window", "", m_nodeGroupWindow.getOpenedState()))

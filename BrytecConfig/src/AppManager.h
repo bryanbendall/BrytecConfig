@@ -15,6 +15,7 @@ struct Version {
 };
 
 void init(GLFWwindow* window);
+void preFrame();
 void update();
 
 Version getVersion();
@@ -52,6 +53,9 @@ void openConfig();
 void saveConfig();
 void saveAsConfig();
 void exit();
+
+void zoom(bool plus);
+int getZoom();
 
 void updateWindowTitle();
 void handleKeyEvents();

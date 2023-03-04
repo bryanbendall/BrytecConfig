@@ -20,6 +20,7 @@ struct AppManagerData {
     std::weak_ptr<Selectable> SelectedItem;
     GLFWwindow* GLFWWindow;
     std::unique_ptr<MainWindow> mainWindow;
+    int fontSize = 16;
     ImFont* BigIcons = nullptr;
     Version version;
     IOTypes::Types dragType = IOTypes::Types::Output_Batt;
@@ -33,9 +34,14 @@ void init(GLFWwindow* window)
     s_data.GLFWWindow = window;
     glfwSetWindowCloseCallback(window, [](GLFWwindow* window) { AppManager::exit(); });
     s_data.mainWindow->setWindow(window);
-    s_data.mainWindow->setupFonts();
+    s_data.mainWindow->setupFonts(s_data.fontSize, s_data.fontSize + 4);
     s_data.mainWindow->setupStyle();
     newConfig();
+}
+
+void preFrame()
+{
+    s_data.mainWindow->setupFonts(s_data.fontSize, s_data.fontSize + 4);
 }
 
 void update()
@@ -167,6 +173,20 @@ void exit()
         glfwSetWindowShouldClose(s_data.GLFWWindow, GL_FALSE);
 }
 
+void zoom(bool plus)
+{
+    if (plus && s_data.fontSize <= 26)
+        s_data.fontSize += 2;
+
+    if (!plus && s_data.fontSize >= 8)
+        s_data.fontSize -= 2;
+}
+
+int getZoom()
+{
+    return s_data.fontSize;
+}
+
 void updateWindowTitle()
 {
     std::string title = "Brytec Config - ";
@@ -219,6 +239,12 @@ void handleKeyEvents()
             }
         }
     }
+
+    // Zoom
+    if (control && ImGui::IsKeyPressed(GLFW_KEY_EQUAL, false))
+        zoom(true);
+    if (control && ImGui::IsKeyPressed(GLFW_KEY_MINUS, false))
+        zoom(false);
 }
 
 }
