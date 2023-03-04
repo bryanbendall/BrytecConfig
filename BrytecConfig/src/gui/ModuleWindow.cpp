@@ -136,13 +136,13 @@ void ModuleWindow::drawMenubar()
 
 void ModuleWindow::drawModules()
 {
-    unsigned int moduleCount = AppManager::getConfig()->getModules().size();
+    uint32_t moduleCount = AppManager::getConfig()->getModules().size();
     float nextSizeX = 150;
     ImGuiStyle& style = ImGui::GetStyle();
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
 
     //ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
-    for (unsigned int n = 0; n < moduleCount; n++) {
+    for (uint32_t n = 0; n < moduleCount; n++) {
         ImGui::PushID(n);
         std::shared_ptr<Module> m = AppManager::getConfig()->getModules()[n];
         drawModule(m);
@@ -158,7 +158,7 @@ void ModuleWindow::drawModules()
 
 void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
 {
-    unsigned int numPins = m->getPhysicalPins().size();
+    uint32_t numPins = m->getPhysicalPins().size();
 
     bool selected = AppManager::isSelected(m);
 
@@ -197,7 +197,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImGui::SetNextItemWidth(130.0f);
 
     // Draw Physical Pin buttons
-    for (unsigned int i = 0; i < numPins; i++) {
+    for (uint32_t i = 0; i < numPins; i++) {
         ImGui::PushID(i);
         auto pin = m->getPhysicalPins()[i];
 
@@ -208,7 +208,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     }
 
     // Draw Internal Pin buttons
-    for (unsigned int j = 0; j < m->getInternalPins().size(); j++) {
+    for (uint32_t j = 0; j < m->getInternalPins().size(); j++) {
         ImGui::PushID(m->getPhysicalPins().size() + j);
         auto pin = m->getInternalPins()[j];
 

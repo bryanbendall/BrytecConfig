@@ -167,7 +167,7 @@ BinarySerializer ModuleSerializer::serializeBinary()
     // Internal Pin Node Groups
     {
         ser.writeRaw<uint16_t>(internalNodeGroupCount);
-        for (int i = 0; i < m_module->getInternalPins().size(); i++) {
+        for (uint16_t i = 0; i < m_module->getInternalPins().size(); i++) {
             if (auto nodeGroup = m_module->getInternalPins()[i]->getNodeGroup()) {
                 ser.writeRaw<uint16_t>(i + m_module->getPhysicalPins().size()); // pin index
                 NodeGroupSerializer nodeGroupSer(nodeGroup);

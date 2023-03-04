@@ -259,11 +259,11 @@ void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup)
     if (!nodeGroup)
         return;
 
-    for (size_t i = 0; i < nodeGroup->getNodes().size(); i++) {
+    for (int i = 0; i < nodeGroup->getNodes().size(); i++) {
         auto& fromNode = nodeGroup->getNodes()[i];
         if (!fromNode)
             continue;
-        for (size_t fromLinkAttribute = 0; fromLinkAttribute < fromNode->getInputs().size(); fromLinkAttribute++) {
+        for (int fromLinkAttribute = 0; fromLinkAttribute < fromNode->getInputs().size(); fromLinkAttribute++) {
             auto& toNode = fromNode->getInput(fromLinkAttribute).ConnectedNode;
 
             if (!toNode.expired()) {

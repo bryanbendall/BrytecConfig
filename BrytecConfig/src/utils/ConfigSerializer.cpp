@@ -92,7 +92,7 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
     // Module Templates
     uint32_t moduleTemplateCount;
     des.readRaw<uint32_t>(&moduleTemplateCount);
-    for (int i = 0; i < moduleTemplateCount; i++) {
+    for (uint32_t i = 0; i < moduleTemplateCount; i++) {
         std::shared_ptr<Module> module = std::make_shared<Module>();
         ModuleSerializer serializer(m_config, module);
         if (serializer.deserializeTemplateBinary(des))
@@ -104,7 +104,7 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
     // Modules
     uint32_t moduleCount;
     des.readRaw<uint32_t>(&moduleCount);
-    for (int i = 0; i < moduleCount; i++) {
+    for (uint32_t i = 0; i < moduleCount; i++) {
         std::shared_ptr<Module> module = m_config->getModules()[i];
         ModuleSerializer serializer(m_config, module);
         if (!serializer.deserializeBinary(des))
@@ -113,7 +113,7 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
 
     uint32_t unassignedNodeGroupCont;
     des.readRaw<uint32_t>(&unassignedNodeGroupCont);
-    for (int i = 0; i < unassignedNodeGroupCont; i++) {
+    for (uint32_t i = 0; i < unassignedNodeGroupCont; i++) {
         std::shared_ptr<NodeGroup> nodeGroup = m_config->addEmptyNodeGroup(0);
         NodeGroupSerializer serializer(nodeGroup);
         if (!serializer.deserializeBinary(des))

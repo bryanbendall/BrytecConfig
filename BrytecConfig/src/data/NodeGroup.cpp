@@ -34,7 +34,7 @@ NodeGroup::NodeGroup(const NodeGroup& other)
     }
 
     // Copy node data
-    for (size_t nodeIndex = 0; nodeIndex < m_nodes.size(); nodeIndex++) {
+    for (int nodeIndex = 0; nodeIndex < m_nodes.size(); nodeIndex++) {
         auto& newNode = m_nodes[nodeIndex];
         auto& oldNode = other.m_nodes[nodeIndex];
 
@@ -42,9 +42,9 @@ NodeGroup::NodeGroup(const NodeGroup& other)
         newNode->setName(oldNode->getName());
 
         // Copy node connections
-        for (size_t inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
+        for (int inputIndex = 0; inputIndex < oldNode->getInputs().size(); inputIndex++) {
             if (auto oldConnectedNode = oldNode->getInputs()[inputIndex].ConnectedNode.lock()) {
-                for (size_t oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
+                for (int oldConnectedNodeIndex = 0; oldConnectedNodeIndex < m_nodes.size(); oldConnectedNodeIndex++) {
                     if (other.m_nodes[oldConnectedNodeIndex] == oldConnectedNode)
                         newNode->setInput(inputIndex, { m_nodes[oldConnectedNodeIndex], oldNode->getInputs()[inputIndex].OutputIndex, oldNode->getInputs()[inputIndex].DefaultValue });
                 }
@@ -75,7 +75,7 @@ std::shared_ptr<Node> NodeGroup::getNode(int id)
 
 int NodeGroup::getNodeIndex(std::shared_ptr<Node> node)
 {
-    for (size_t i = 0; i < m_nodes.size(); i++) {
+    for (int i = 0; i < m_nodes.size(); i++) {
         if (m_nodes[i] == node)
             return i;
     }

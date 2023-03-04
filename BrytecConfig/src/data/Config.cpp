@@ -75,7 +75,7 @@ uint8_t Config::getAssignedModuleAddress(std::shared_ptr<NodeGroup> nodeGroup)
     return 0;
 }
 
-uint8_t Config::getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup)
+uint16_t Config::getAssignedPinAddress(std::shared_ptr<NodeGroup> nodeGroup)
 {
     for (auto module : m_modules) {
 

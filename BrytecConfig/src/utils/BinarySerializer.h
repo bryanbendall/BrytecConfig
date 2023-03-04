@@ -23,7 +23,7 @@ public:
     void writeArray(const T* data, uint32_t size)
     {
         writeRaw<uint32_t>(size);
-        for (int i = 0; i < size; i++)
+        for (uint32_t i = 0; i < size; i++)
             writeRaw<T>(data[i]);
     }
 

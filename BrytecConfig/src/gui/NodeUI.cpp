@@ -30,7 +30,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
     switch (node->getType()) {
 
-    case NodeTypes::Final_Value:
+    case NodeTypes::Final_Value: {
         UI::InputFloat(node, 0, "Final Value");
 
         if (mode == NodeWindow::Mode::Simulation) {
@@ -74,16 +74,18 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             }
         }
         break;
+    }
 
-    case NodeTypes::Initial_Value:
+    case NodeTypes::Initial_Value: {
         if (mode == NodeWindow::Mode::Simulation) {
             UI::ValueFloat(node, 0, "Value", 0.0f, 5.0f, 0.01f);
             UI::OnOffButton(node, node->getValue(0), true);
         }
         UI::Ouput(node, 0, "Value");
         break;
+    }
 
-    case NodeTypes::Node_Group:
+    case NodeTypes::Node_Group: {
         imnodes::BeginStaticAttribute(node->getValueId(0));
 
         static std::shared_ptr<NodeGroup> thisNodeGroup;
@@ -209,8 +211,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
         UI::Ouput(node, 0, "Result");
         break;
+    }
 
-    case NodeTypes::And:
+    case NodeTypes::And: {
         UI::InputBool(node, 0, "Input");
         UI::InputBool(node, 1, "Input");
         UI::InputBool(node, 2, "Input");
@@ -218,8 +221,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 4, "Input");
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Or:
+    case NodeTypes::Or: {
         UI::InputBool(node, 0, "Input");
         UI::InputBool(node, 1, "Input");
         UI::InputBool(node, 2, "Input");
@@ -227,16 +231,18 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputBool(node, 4, "Input");
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Two_Stage:
+    case NodeTypes::Two_Stage: {
         UI::InputBool(node, 0, "Stage 1");
         UI::InputFloat(node, 1, "Stage 1");
         UI::InputBool(node, 2, "Stage 2");
         UI::InputFloat(node, 3, "Stage 2");
         UI::Ouput(node, 0, "Result");
         break;
+    }
 
-    case NodeTypes::Curve:
+    case NodeTypes::Curve: {
         static const char* s_curveNames[(int)CurveType::Count] = {
             "Toggle",
             "Linear",
@@ -249,8 +255,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 2, "Time", 2, 0.0f, 10.0f, 0.05f);
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::ZeroToOne);
         break;
+    }
 
-    case NodeTypes::Compare:
+    case NodeTypes::Compare: {
         static const char* s_compareNames[(int)CompareType::Count] = {
             "Equal",
             "Not Equal",
@@ -264,38 +271,44 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::ValueCombo(node, 0, s_compareNames, (int)CompareType::Count);
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::On_Off:
+    case NodeTypes::On_Off: {
         UI::InputBool(node, 0, "On");
         UI::InputBool(node, 1, "Off");
         UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Invert:
+    case NodeTypes::Invert: {
         UI::InputBool(node, 0, "Input");
         UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Toggle:
+    case NodeTypes::Toggle: {
         UI::InputBool(node, 0, "Input");
         UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Delay:
+    case NodeTypes::Delay: {
         UI::InputFloat(node, 0, "Input");
         UI::InputFloat(node, 1, "Time");
         UI::Ouput(node, 0, "Output");
         break;
+    }
 
-    case NodeTypes::Push_Button:
+    case NodeTypes::Push_Button: {
         UI::InputBool(node, 0, "Button");
         UI::InputBool(node, 1, "Neutral Safety");
         UI::InputBool(node, 2, "Enging Running");
         UI::Ouput(node, 0, "Ignition", Colors::NodeConnections::Boolean);
         UI::Ouput(node, 1, "Starter", Colors::NodeConnections::Boolean);
         break;
+    }
 
-    case NodeTypes::Map_Value:
+    case NodeTypes::Map_Value: {
         UI::InputFloat(node, 0, "Input");
         UI::InputFloat(node, 1, "From Min");
         UI::InputFloat(node, 2, "From Max");
@@ -303,8 +316,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 4, "To Max");
         UI::Ouput(node, 0, "Result");
         break;
+    }
 
-    case NodeTypes::Math:
+    case NodeTypes::Math: {
         static const char* s_mathNames[(int)MathType::Count] = {
             "Add",
             "Subtract",
@@ -316,20 +330,23 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::ValueCombo(node, 0, s_mathNames, (int)MathType::Count);
         UI::Ouput(node, 0, "Result");
         break;
+    }
 
-    case NodeTypes::Value:
+    case NodeTypes::Value: {
         UI::ValueFloat(node, 0, "Value");
         UI::Ouput(node, 0, "Output");
         break;
+    }
 
-    case NodeTypes::Switch:
+    case NodeTypes::Switch: {
         UI::InputBool(node, 0, "Selection");
         UI::InputFloat(node, 1, "If True");
         UI::InputFloat(node, 2, "If False");
         UI::Ouput(node, 0, "Output");
         break;
+    }
 
-    case NodeTypes::CanBus:
+    case NodeTypes::CanBus: {
         UI::InputFloat(node, 0, "Id", 0, 0.0f, 300.0f);
         UI::Ouput(node, 0, "Data 0");
         UI::Ouput(node, 1, "Data 1");
@@ -340,8 +357,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::Ouput(node, 6, "Data 6");
         UI::Ouput(node, 7, "Data 7");
         break;
+    }
 
-    case NodeTypes::Convert:
+    case NodeTypes::Convert: {
         UI::InputFloat(node, 0, "Data 0");
         if (node->getValue(1) >= 1.0f)
             UI::InputFloat(node, 1, "Data 1");
@@ -355,15 +373,17 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::ValueCombo(node, 1, outputs, 3);
         UI::Ouput(node, 0, "Output");
         break;
+    }
 
-    case NodeTypes::PinCurrent:
+    case NodeTypes::PinCurrent: {
         if (mode == NodeWindow::Mode::Simulation) {
             UI::ValueFloat(node, 0, "Value", 0.0f, 30.0f, 0.1f);
         }
         UI::Ouput(node, 0, "Value");
         break;
+    }
 
-    case NodeTypes::PID:
+    case NodeTypes::PID: {
         UI::InputFloat(node, 0, "Input");
         UI::InputFloat(node, 1, "Target");
         UI::InputFloat(node, 2, "P");
@@ -371,14 +391,16 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 4, "D");
         UI::Ouput(node, 0, "Value");
         break;
+    }
 
-    case NodeTypes::Counter:
+    case NodeTypes::Counter: {
         UI::InputFloat(node, 0, "Up");
         UI::InputFloat(node, 1, "Down");
         UI::InputFloat(node, 2, "Min", 0);
         UI::InputFloat(node, 3, "Max", 0);
         UI::Ouput(node, 0, "Value");
         break;
+    }
 
     default:
         drawUnimplimentedNode(node);
