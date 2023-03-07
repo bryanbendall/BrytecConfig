@@ -232,13 +232,14 @@ void MainWindow::setDarkThemeColors()
 
 static bool anyItemHovered = false;
 static int hoveredTime = 0;
+static float s_iconSize = 0.0f;
 
 template <typename T>
 static void ToolbarButton(const char* icon, const char* tooltip, T&& function)
 {
-    static float iconSize = 40.0f;
+    s_iconSize = ImGui::CalcTextSize(ICON_FA_FILE).x * 2.5f;
     ImGui::SameLine();
-    if (ImGui::Button(icon, ImVec2(iconSize, iconSize)))
+    if (ImGui::Button(icon, ImVec2(s_iconSize, s_iconSize)))
         function();
     ImGui::PopFont();
     ImGui::PopStyleVar(2);
@@ -254,10 +255,12 @@ static void ToolbarButton(const char* icon, const char* tooltip, T&& function)
 
 static void ToolbarSeperator()
 {
+    auto cursorScreenPos = ImGui::GetCursorScreenPos();
+
     ImGui::SameLine();
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddLine(ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 28.0f),
-        ImVec2(ImGui::GetCursorPosX() + 4.0f, ImGui::GetCursorPosY() + 55.0f),
+    draw_list->AddLine(ImVec2(ImGui::GetCursorPosX() + 4.0f, cursorScreenPos.y - 5.0f),
+        ImVec2(ImGui::GetCursorPosX() + 4.0f, cursorScreenPos.y - s_iconSize + 5.0f),
         IM_COL32(80, 80, 80, 255));
     ImGui::SameLine();
     ImGui::Dummy(ImVec2(10.0f, 0.0f));

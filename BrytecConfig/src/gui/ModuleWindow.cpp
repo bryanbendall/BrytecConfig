@@ -168,10 +168,6 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     drawList->ChannelsSetCurrent(1);
 
     // Module style setup
-    bool titleHovered = false;
-    ImVec2 label_size = ImGui::CalcTextSize("Module");
-    float titleBarHeight = label_size.y + ImGui::GetStyle().FramePadding.y * 2.0f;
-
     ImGui::BeginGroup();
     if (!m->getEnabled())
         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
@@ -179,8 +175,12 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, IM_COL32(0, 0, 0, 0));
 
+    bool titleHovered = false;
+    ImVec2 label_size = ImGui::CalcTextSize("Module Default Size Size");
+    float titleBarHeight = label_size.y + ImGui::GetStyle().FramePadding.y * 2.0f;
+
     // Draw Module button
-    if (ImGui::Button(m->getName().c_str(), { 150, titleBarHeight }))
+    if (ImGui::Button(m->getName().c_str(), { label_size.x, titleBarHeight }))
         AppManager::setSelected(m);
     titleHovered = ImGui::IsItemHovered();
 
@@ -193,8 +193,9 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     if (!m->getEnabled())
         ImGui::PopStyleColor();
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
-    ImGui::Indent(5.0f);
-    ImGui::SetNextItemWidth(130.0f);
+    float indentSize = 5.0f;
+    ImGui::Indent(indentSize);
+    float buttonWidth = label_size.x - (indentSize * 2);
 
     // Draw Physical Pin buttons
     for (uint32_t i = 0; i < numPins; i++) {
@@ -202,7 +203,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         auto pin = m->getPhysicalPins()[i];
 
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : pin->getPinoutName();
-        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText);
+        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText, buttonWidth);
 
         ImGui::PopID();
     }
@@ -213,7 +214,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         auto pin = m->getInternalPins()[j];
 
         std::string buttonText = pin->getNodeGroup() ? pin->getNodeGroup()->getName() : "Internal";
-        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText);
+        drawPinButton(std::static_pointer_cast<Pin>(pin), buttonText, buttonWidth);
 
         ImGui::PopID();
     }
@@ -256,7 +257,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
     }
 }
 
-void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& name)
+void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& name, float width)
 {
     std::shared_ptr<NodeGroup> nodeGroup = pin->getNodeGroup();
 
@@ -278,7 +279,7 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& na
     bool enabled = nodeGroup ? nodeGroup->getEnabled() : false;
     if (!enabled)
         ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-    if (ImGui::Button(name.c_str(), { 140, 0 }))
+    if (ImGui::Button(name.c_str(), { width, 0.0f }))
         AppManager::setSelected(pin);
     if (!enabled)
         ImGui::PopStyleColor();

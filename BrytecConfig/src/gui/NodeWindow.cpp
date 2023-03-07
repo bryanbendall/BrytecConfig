@@ -79,6 +79,10 @@ void NodeWindow::drawWindow()
     bool nodeGraphFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
     m_isFocused = windowFocus || nodeGraphFocus;
 
+    float linkThickness = std::clamp(AppManager::getZoom() / 5.0f, 2.0f, 6.0f);
+    imnodes::PushStyleVar(imnodes::StyleVar_LinkThickness, linkThickness);
+    imnodes::PushStyleVar(imnodes::StyleVar_PinCircleRadius, linkThickness);
+    imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingHorizontal, AppManager::getZoom() / 2.0f);
     imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingVertical, 4.0f);
 
     drawPopupMenu(nodeGroup);
@@ -94,6 +98,9 @@ void NodeWindow::drawWindow()
 
     imnodes::EndNodeEditor();
 
+    imnodes::PopStyleVar();
+    imnodes::PopStyleVar();
+    imnodes::PopStyleVar();
     imnodes::PopStyleVar();
 
     if (nodeGroup) {
@@ -185,6 +192,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
         imnodes::SetNodeGridSpacePos(node->getId(), node->getPosition());
 
     // Style for nodes
+    ImVec2 label_size = ImGui::CalcTextSize("This is a node box size");
     if (node->getLoopFound()) {
         imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, Colors::Node::Error);
         imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundHovered, Colors::Node::Error);
@@ -198,7 +206,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
 
     // Node title
     imnodes::BeginNodeTitleBar();
-    ImGui::PushItemWidth(nodeWidth);
+    ImGui::PushItemWidth(label_size.x);
 
     static int editingId = -1;
     static bool setFocus = false;
@@ -210,7 +218,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
     ImGui::PopStyleColor();
     ImGui::SameLine();
 
-    ImGui::PushItemWidth(nodeWidth - 30);
+    ImGui::PushItemWidth(label_size.x - 30);
     if (editingId == node->getId()) {
 
         // Set focus
@@ -238,7 +246,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 3.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2.0f, 4.0f));
 
-    NodeUI::drawNode(node, m_mode, m_nodeGroup);
+    NodeUI::drawNode(node, m_mode, m_nodeGroup, label_size.x);
 
     ImGui::PopStyleVar(2);
     ImGui::PopItemWidth();

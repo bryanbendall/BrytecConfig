@@ -19,7 +19,7 @@ private:
     void drawMenubar();
     void drawModules();
     void drawModule(std::shared_ptr<Module>& m);
-    void drawPinButton(std::shared_ptr<Pin> pin, const std::string& name);
+    void drawPinButton(std::shared_ptr<Pin> pin, const std::string& name, float width);
 
 private:
     enum class FilterType {

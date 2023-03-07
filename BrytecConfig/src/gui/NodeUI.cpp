@@ -24,8 +24,11 @@ static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label,
 static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
 }
 
-void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup)
+static float s_nodeWidth = 0.0f;
+
+void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::weak_ptr<NodeGroup> nodeGroup, float nodeWidth)
 {
+    s_nodeWidth = nodeWidth;
     static bool nodeGroupSearchFocus = false;
 
     switch (node->getType()) {
@@ -70,7 +73,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 stream << std::fixed << std::setprecision(2) << value;
                 UI::SameHeightText(stream.str());
             } else if (percentValue) {
-                ImGui::ProgressBar(value, ImVec2(NodeWindow::nodeWidth, 0.0f));
+                ImGui::ProgressBar(value, ImVec2(nodeWidth, 0.0f));
             }
         }
         break;
@@ -201,7 +204,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
             ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-            if (ImGui::Button(text, ImVec2(NodeWindow::nodeWidth, 0.0f)))
+            if (ImGui::Button(text, ImVec2(nodeWidth, 0.0f)))
                 node->getValue(0) > 0.0f ? node->getValue(0) = 0.0f : node->getValue(0) = 1.0f;
             ImGui::PopStyleVar();
             ImGui::PopStyleColor(3);
@@ -429,11 +432,11 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
     if (node->getInput(attribute).ConnectedNode.expired()) {
         std::stringstream stream;
         stream << std::fixed << std::setprecision(decimals) << node->getInput(attribute).DefaultValue;
-        float floatX = ImGui::CalcTextSize(stream.str().c_str()).x;
+        float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
 
-        float labelX = ImGui::CalcTextSize(label.c_str()).x;
-        float spaceX = ImGui::CalcTextSize(" ").x;
-        float numSpaces = ((124.0f - (labelX + floatX)) / spaceX);
+        float labelWidth = ImGui::CalcTextSize(label.c_str()).x;
+        float spaceWidth = ImGui::CalcTextSize(" ").x;
+        float numSpaces = ((s_nodeWidth - AppManager::getZoom() - (labelWidth + valueWidth)) / spaceWidth);
 
         for (int i = 0; i < numSpaces; i++)
             label += " ";
@@ -504,7 +507,7 @@ void UI::Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, un
     imnodes::PushColorStyle(imnodes::ColorStyle_Pin, color);
 
     imnodes::BeginOutputAttribute(node->getOutputId(attribute));
-    ImGui::Indent(NodeWindow::nodeWidth - ImGui::CalcTextSize(label.c_str()).x);
+    ImGui::Indent(s_nodeWidth - ImGui::CalcTextSize(label.c_str()).x);
     SameHeightText(label);
     imnodes::EndOutputAttribute();
 
@@ -530,7 +533,7 @@ void UI::OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact)
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, hoverColor);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 3.0f);
-    if (ImGui::Button(text, ImVec2(NodeWindow::nodeWidth, 0.0f)) && interact)
+    if (ImGui::Button(text, ImVec2(s_nodeWidth, 0.0f)) && interact)
         value > 0.0f ? value = 0.0f : value = 1.0f;
     ImGui::PopStyleVar();
     ImGui::PopStyleColor(3);

@@ -38,8 +38,6 @@ public:
         Simulation
     };
 
-    static inline const float nodeWidth = 140.0f;
-
 private:
     bool m_opened = true;
     bool m_isFocused = false;

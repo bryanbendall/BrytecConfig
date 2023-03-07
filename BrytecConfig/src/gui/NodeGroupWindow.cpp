@@ -114,7 +114,7 @@ void NodeGroupWindow::drawNodeGroups()
     auto& nodeGroups = AppManager::getConfig()->getNodeGroups();
     int nodeGroupCount = nodeGroups.size();
     float window_visible_x2 = ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMax().x;
-    float buttonWidth = 150;
+    float buttonWidth = ImGui::CalcTextSize("Node Group Default Size").x;
 
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
 
