@@ -16,3 +16,6 @@
 [submodule "BrytecConfig/src/BrytecConfigEmbedded"]
 	path = BrytecConfig/src/BrytecConfigEmbedded
 	url = https://github.com/bryanbendall/BrytecConfigEmbedded.git
+[submodule "BrytecConfig/vendor/libusb"]
+	path = BrytecConfig/vendor/libusb
+	url = https://github.com/bryanbendall/libusb.git

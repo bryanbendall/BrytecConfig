@@ -121,6 +121,7 @@ target_include_directories(BrytecConfig PUBLIC
                            "vendor/yaml-cpp/include"
                            "vendor/glfw/include"
                            "vendor/fontawesome"
+                           "vendor/libusb"
                            )
 
 add_subdirectory(vendor/yaml-cpp)
@@ -130,6 +131,8 @@ add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/nativefiledialog)
 add_subdirectory(vendor/imnodes)
 
+target_link_directories(BrytecConfig PUBLIC vendor/libusb/build/v143/x64/Debug/lib)
+
 target_link_libraries(BrytecConfig PUBLIC 
                         yaml-cpp
                         glfw
@@ -137,4 +140,5 @@ target_link_libraries(BrytecConfig PUBLIC
                         imgui
                         nativefiledialog
                         imnodes
+                        libusb-1.0
                     )
