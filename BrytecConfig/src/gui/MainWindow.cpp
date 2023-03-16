@@ -1,13 +1,14 @@
 #include "MainWindow.h"
 
-#include <imgui.h>
-//#include <misc/freetype/imgui_freetype.h>
 #include "AppManager.h"
 #include "NotificationWindow.h"
+#include "fonts/droidsans.cpp"
+#include "fonts/fa-solid-900.cpp"
 #include "utils/DefaultPaths.h"
 #include <IconsFontAwesome5.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <functional>
+#include <imgui.h>
 
 MainWindow::MainWindow()
 {
@@ -26,18 +27,17 @@ void MainWindow::setupFonts(int size, int iconSize)
     // Load Fonts
     ImGuiIO& io = ImGui::GetIO();
     io.Fonts->Clear();
-    io.Fonts->AddFontFromFileTTF(FONTS_PATH_DROID_SANS, s_fontSize);
+    io.Fonts->AddFontFromMemoryCompressedTTF(droidSans_compressed_data, droidSans_compressed_size, s_fontSize);
 
     static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, (s_fontSize - 2), &icons_config, icons_ranges);
-    //ImGuiFreeType::BuildFontAtlas(io.Fonts, ImGuiFreeType::ForceAutoHint | ImGuiFreeType::MonoHinting);
+    io.Fonts->AddFontFromMemoryCompressedTTF(fa_compressed_data, fa_compressed_size, (s_fontSize - 2), &icons_config, icons_ranges);
 
     ImFontConfig icons_config2;
     icons_config2.PixelSnapH = true;
-    AppManager::setBigIconFont(io.Fonts->AddFontFromFileTTF(FONTS_PATH_FONT_AWESOME, s_iconSize, &icons_config2, icons_ranges));
+    AppManager::setBigIconFont(io.Fonts->AddFontFromMemoryCompressedTTF(fa_compressed_data, fa_compressed_size, s_iconSize, &icons_config2, icons_ranges));
 
     ImGui_ImplOpenGL3_DestroyDeviceObjects();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
