@@ -6,6 +6,7 @@
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
 #include <GLFW/glfw3.h>
+#include "SettingsWindow.h"
 
 class MainWindow {
 
@@ -21,7 +22,6 @@ public:
 
 private:
     void drawMenu();
-    void setDarkThemeColors();
     void drawMenuBar();
 
 private:
@@ -31,5 +31,6 @@ private:
     PropertiesWindow m_propertiesWindow;
     NodeGroupWindow m_nodeGroupWindow;
     ModuleBuilderWindow m_moduleBuilderWindow;
+    SettingsWindow m_settingsWindow;
     const char* m_ini_to_load = NULL;
 };

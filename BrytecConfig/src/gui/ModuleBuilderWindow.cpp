@@ -1,7 +1,6 @@
 #include "ModuleBuilderWindow.h"
 
 #include "AppManager.h"
-#include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <IconsFontAwesome5.h>
@@ -37,7 +36,7 @@ void ModuleBuilderWindow::drawMenubar()
 
         // Open
         if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
-            auto modulePath = FileDialogs::OpenFile("btmodule", MODULES_PATH);
+            auto modulePath = FileDialogs::OpenFile("btmodule", AppManager::getModulesPath());
             if (!modulePath.empty()) {
                 std::shared_ptr<Module> module = std::make_shared<Module>();
                 ModuleSerializer serializer(module);
@@ -53,7 +52,7 @@ void ModuleBuilderWindow::drawMenubar()
 
         // Save
         if (ImGui::MenuItem(ICON_FA_SAVE)) {
-            auto path = FileDialogs::SaveFile("btmodule", MODULES_PATH);
+            auto path = FileDialogs::SaveFile("btmodule", AppManager::getModulesPath());
 
             if (path.extension().empty())
                 path.replace_extension("btmodule");

@@ -15,6 +15,8 @@ struct Version {
 };
 
 void init(GLFWwindow* window);
+void loadSettings();
+void saveSettings();
 void preFrame();
 void update();
 
@@ -56,6 +58,14 @@ void exit();
 
 void zoom(bool plus);
 int getZoom();
+void setZoom(int zoom);
+
+const std::filesystem::path& getConfigsPath();
+void setConfigsPath(const std::filesystem::path& path);
+const std::filesystem::path& getModulesPath();
+void setModulesPath(const std::filesystem::path& path);
+const std::filesystem::path& getNodeGroupsPath();
+void setNodeGroupsPath(const std::filesystem::path& path);
 
 void updateWindowTitle();
 void handleKeyEvents();

@@ -98,13 +98,14 @@ add_executable(BrytecConfig
                 src/gui/NotificationWindow.cpp
                 src/gui/NotificationWindow.h
                 src/gui/PropertiesWindow.cpp
+                src/gui/SettingsWindow.cpp
+                src/gui/SettingsWindow.h
                 src/gui/PropertiesWindow.h
                 src/utils/BinarySerializer.cpp
                 src/utils/BinarySerializer.h
                 src/utils/Colors.h
                 src/utils/ConfigSerializer.cpp
                 src/utils/ConfigSerializer.h
-                src/utils/DefaultPaths.h
                 src/utils/FileDialogs.cpp
                 src/utils/FileDialogs.h
                 src/utils/ModuleSerializer.cpp

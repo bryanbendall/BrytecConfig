@@ -2,7 +2,6 @@
 
 #include "AppManager.h"
 #include "utils/Colors.h"
-#include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/NodeGroupSerializer.h"
 #include <IconsFontAwesome5.h>
@@ -45,7 +44,7 @@ void NodeGroupWindow::drawMenubar()
 
         // Open
         if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
-            auto path = FileDialogs::OpenFile("btnodes", NODE_GROUPS_PATH);
+            auto path = FileDialogs::OpenFile("btnodes", AppManager::getNodeGroupsPath());
             if (!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
@@ -63,7 +62,7 @@ void NodeGroupWindow::drawMenubar()
         // Save
         if (ImGui::MenuItem(ICON_FA_SAVE, NULL, false, nodeGroupSelected)) {
             if (nodeGroup) {
-                auto path = FileDialogs::SaveFile("btnodes", NODE_GROUPS_PATH);
+                auto path = FileDialogs::SaveFile("btnodes", AppManager::getNodeGroupsPath());
 
                 if (path.extension().empty())
                     path.replace_extension("btnodes");

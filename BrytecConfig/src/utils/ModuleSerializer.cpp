@@ -2,7 +2,6 @@
 
 #include "AppManager.h"
 #include "NodeGroupSerializer.h"
-#include "utils/DefaultPaths.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -257,10 +256,10 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
     std::vector<std::filesystem::path> moduleList;
 
     // Return empty list if it doesn't exist
-    if (!std::filesystem::exists(MODULES_PATH))
+    if (!std::filesystem::exists(AppManager::getModulesPath()))
         return moduleList;
 
-    for (auto& directoryEntry : std::filesystem::directory_iterator(MODULES_PATH)) {
+    for (auto& directoryEntry : std::filesystem::directory_iterator(AppManager::getModulesPath())) {
         const auto& path = directoryEntry.path();
 
         // Check extension

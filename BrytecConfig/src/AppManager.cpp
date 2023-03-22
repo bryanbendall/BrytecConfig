@@ -5,13 +5,13 @@
 #include "gui/NotificationWindow.h"
 #include "utils/BinarySerializer.h"
 #include "utils/ConfigSerializer.h"
-#include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <fstream>
 #include <imgui.h>
 #include <iostream>
 #include <memory>
+#include <yaml-cpp/yaml.h>
 
 namespace AppManager {
 
@@ -24,6 +24,9 @@ struct AppManagerData {
     ImFont* BigIcons = nullptr;
     Version version;
     IOTypes::Types dragType = IOTypes::Types::Output_Batt;
+    std::filesystem::path configsPath = std::filesystem::current_path();
+    std::filesystem::path modulesPath = std::filesystem::current_path();
+    std::filesystem::path nodeGroupsPath = std::filesystem::current_path();
 };
 
 static AppManagerData s_data;
@@ -36,7 +39,50 @@ void init(GLFWwindow* window)
     s_data.mainWindow->setWindow(window);
     s_data.mainWindow->setupFonts(s_data.fontSize, s_data.fontSize + 4);
     s_data.mainWindow->setupStyle();
+    loadSettings();
     newConfig();
+}
+
+void loadSettings()
+{
+    if (std::filesystem::exists("BtSettings.yaml")) {
+        YAML::Node node = YAML::LoadFile("BtSettings.yaml");
+
+        if (node["Zoom"])
+            s_data.fontSize = node["Zoom"].as<int>();
+
+        if (node["Config Path"])
+            s_data.configsPath = node["Config Path"].as<std::string>();
+
+        if (node["Module Path"])
+            s_data.modulesPath = node["Module Path"].as<std::string>();
+
+        if (node["Node Groups Path"])
+            s_data.nodeGroupsPath = node["Node Groups Path"].as<std::string>();
+    }
+}
+
+void saveSettings()
+{
+    YAML::Emitter out;
+    out << YAML::BeginMap;
+
+    out << YAML::Key << "Zoom";
+    out << YAML::Value << s_data.fontSize;
+
+    out << YAML::Key << "Config Path";
+    out << YAML::Value << s_data.configsPath.string();
+
+    out << YAML::Key << "Module Path";
+    out << YAML::Value << s_data.modulesPath.string();
+
+    out << YAML::Key << "Node Groups Path";
+    out << YAML::Value << s_data.nodeGroupsPath.string();
+
+    out << YAML::EndMap;
+
+    std::ofstream fout("BtSettings.yaml");
+    fout << out.c_str();
 }
 
 void preFrame()
@@ -110,7 +156,7 @@ void newConfig()
 
 void openConfig()
 {
-    auto path = FileDialogs::OpenFile("btconfig", CONFIGS_PATH);
+    auto path = FileDialogs::OpenFile("btconfig", s_data.configsPath);
     if (path.empty())
         return;
 
@@ -148,7 +194,7 @@ void saveConfig()
 
 void saveAsConfig()
 {
-    auto path = FileDialogs::SaveFile("btconfig", CONFIGS_PATH);
+    auto path = FileDialogs::SaveFile("btconfig", s_data.configsPath);
 
     if (path.empty())
         return;
@@ -175,16 +221,55 @@ void exit()
 
 void zoom(bool plus)
 {
-    if (plus && s_data.fontSize <= 26)
-        s_data.fontSize += 2;
-
-    if (!plus && s_data.fontSize >= 8)
-        s_data.fontSize -= 2;
+    if (plus)
+        setZoom(s_data.fontSize + 2);
+    else
+        setZoom(s_data.fontSize - 2);
 }
 
 int getZoom()
 {
     return s_data.fontSize;
+}
+
+void setZoom(int zoom)
+{
+    zoom = std::clamp(zoom, 8, 26);
+    s_data.fontSize = zoom;
+    saveSettings();
+}
+
+const std::filesystem::path& getConfigsPath()
+{
+    return s_data.configsPath;
+}
+
+void setConfigsPath(const std::filesystem::path& path)
+{
+    s_data.configsPath = path;
+    saveSettings();
+}
+
+const std::filesystem::path& getModulesPath()
+{
+    return s_data.modulesPath;
+}
+
+void setModulesPath(const std::filesystem::path& path)
+{
+    s_data.modulesPath = path;
+    saveSettings();
+}
+
+const std::filesystem::path& getNodeGroupsPath()
+{
+    return s_data.nodeGroupsPath;
+}
+
+void setNodeGroupsPath(const std::filesystem::path& path)
+{
+    s_data.nodeGroupsPath = path;
+    saveSettings();
 }
 
 void updateWindowTitle()

@@ -3,7 +3,6 @@
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "NotificationWindow.h"
 #include "utils/Colors.h"
-#include "utils/DefaultPaths.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <IconsFontAwesome5.h>
@@ -49,7 +48,7 @@ void ModuleWindow::drawMenubar()
 
         // Open
         if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
-            auto modulePath = FileDialogs::OpenFile("btmodule", MODULES_PATH);
+            auto modulePath = FileDialogs::OpenFile("btmodule", AppManager::getModulesPath());
             if (!modulePath.empty())
                 AppManager::getConfig()->addModule(modulePath);
         }
