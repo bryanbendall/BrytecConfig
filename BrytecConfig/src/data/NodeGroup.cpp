@@ -4,6 +4,8 @@
 #include "gui/NotificationWindow.h"
 #include "utils/ModuleSerializer.h"
 
+namespace Brytec {
+
 NodeGroup::NodeGroup()
     : m_uuid(UUID())
 {
@@ -225,4 +227,6 @@ void NodeGroup::traverseConnections(std::shared_ptr<Node> node, std::deque<std::
     }
 
     loopCheck.pop_back();
+}
+
 }

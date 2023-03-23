@@ -2,6 +2,8 @@
 
 #include <functional>
 
+namespace Brytec {
+
 class UUID {
 public:
     UUID();
@@ -15,14 +17,15 @@ private:
     uint64_t m_UUID;
 };
 
+}
+
 namespace std {
 
 template <>
-struct hash<UUID> {
-    std::size_t operator()(const UUID& uuid) const
+struct hash<Brytec::UUID> {
+    std::size_t operator()(const Brytec::UUID& uuid) const
     {
         return (uint64_t)uuid;
     }
 };
-
 }

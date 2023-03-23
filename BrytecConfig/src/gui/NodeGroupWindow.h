@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace Brytec {
+
 class NodeGroupWindow {
 
 public:
@@ -27,3 +29,5 @@ private:
     std::string m_search;
     int m_shownNodeGroups = 0;
 };
+
+}

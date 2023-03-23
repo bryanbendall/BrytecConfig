@@ -7,6 +7,8 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 
+namespace Brytec {
+
 namespace AppManager {
 
 struct Version {
@@ -70,4 +72,5 @@ void setNodeGroupsPath(const std::filesystem::path& path);
 void updateWindowTitle();
 void handleKeyEvents();
 
-};
+}
+}

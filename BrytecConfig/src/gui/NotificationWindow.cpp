@@ -5,6 +5,8 @@
 #include <iostream>
 #include <vector>
 
+namespace Brytec {
+
 static std::vector<Notification> s_notifications;
 
 void NotificationWindow::drawWindow()
@@ -93,4 +95,6 @@ void NotificationWindow::drawWindow()
 void NotificationWindow::add(const Notification& notification)
 {
     s_notifications.push_back(notification);
+}
+
 }

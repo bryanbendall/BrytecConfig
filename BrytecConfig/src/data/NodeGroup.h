@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+namespace Brytec {
+
 class NodeGroup : public Selectable, public std::enable_shared_from_this<NodeGroup> {
 
 public:
@@ -69,3 +71,5 @@ private:
     std::deque<std::shared_ptr<Node>> m_nodes;
     int m_nodesIds = 0;
 };
+
+}

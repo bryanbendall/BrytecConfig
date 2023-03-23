@@ -3,6 +3,8 @@
 #include "Module.h"
 #include "utils/ModuleSerializer.h"
 
+namespace Brytec {
+
 Config::Config(const std::filesystem::path& path)
     : m_path(path)
 {
@@ -153,4 +155,6 @@ bool Config::getUsedOnBus(std::shared_ptr<NodeGroup> nodeGroup)
     }
 
     return false;
+}
+
 }

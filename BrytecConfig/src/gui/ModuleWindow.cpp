@@ -10,6 +10,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace Brytec {
+
 static bool shouldUpdateInternalPins = false;
 
 ModuleWindow::ModuleWindow()
@@ -355,4 +357,6 @@ void ModuleWindow::drawPinButton(std::shared_ptr<Pin> pin, const std::string& na
         }
         ImGui::EndDragDropTarget();
     }
+}
+
 }

@@ -2,6 +2,8 @@
 
 #include <nfd.h>
 
+namespace Brytec {
+
 std::filesystem::path FileDialogs::OpenFile(const char* filter, std::filesystem::path defaultPath)
 {
     nfdchar_t* outPath = NULL;
@@ -46,4 +48,6 @@ std::filesystem::path FileDialogs::SaveFile(const char* filter, std::filesystem:
     free(outPath);
 
     return path;
+}
+
 }

@@ -3,6 +3,8 @@
 #include "data/Module.h"
 #include "data/Pin.h"
 
+namespace Brytec {
+
 class PropertiesWindow {
 
 public:
@@ -21,3 +23,5 @@ private:
 private:
     bool m_opened = true;
 };
+
+}

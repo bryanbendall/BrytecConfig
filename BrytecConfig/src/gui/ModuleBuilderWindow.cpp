@@ -8,6 +8,8 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+namespace Brytec {
+
 ModuleBuilderWindow::ModuleBuilderWindow()
 {
     m_module = std::make_shared<Module>();
@@ -312,4 +314,6 @@ void ModuleBuilderWindow::writeDefineFile(const std::filesystem::path& path)
         std::replace(pinout.begin(), pinout.end(), ' ', '_');
         fout << "#define BT_PIN_" << pinout << " " << i << "\n";
     }
+}
+
 }

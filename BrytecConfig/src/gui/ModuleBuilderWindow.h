@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <memory>
 
+namespace Brytec {
+
 class ModuleBuilderWindow {
 
 public:
@@ -22,3 +24,5 @@ private:
     std::shared_ptr<Module> m_module;
     std::shared_ptr<PhysicalPin> m_editPin;
 };
+
+}

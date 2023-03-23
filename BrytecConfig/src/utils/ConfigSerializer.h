@@ -6,6 +6,8 @@
 #include <filesystem>
 #include <memory>
 
+namespace Brytec {
+
 class ConfigSerializer {
 
 public:
@@ -17,3 +19,5 @@ public:
 private:
     std::shared_ptr<Config> m_config;
 };
+
+}

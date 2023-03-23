@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace Brytec {
+
 struct CanTypes {
     enum class Types {
         Disabled,
@@ -48,3 +50,5 @@ struct CanBus {
     CanFormat::Types format = CanFormat::Types::Std;
     CanSpeed::Types speed = CanSpeed::Types::Speed_1MBps;
 };
+
+}

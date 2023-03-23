@@ -6,6 +6,8 @@
 #include <memory>
 #include <misc/cpp/imgui_stdlib.h>
 
+namespace Brytec {
+
 static ImGuiTableFlags flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBody;
 
 void PropertiesWindow::drawWindow()
@@ -414,4 +416,6 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             ImGui::EndTable();
         }
     }
+}
+
 }

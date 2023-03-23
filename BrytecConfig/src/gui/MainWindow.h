@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 #include "SettingsWindow.h"
 
+namespace Brytec {
+
 class MainWindow {
 
 public:
@@ -34,3 +36,5 @@ private:
     SettingsWindow m_settingsWindow;
     const char* m_ini_to_load = NULL;
 };
+
+}

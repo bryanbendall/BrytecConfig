@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Brytec {
+
 class SettingsWindow {
 
 public:
@@ -10,3 +12,5 @@ public:
 private:
     bool m_opened = false;
 };
+
+}

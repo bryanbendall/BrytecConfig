@@ -9,6 +9,8 @@
 #include <iostream>
 #include <misc/cpp/imgui_stdlib.h>
 
+namespace Brytec {
+
 NodeGroupWindow::NodeGroupWindow()
 {
 }
@@ -237,4 +239,6 @@ void NodeGroupWindow::handleDragDrop()
         }
         ImGui::EndDragDropTarget();
     }
+}
+
 }

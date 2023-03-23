@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace Brytec {
+
 ModuleSerializer::ModuleSerializer(std::shared_ptr<Module>& module)
     : m_module(module)
 {
@@ -274,4 +276,6 @@ std::vector<std::filesystem::path> ModuleSerializer::readModulesFromDisk()
     }
 
     return moduleList;
+}
+
 }

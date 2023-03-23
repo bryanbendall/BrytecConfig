@@ -13,6 +13,8 @@
 #include <memory>
 #include <yaml-cpp/yaml.h>
 
+namespace Brytec {
+
 namespace AppManager {
 
 struct AppManagerData {
@@ -332,4 +334,5 @@ void handleKeyEvents()
         zoom(false);
 }
 
+}
 }

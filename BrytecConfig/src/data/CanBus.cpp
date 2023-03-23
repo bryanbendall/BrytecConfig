@@ -1,5 +1,7 @@
 #include "CanBus.h"
 
+namespace Brytec {
+
 const char* CanTypes::Strings[] = {
     "Disabled",
     "Brytec",
@@ -21,3 +23,5 @@ const char* CanSpeed::Strings[] = {
     "50 kBps",
     "20 kBps"
 };
+
+}

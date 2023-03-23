@@ -5,6 +5,8 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
+namespace Brytec {
+
 ConfigSerializer::ConfigSerializer(std::shared_ptr<Config>& config)
     : m_config(config)
 {
@@ -128,4 +130,6 @@ bool ConfigSerializer::deserializeBinary(BinaryDeserializer& des)
         return false;
 
     return true;
+}
+
 }

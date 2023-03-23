@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+namespace Brytec {
+
 class Config {
 
 public:
@@ -39,3 +41,5 @@ private:
     std::vector<std::shared_ptr<Module>> m_modules;
     std::vector<std::shared_ptr<NodeGroup>> m_nodeGroups;
 };
+
+}

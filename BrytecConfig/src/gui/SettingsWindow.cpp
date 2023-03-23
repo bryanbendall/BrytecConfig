@@ -11,6 +11,8 @@
 #include <imgui.h>
 #include <misc/cpp/imgui_stdlib.h>
 
+namespace Brytec {
+
 SettingsWindow::SettingsWindow()
 {
 }
@@ -89,4 +91,6 @@ void SettingsWindow::drawWindow()
     }
 
     ImGui::End();
+}
+
 }

@@ -1,6 +1,8 @@
 #include "BinarySerializer.h"
 #include <fstream>
 
+namespace Brytec {
+
 void BinarySerializer::append(BinarySerializer& ser)
 {
     m_data.reserve(m_data.size() + ser.getData().size());
@@ -11,4 +13,6 @@ void BinarySerializer::writeToFile(const std::filesystem::path& path)
 {
     std::ofstream fout(path, std::ofstream::binary);
     fout.write((char*)m_data.data(), m_data.size());
+}
+
 }

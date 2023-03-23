@@ -2,6 +2,8 @@
 #include "NodeGroup.h"
 #include <iostream>
 
+namespace Brytec {
+
 const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Final Value",
     "Initial Value",
@@ -243,4 +245,6 @@ unsigned int Node::getBytesSize()
 bool Node::hasConnection(int inputIndex)
 {
     return !m_inputs[inputIndex].ConnectedNode.expired();
+}
+
 }

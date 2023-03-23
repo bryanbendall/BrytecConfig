@@ -49,21 +49,21 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    AppManager::init(window);
+    Brytec::AppManager::init(window);
 
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
         glfwPollEvents();
 
-        AppManager::preFrame();
+        Brytec::AppManager::preFrame();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        AppManager::update();
+        Brytec::AppManager::update();
 
         // Rendering
         ImGui::Render();

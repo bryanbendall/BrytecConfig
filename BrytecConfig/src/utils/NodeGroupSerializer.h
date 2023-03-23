@@ -8,6 +8,8 @@
 #include <memory>
 #include <yaml-cpp/yaml.h>
 
+namespace Brytec {
+
 class NodeGroupSerializer {
 
 public:
@@ -19,3 +21,5 @@ public:
 private:
     std::shared_ptr<NodeGroup> m_nodeGroup;
 };
+
+}

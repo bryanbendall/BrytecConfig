@@ -14,6 +14,8 @@
 #include <misc/cpp/imgui_stdlib.h>
 #include <sstream>
 
+namespace Brytec {
+
 namespace UI {
 static void SameHeightText(std::string text);
 static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
@@ -537,4 +539,6 @@ void UI::OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact)
         value > 0.0f ? value = 0.0f : value = 1.0f;
     ImGui::PopStyleVar();
     ImGui::PopStyleColor(3);
+}
+
 }

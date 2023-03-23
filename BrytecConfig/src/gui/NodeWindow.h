@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+namespace Brytec {
+
 class NodeWindow {
 
 public:
@@ -48,3 +50,5 @@ private:
     imnodes::EditorContext* defaultContext;
     std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;
 };
+
+}

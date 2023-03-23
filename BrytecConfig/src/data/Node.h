@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+namespace Brytec {
+
 class Node;
 struct NodeConnection {
     std::weak_ptr<Node> ConnectedNode;
@@ -92,3 +94,5 @@ protected:
     bool m_loopFound = false;
     UUID m_selectedNodeGroup = 0;
 };
+
+}

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace Brytec {
+
 class ModuleWindow {
 
 public:
@@ -33,3 +35,5 @@ private:
     FilterType m_filter = FilterType::All;
     bool m_simulateModule = false;
 };
+
+}

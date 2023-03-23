@@ -1,5 +1,7 @@
 #include "Pin.h"
 
+namespace Brytec {
+
 void Pin::setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup, bool simulation)
 {
     if (auto oldNodeGroup = m_nodeGroup.lock())
@@ -9,4 +11,6 @@ void Pin::setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup, bool simulation)
         nodeGroup->setAssigned(true);
 
     m_nodeGroup = nodeGroup;
+}
+
 }

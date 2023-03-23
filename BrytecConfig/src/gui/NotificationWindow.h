@@ -8,6 +8,8 @@
 #include <imgui.h>
 #include <string>
 
+namespace Brytec {
+
 enum class NotificationType {
     None,
     Success,
@@ -32,3 +34,5 @@ private:
     static constexpr float s_padding = 20.0f;
     static constexpr float s_spacing = 10.0f;
 };
+
+}

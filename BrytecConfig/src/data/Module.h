@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+namespace Brytec {
+
 class Module : public Selectable {
 
 public:
@@ -51,3 +53,5 @@ private:
     bool m_enabled = true;
     std::vector<CanBus> m_canBus;
 };
+
+}

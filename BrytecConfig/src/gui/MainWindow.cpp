@@ -9,6 +9,8 @@
 #include <functional>
 #include <imgui.h>
 
+namespace Brytec {
+
 MainWindow::MainWindow()
 {
 }
@@ -269,4 +271,6 @@ void MainWindow::drawMenuBar()
     ImGui::End();
 
     ImGui::PopFont();
+}
+
 }

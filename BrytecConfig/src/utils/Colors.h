@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+namespace Brytec {
+
 namespace Colors {
 
 static constexpr ImU32 PrimarySelection = IM_COL32(255, 255, 255, 255);
@@ -38,4 +40,6 @@ namespace Notifications {
     static constexpr ImU32 Error = IM_COL32(255, 25, 25, 204);
     static constexpr ImU32 Info = IM_COL32(75, 120, 200, 255);
 }
+}
+
 }

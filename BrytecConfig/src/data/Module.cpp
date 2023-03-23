@@ -2,6 +2,8 @@
 
 #include "utils/ModuleSerializer.h"
 
+namespace Brytec {
+
 Module::Module()
 {
     addCanBus({ "Can 0", CanTypes::Types::Brytec });
@@ -41,4 +43,6 @@ void Module::updateInternalPins()
         m_internalPins.end());
 
     addInternalPin();
+}
+
 }

@@ -15,6 +15,8 @@
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
 #include "utils/BinarySerializer.h"
 
+namespace Brytec {
+
 NodeWindow::NodeWindow()
 {
     imnodes::Initialize();
@@ -399,4 +401,6 @@ imnodes::EditorContext* NodeWindow::getContext(std::shared_ptr<NodeGroup>& nodeG
         m_contexts[nodeGroup] = imnodes::EditorContextCreate();
 
     return m_contexts[nodeGroup];
+}
+
 }

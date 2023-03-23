@@ -9,6 +9,8 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
+namespace Brytec {
+
 class ModuleSerializer {
 public:
     ModuleSerializer(std::shared_ptr<Module>& module);
@@ -26,3 +28,5 @@ private:
     std::shared_ptr<Module> m_module;
     std::shared_ptr<Config> m_config = nullptr;
 };
+
+}

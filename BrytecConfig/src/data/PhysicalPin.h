@@ -2,6 +2,8 @@
 
 #include "Pin.h"
 
+namespace Brytec {
+
 class PhysicalPin : public Pin {
 
 public:
@@ -19,3 +21,5 @@ private:
     uint8_t m_maxCurrent = 0;
     bool m_pwm = false;
 };
+
+}

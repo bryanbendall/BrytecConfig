@@ -2,6 +2,8 @@
 
 #include <fstream>
 
+namespace Brytec {
+
 NodeGroupSerializer::NodeGroupSerializer(std::shared_ptr<NodeGroup>& nodeGroup)
     : m_nodeGroup(nodeGroup)
 {
@@ -221,4 +223,6 @@ bool NodeGroupSerializer::deserializeBinary(BinaryDeserializer& des)
     }
 
     return true;
+}
+
 }

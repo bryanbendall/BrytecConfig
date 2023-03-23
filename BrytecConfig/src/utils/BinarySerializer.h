@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace Brytec {
+
 class BinarySerializer {
 
 public:
@@ -40,4 +42,6 @@ template <>
 inline void BinarySerializer::writeRaw<std::string>(std::string data)
 {
     writeArray<char>(data.data(), data.size());
+}
+
 }

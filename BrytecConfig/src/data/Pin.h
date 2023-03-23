@@ -4,6 +4,8 @@
 #include "NodeGroup.h"
 #include "Selectable.h"
 
+namespace Brytec {
+
 class Pin : public Selectable {
 
 public:
@@ -20,3 +22,5 @@ protected:
     std::vector<IOTypes::Types> m_availableTypes;
     std::weak_ptr<NodeGroup> m_nodeGroup;
 };
+
+}
