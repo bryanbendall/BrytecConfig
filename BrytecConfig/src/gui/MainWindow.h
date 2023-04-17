@@ -5,8 +5,9 @@
 #include "NodeGroupWindow.h"
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
-#include <GLFW/glfw3.h>
+#include "SerialWindow.h"
 #include "SettingsWindow.h"
+#include <GLFW/glfw3.h>
 
 namespace Brytec {
 
@@ -34,6 +35,7 @@ private:
     NodeGroupWindow m_nodeGroupWindow;
     ModuleBuilderWindow m_moduleBuilderWindow;
     SettingsWindow m_settingsWindow;
+    SerialWindow m_serialWindow;
     const char* m_ini_to_load = NULL;
 };
 

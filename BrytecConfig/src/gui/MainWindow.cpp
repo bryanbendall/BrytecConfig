@@ -126,6 +126,7 @@ void MainWindow::drawWindow()
     m_nodeGroupWindow.drawWindow();
     m_moduleBuilderWindow.drawWindow();
     m_settingsWindow.drawWindow();
+    m_serialWindow.drawWindow();
 
     NotificationWindow::drawWindow();
 

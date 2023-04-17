@@ -10,6 +10,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.cpp
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
+                src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.h
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
@@ -98,9 +100,13 @@ add_executable(BrytecConfig
                 src/gui/NotificationWindow.cpp
                 src/gui/NotificationWindow.h
                 src/gui/PropertiesWindow.cpp
+                src/gui/PropertiesWindow.h
+                src/gui/SerialWindow.cpp
+                src/gui/SerialWindow.h
                 src/gui/SettingsWindow.cpp
                 src/gui/SettingsWindow.h
-                src/gui/PropertiesWindow.h
+                src/usb/Usb.cpp
+                src/usb/Usb.h
                 src/utils/BinarySerializer.cpp
                 src/utils/BinarySerializer.h
                 src/utils/Colors.h
@@ -122,6 +128,7 @@ target_include_directories(BrytecConfig PUBLIC
                            "vendor/yaml-cpp/include"
                            "vendor/glfw/include"
                            "vendor/fontawesome"
+                           "vendor/serial/include"
                            )
 
 add_subdirectory(vendor/yaml-cpp)
@@ -130,6 +137,7 @@ add_subdirectory(vendor/glad)
 add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/nativefiledialog)
 add_subdirectory(vendor/imnodes)
+add_subdirectory(vendor/serial)
 
 target_link_libraries(BrytecConfig PUBLIC 
                         yaml-cpp
@@ -138,4 +146,5 @@ target_link_libraries(BrytecConfig PUBLIC
                         imgui
                         nativefiledialog
                         imnodes
+                        serial
                     )
