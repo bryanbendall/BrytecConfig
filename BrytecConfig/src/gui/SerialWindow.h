@@ -1,17 +1,15 @@
 #pragma once
 
 #include "BrytecConfigEmbedded/Can/EBrytecCan.h"
+#include "usb/Usb.h"
 #include <map>
-#include <mutex>
-#include <serial/serial.h>
-#include <thread>
-#include <vector>
+
+namespace Brytec {
 
 class SerialWindow {
 
 public:
     SerialWindow() = default;
-    ~SerialWindow();
 
     void drawWindow();
     void setOpenedState(bool state) { m_opened = state; }
@@ -19,12 +17,8 @@ public:
 
 private:
     bool m_opened = true;
-    std::vector<serial::PortInfo> m_devices;
     serial::PortInfo m_selectedDevice;
-    serial::Serial m_serial;
-    std::vector<Brytec::CanExtFrame> m_read;
-    std::map<uint32_t, Brytec::CanExtFrame> m_map;
-    std::mutex m_mutex;
-    std::thread m_thread;
-    bool m_runThread = false;
+    Usb m_usb;
 };
+
+}
