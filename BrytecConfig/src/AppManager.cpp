@@ -165,8 +165,7 @@ void openConfig()
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
 
-    BinaryDeserializer des;
-    des.setDataFromPath(path);
+    BinaryDeserializer des(path);
     if (serializer.deserializeBinary(des)) {
         clearSelected();
         s_data.config = config;

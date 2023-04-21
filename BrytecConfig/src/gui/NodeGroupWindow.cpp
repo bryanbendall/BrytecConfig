@@ -50,8 +50,7 @@ void NodeGroupWindow::drawMenubar()
             if (!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
-                BinaryDeserializer des;
-                des.setDataFromPath(path);
+                BinaryDeserializer des(path);
                 if (serializer.deserializeBinary(des)) {
                     AppManager::setSelected(nodeGroup);
                 } else {

@@ -42,8 +42,7 @@ void ModuleBuilderWindow::drawMenubar()
             if (!modulePath.empty()) {
                 std::shared_ptr<Module> module = std::make_shared<Module>();
                 ModuleSerializer serializer(module);
-                BinaryDeserializer des;
-                des.setDataFromPath(modulePath);
+                BinaryDeserializer des(modulePath);
                 if (serializer.deserializeTemplateBinary(des)) {
                     m_module = module;
                 } else {
