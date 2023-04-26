@@ -19,6 +19,35 @@ void SerialWindow::drawWindow()
         if (ImGui::Button("close serial"))
             m_usb.close();
 
+        ImGui::SameLine();
+
+        if (ImGui::Button("clear data")) {
+            m_canMap.clear();
+            m_canFrames.clear();
+        }
+
+        ImGui::SameLine();
+
+        ImGui::Text("Total Messages: %d", m_canFrames.size());
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("send packet")) {
+            static int i = 0;
+            i++;
+            CanExtFrame can;
+            can.id = 52;
+            can.data[0] = i;
+            UsbPacket packet;
+            packet.set(can);
+            m_usb.send(packet);
+
+            can.id = 66;
+            can.data[1] = i;
+            packet.set(can);
+            m_usb.send(packet);
+        }
+
     } else {
 
         std::vector<serial::PortInfo> availablePorts = m_usb.getAvailablePorts();
@@ -36,16 +65,32 @@ void SerialWindow::drawWindow()
             ImGui::EndCombo();
         }
 
-        if (ImGui::Button("open serial")) {
+        if (ImGui::Button("open serial"))
             m_usb.open(m_selectedDevice.port);
-        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("clear data"))
+            m_canFrames.clear();
     }
 
     ImGui::Separator();
 
-    for (auto& m : m_usb.getMap()) {
+    std::vector<UsbPacket> newPackets = m_usb.getPackets();
+
+    ImGui::Text("%d", newPackets.size());
+
+    for (auto& newPacket : newPackets) {
+        if (auto frame = newPacket.as<CanExtFrame>())
+            m_canMap[frame.id] = frame;
+        // m_canFrames.push_back(frame);
+    }
+
+    for (auto& m : m_canMap) {
         auto& f = m.second;
-        ImGui::Text("id: %d dlc: %d data: %d %d %d %d %d %d %d %d", f.id, f.dlc,
+        ImGui::Text("id: %d dlc: %d data: %d %d %d %d %d %d %d %d",
+            f.id,
+            f.dlc,
             f.data[0],
             f.data[1],
             f.data[2],

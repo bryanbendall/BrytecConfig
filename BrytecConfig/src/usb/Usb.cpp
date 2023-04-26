@@ -5,55 +5,68 @@
 
 namespace Brytec {
 
-static void usbThread(bool& run, serial::Serial& serial, std::mutex& mutex, std::map<uint32_t, Brytec::CanExtFrame>& vec)
+static void usbRxThread(bool& run, serial::Serial& serial, std::mutex& rxMutex, std::vector<uint8_t>& rxData)
 {
     while (run) {
 
-        size_t readLenth;
         if (serial.isOpen()) {
 
-            static uint8_t buffer[64];
+            uint8_t buffer[64];
+            uint8_t length = 0;
             try {
-                readLenth = serial.read(buffer, 64);
+                length = serial.read(buffer, 64);
             } catch (std::exception& e) {
                 std::cerr << "Exception: " << e.what() << std::endl;
                 serial.close();
                 run = false;
             }
 
-            if (readLenth > 0) {
-                Brytec::CanExtFrame frame;
-                uint8_t size = 0;
-
-                Brytec::BinaryDeserializer des;
-                des.setData(buffer, 64);
-
-                des.readRaw<uint32_t>(&frame.id);
-                des.readRaw<uint8_t>(&frame.dlc);
-                des.readRaw<uint8_t>(&frame.data[0]);
-                des.readRaw<uint8_t>(&frame.data[1]);
-                des.readRaw<uint8_t>(&frame.data[2]);
-                des.readRaw<uint8_t>(&frame.data[3]);
-                des.readRaw<uint8_t>(&frame.data[4]);
-                des.readRaw<uint8_t>(&frame.data[5]);
-                des.readRaw<uint8_t>(&frame.data[6]);
-                des.readRaw<uint8_t>(&frame.data[7]);
-
-                mutex.lock();
-                vec[frame.id] = frame;
-                mutex.unlock();
+            if (length > 0) {
+                rxMutex.lock();
+                rxData.insert(rxData.end(), std::begin(buffer), std::begin(buffer) + length);
+                rxMutex.unlock();
             }
         }
     }
+}
 
-    serial.close();
+static void usbTxThread(bool& run, serial::Serial& serial, std::mutex& txMutex, std::deque<UsbPacket>& txPackets)
+{
+    while (run) {
+
+        if (serial.isOpen()) {
+
+            uint8_t buffer[64];
+            uint8_t length;
+
+            if (txPackets.size() > 0) {
+                txMutex.lock();
+                UsbPacket sendPacket = txPackets[0];
+                txPackets.pop_front();
+                txMutex.unlock();
+
+                buffer[0] = PacketStart;
+                buffer[1] = sendPacket.length;
+                memcpy(&buffer[2], sendPacket.data, sendPacket.length);
+                try {
+                    length = serial.write(buffer, sendPacket.length + 2);
+                } catch (std::exception& e) {
+                    std::cerr << "Exception: " << e.what() << std::endl;
+                    serial.close();
+                    run = false;
+                }
+
+                if (length != sendPacket.length + 2) {
+                    std::cout << "Didnt send all of the data";
+                }
+            }
+        }
+    }
 }
 
 Usb::~Usb()
 {
-    m_runThread = false;
-    if (m_thread.joinable())
-        m_thread.join();
+    close();
 }
 
 void Usb::open(std::string port)
@@ -70,12 +83,17 @@ void Usb::open(std::string port)
             std::cerr << "Exception: " << e.what() << std::endl;
         }
 
-        if (!m_runThread && m_thread.joinable())
-            m_thread.join();
+        if (!m_runThread && m_rxThread.joinable())
+            m_rxThread.join();
+        if (!m_runThread && m_txThread.joinable())
+            m_txThread.join();
 
         if (m_serial.isOpen()) {
             m_runThread = true;
-            m_thread = std::thread(usbThread, std::ref(m_runThread), std::ref(m_serial), std::ref(m_mutex), std::ref(m_map));
+            m_rxThread = std::thread(usbRxThread, std::ref(m_runThread), std::ref(m_serial),
+                std::ref(m_rxMutex), std::ref(m_rxData));
+            m_txThread = std::thread(usbTxThread, std::ref(m_runThread), std::ref(m_serial),
+                std::ref(m_txMutex), std::ref(m_txPackets));
         }
     }
 }
@@ -83,7 +101,64 @@ void Usb::open(std::string port)
 void Usb::close()
 {
     m_runThread = false;
-    m_thread.join();
+    if (m_serial.isOpen())
+        m_serial.close();
+    if (m_rxThread.joinable())
+        m_rxThread.join();
+    if (m_txThread.joinable())
+        m_txThread.join();
 }
 
+std::vector<UsbPacket> Usb::getPackets()
+{
+    m_rxMutex.lock();
+    std::vector<UsbPacket> packets;
+
+    while (UsbPacket packet = getPacketFromRaw()) {
+        packets.push_back(packet);
+    }
+
+    m_rxMutex.unlock();
+
+    return packets;
+}
+
+void Usb::send(const UsbPacket& packet)
+{
+    m_txMutex.lock();
+    m_txPackets.push_back(packet);
+    m_txMutex.unlock();
+}
+
+UsbPacket Usb::getPacketFromRaw()
+{
+    UsbPacket packet;
+
+    if (m_rxData.size() <= 0)
+        return packet;
+
+    auto start = std::find(m_rxData.begin(), m_rxData.end(), PacketStart);
+    if (start > m_rxData.begin()) {
+        m_rxData.erase(m_rxData.begin(), start);
+    }
+
+    if (m_rxData.size() >= 2)
+        packet.length = m_rxData[1];
+    else
+        return packet;
+
+    if (packet.length > 64) {
+        // Something wrong with packet, delete it and try again
+        m_rxData.erase(m_rxData.begin());
+        return packet;
+    }
+
+    if (m_rxData.size() >= packet.length + 2)
+        memcpy(packet.data, &m_rxData[2], packet.length);
+    else
+        return packet;
+
+    m_rxData.erase(m_rxData.begin(), m_rxData.begin() + packet.length + 2);
+    return packet;
+}
 }
