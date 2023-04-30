@@ -1,5 +1,6 @@
 #include "ModuleWindow.h"
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "NotificationWindow.h"
 #include "utils/Colors.h"
@@ -99,7 +100,7 @@ void ModuleWindow::drawMenubar()
 
                 ModuleSerializer moduleSer(module);
                 BinarySerializer ser = moduleSer.serializeBinary();
-                BinaryDeserializer des(ser.getData().data(), ser.getData().size());
+                BinaryArrayDeserializer des(ser.getData().data(), ser.getData().size());
 
                 EBrytecApp::deserializeModule(des);
 

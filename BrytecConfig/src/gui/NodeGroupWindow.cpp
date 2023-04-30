@@ -1,6 +1,7 @@
 #include "NodeGroupWindow.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h"
 #include "utils/Colors.h"
 #include "utils/FileDialogs.h"
 #include "utils/NodeGroupSerializer.h"
@@ -50,7 +51,7 @@ void NodeGroupWindow::drawMenubar()
             if (!path.empty()) {
                 std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
                 NodeGroupSerializer serializer(nodeGroup);
-                BinaryDeserializer des(path);
+                BinaryPathDeserializer des(path);
                 if (serializer.deserializeBinary(des)) {
                     AppManager::setSelected(nodeGroup);
                 } else {

@@ -8,10 +8,13 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Can/EBrytecCan.cpp
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.cpp
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
-                src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.cpp
                 src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.h
+                src/BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.cpp
+                src/BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp

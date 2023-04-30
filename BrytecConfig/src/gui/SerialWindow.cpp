@@ -32,7 +32,11 @@ void SerialWindow::drawWindow()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("send packet")) {
+        // if (ImGui::Button("send packet")) {
+        static float timer = 0.0f;
+        timer += ImGui::GetIO().DeltaTime;
+
+        if (timer > 0.10f) {
             static int i = 0;
             i++;
             CanExtFrame can;
@@ -46,7 +50,10 @@ void SerialWindow::drawWindow()
             can.data[1] = i;
             packet.set(can);
             m_usb.send(packet);
+
+            timer = 0.0f;
         }
+            // }
 
     } else {
 
@@ -70,8 +77,10 @@ void SerialWindow::drawWindow()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("clear data"))
+        if (ImGui::Button("clear data")) {
+            m_canMap.clear();
             m_canFrames.clear();
+        }
     }
 
     ImGui::Separator();

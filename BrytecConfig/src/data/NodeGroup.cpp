@@ -1,5 +1,6 @@
 #include "NodeGroup.h"
 
+#include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "gui/NotificationWindow.h"
 #include "utils/ModuleSerializer.h"
@@ -162,7 +163,7 @@ void NodeGroup::evaluateAllNodes()
 
     ModuleSerializer moduleSer(module);
     BinarySerializer ser = moduleSer.serializeBinary();
-    BinaryDeserializer des(ser.getData().data(), ser.getData().size());
+    BinaryArrayDeserializer des(ser.getData().data(), ser.getData().size());
 
     EBrytecApp::deserializeModule(des);
     EBrytecApp::evaulateJustNodes(ImGui::GetIO().DeltaTime);

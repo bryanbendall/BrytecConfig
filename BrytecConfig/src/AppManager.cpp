@@ -1,6 +1,6 @@
 #include "AppManager.h"
 
-#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "gui/NotificationWindow.h"
 #include "utils/BinarySerializer.h"
@@ -165,7 +165,7 @@ void openConfig()
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
 
-    BinaryDeserializer des(path);
+    BinaryPathDeserializer des(path);
     if (serializer.deserializeBinary(des)) {
         clearSelected();
         s_data.config = config;
