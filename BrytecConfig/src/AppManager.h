@@ -4,6 +4,7 @@
 #include "data/Selectable.h"
 #include "gui/MainWindow.h"
 #include "imgui.h"
+#include "usb/UsbManager.h"
 #include <GLFW/glfw3.h>
 #include <memory>
 
@@ -25,6 +26,8 @@ void update();
 Version getVersion();
 
 std::shared_ptr<Config>& getConfig();
+
+UsbManager& getUsbManager();
 
 // Selection ////////////////////////////////
 std::weak_ptr<Selectable> getSelectedItem();

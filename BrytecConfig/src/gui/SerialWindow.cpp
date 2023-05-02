@@ -1,5 +1,6 @@
 #include "SerialWindow.h"
 
+#include "AppManager.h"
 #include "imgui.h"
 #include <string>
 
@@ -10,89 +11,79 @@ void SerialWindow::drawWindow()
     if (!m_opened)
         return;
 
+    UsbManager& usb = AppManager::getUsbManager();
+
     ImGui::Begin("Serial", &m_opened);
 
-    if (m_usb.isOpen()) {
+    if (AppManager::getUsbManager().isOpen()) {
 
-        ImGui::Text("Connected to: %s", m_selectedDevice.description.c_str());
+        ImGui::Text("Connected to: %s", usb.getDevice().description.c_str());
+        ImGui::Text("Hardware id: %s", usb.getDevice().hardware_id.c_str());
+        ImGui::Text("Port: %s", usb.getDevice().port.c_str());
 
         if (ImGui::Button("close serial"))
-            m_usb.close();
+            usb.close();
 
         ImGui::SameLine();
 
         if (ImGui::Button("clear data")) {
             m_canMap.clear();
-            m_canFrames.clear();
         }
 
         ImGui::SameLine();
 
-        ImGui::Text("Total Messages: %d", m_canFrames.size());
+        if (ImGui::Button("send packet")) {
+            static float timer = 0.0f;
+            timer += ImGui::GetIO().DeltaTime;
 
-        ImGui::SameLine();
-
-        // if (ImGui::Button("send packet")) {
-        static float timer = 0.0f;
-        timer += ImGui::GetIO().DeltaTime;
-
-        if (timer > 0.10f) {
+            // if (timer > 0.10f) {
             static int i = 0;
             i++;
             CanExtFrame can;
             can.id = 52;
             can.data[0] = i;
-            UsbPacket packet;
-            packet.set(can);
-            m_usb.send(packet);
+            usb.send(can);
 
             can.id = 66;
             can.data[1] = i;
-            packet.set(can);
-            m_usb.send(packet);
+            usb.send(can);
 
             timer = 0.0f;
-        }
             // }
+        }
 
     } else {
 
-        std::vector<serial::PortInfo> availablePorts = m_usb.getAvailablePorts();
+        std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
+        std::string displayText = usb.getDevice().description;
 
-        auto ret = std::find_if(availablePorts.begin(), availablePorts.end(), [this](serial::PortInfo info) { return info.description == m_selectedDevice.description; });
+        auto ret = std::find_if(availablePorts.begin(), availablePorts.end(), [&](serial::PortInfo info) { return info.description == displayText; });
         if (ret == availablePorts.end())
-            m_selectedDevice.description = "";
+            displayText = "";
 
-        if (ImGui::BeginCombo("##Serial Ports", m_selectedDevice.description.c_str())) {
+        if (ImGui::BeginCombo("##Serial Ports", displayText.c_str())) {
             for (auto& device : availablePorts) {
-                if (ImGui::Selectable(device.description.c_str(), device.port == m_selectedDevice.port)) {
-                    m_selectedDevice = device;
+                if (ImGui::Selectable(device.description.c_str(), device.description == displayText)) {
+                    usb.setDevice(device);
                 }
             }
             ImGui::EndCombo();
         }
 
         if (ImGui::Button("open serial"))
-            m_usb.open(m_selectedDevice.port);
+            usb.open();
 
         ImGui::SameLine();
 
         if (ImGui::Button("clear data")) {
             m_canMap.clear();
-            m_canFrames.clear();
         }
     }
 
     ImGui::Separator();
 
-    std::vector<UsbPacket> newPackets = m_usb.getPackets();
-
-    ImGui::Text("%d", newPackets.size());
-
-    for (auto& newPacket : newPackets) {
-        if (auto frame = newPacket.as<CanExtFrame>())
-            m_canMap[frame.id] = frame;
-        // m_canFrames.push_back(frame);
+    for (auto& frame : usb.getCanFrames()) {
+        m_canMap[frame.id] = frame;
     }
 
     for (auto& m : m_canMap) {

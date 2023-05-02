@@ -1,6 +1,7 @@
 #include "Usb.h"
 
 #include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
+#include <exception>
 #include <iostream>
 
 namespace Brytec {
@@ -109,7 +110,7 @@ void Usb::close()
         m_txThread.join();
 }
 
-std::vector<UsbPacket> Usb::getPackets()
+std::vector<UsbPacket> Usb::getReceivedPackets()
 {
     m_rxMutex.lock();
     std::vector<UsbPacket> packets;

@@ -112,6 +112,8 @@ add_executable(BrytecConfig
                 src/gui/SettingsWindow.h
                 src/usb/Usb.cpp
                 src/usb/Usb.h
+                src/usb/UsbManager.cpp
+                src/usb/UsbManager.h
                 src/utils/BinarySerializer.cpp
                 src/utils/BinarySerializer.h
                 src/utils/Colors.h

@@ -29,6 +29,7 @@ struct AppManagerData {
     std::filesystem::path configsPath = std::filesystem::current_path();
     std::filesystem::path modulesPath = std::filesystem::current_path();
     std::filesystem::path nodeGroupsPath = std::filesystem::current_path();
+    UsbManager usbManager;
 };
 
 static AppManagerData s_data;
@@ -96,6 +97,7 @@ void update()
 {
     s_data.mainWindow->drawWindow();
     handleKeyEvents();
+    s_data.usbManager.update();
 }
 
 Version getVersion()
@@ -106,6 +108,11 @@ Version getVersion()
 std::shared_ptr<Config>& getConfig()
 {
     return s_data.config;
+}
+
+UsbManager& getUsbManager()
+{
+    return s_data.usbManager;
 }
 
 std::weak_ptr<Selectable> getSelectedItem()

@@ -3,8 +3,6 @@
 #include "BrytecConfigEmbedded/Can/EBrytecCan.h"
 #include "BrytecConfigEmbedded/Usb/UsbDefs.h"
 #include <deque>
-#include <exception>
-#include <map>
 #include <mutex>
 #include <serial/serial.h>
 #include <string>
@@ -22,9 +20,8 @@ public:
     void close();
 
     bool isOpen() { return m_serial.isOpen(); }
-    std::vector<serial::PortInfo> getAvailablePorts() { return serial::list_ports(); }
-    std::vector<UsbPacket> getPackets();
 
+    std::vector<UsbPacket> getReceivedPackets();
     void send(const UsbPacket& packet);
 
 private:
