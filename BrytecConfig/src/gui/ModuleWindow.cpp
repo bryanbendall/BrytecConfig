@@ -100,21 +100,19 @@ void ModuleWindow::drawMenubar()
 
                 ModuleSerializer moduleSer(module);
                 BinarySerializer ser = moduleSer.serializeBinary();
-                BinaryArrayDeserializer des(ser.getData().data(), ser.getData().size());
 
-                EBrytecApp::deserializeModule(des);
+                BrytecBoard::updateConfig(ser.getData().data(), ser.getData().size(), 0);
 
-                if (EBrytecApp::isDeserializeOk())
+                EBrytecApp::deserializeModule();
+
+                if (EBrytecApp::isDeserializeOk()) {
                         std::cout << "Deserialize completed succesfully" << std::endl;
-                else
+                        EBrytecApp::setMode(EBrytecApp::Mode::Normal);
+                        std::cout << "Done module setup" << std::endl;
+                        m_simulateModule = true;
+                } else {
                         std::cout << "Deserialize failed!!!!" << std::endl;
-
-                EBrytecApp::setupModule();
-                EBrytecApp::setupPins();
-
-                std::cout << "Done setup" << std::endl;
-
-                m_simulateModule = true;
+                }
                 }
             }
 
