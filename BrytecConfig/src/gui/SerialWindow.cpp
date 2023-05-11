@@ -1,7 +1,9 @@
 #include "SerialWindow.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "imgui.h"
+#include "utils/ModuleSerializer.h"
 #include <string>
 
 namespace Brytec {
@@ -26,34 +28,42 @@ void SerialWindow::drawWindow()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("clear data")) {
-            m_canMap.clear();
+        // if (ImGui::Button("clear data")) {
+        //     m_canMap.clear();
+        // }
+
+        // ImGui::SameLine();
+
+        // if (ImGui::Button("send packet")) {
+        //     static int i = 0;
+        //     i++;
+        //     CanExtFrame can;
+        //     can.id = 52;
+        //     can.data[0] = i;
+        //     usb.send(can);
+        // }
+
+        // ImGui::SameLine();
+
+        std::shared_ptr<Module> module = AppManager::getSelected<Module>();
+        ImGui::BeginDisabled(!AppManager::getUsbManager().getDoneSendingConfig() || !module);
+        if (ImGui::Button("Send Config")) {
+
+            if (module) {
+                ModuleSerializer moduleSer(module);
+                BinarySerializer ser = moduleSer.serializeBinary();
+                AppManager::getUsbManager().sendConfig(module->getAddress(), ser.getData());
+            }
         }
+        ImGui::EndDisabled();
 
-        ImGui::SameLine();
+        ImGui::Separator();
 
-        if (ImGui::Button("send packet")) {
-            static float timer = 0.0f;
-            timer += ImGui::GetIO().DeltaTime;
+        ImGui::ProgressBar((float)(usb.getAmountToSend() - usb.getAmountLeftToSend()) / (float)usb.getAmountToSend());
 
-            // if (timer > 0.10f) {
-            static int i = 0;
-            i++;
-            CanExtFrame can;
-            can.id = 52;
-            can.data[0] = i;
-            usb.send(can);
-
-            can.id = 66;
-            can.data[1] = i;
-            usb.send(can);
-
-            timer = 0.0f;
-            // }
-        }
+        ImGui::Text("Sending %u out of %u", usb.getAmountLeftToSend(), usb.getAmountToSend());
 
     } else {
-
         std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
         std::string displayText = usb.getDevice().description;
 
