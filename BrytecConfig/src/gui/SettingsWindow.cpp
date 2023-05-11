@@ -87,6 +87,19 @@ void SettingsWindow::drawWindow()
         }
         ImGui::PopID();
 
+        // Open Last File
+        ImGui::PushID("Open Last File");
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Open Last File");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        bool value = AppManager::getOpenLastFile();
+        if (ImGui::Checkbox("##Open Last File", &value))
+            AppManager::setOpenLastFile(value);
+        ImGui::PopID();
+
         ImGui::EndTable();
     }
 

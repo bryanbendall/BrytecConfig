@@ -57,6 +57,7 @@ ImFont* getBigIconFont();
 // Commands
 void newConfig();
 void openConfig();
+void openConfigFile(std::filesystem::path& path);
 void saveConfig();
 void saveAsConfig();
 void exit();
@@ -71,6 +72,11 @@ const std::filesystem::path& getModulesPath();
 void setModulesPath(const std::filesystem::path& path);
 const std::filesystem::path& getNodeGroupsPath();
 void setNodeGroupsPath(const std::filesystem::path& path);
+
+bool getOpenLastFile();
+void setOpenLastFile(bool value);
+const std::filesystem::path& getLastFile();
+void setLastFile(const std::filesystem::path& file);
 
 void updateWindowTitle();
 void handleKeyEvents();

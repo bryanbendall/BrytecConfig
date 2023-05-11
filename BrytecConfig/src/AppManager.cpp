@@ -30,6 +30,8 @@ struct AppManagerData {
     std::filesystem::path modulesPath = std::filesystem::current_path();
     std::filesystem::path nodeGroupsPath = std::filesystem::current_path();
     UsbManager usbManager;
+    bool openLastFile = true;
+    std::filesystem::path lastFile = "";
 };
 
 static AppManagerData s_data;
@@ -43,7 +45,11 @@ void init(GLFWwindow* window)
     s_data.mainWindow->setupFonts(s_data.fontSize, s_data.fontSize + 4);
     s_data.mainWindow->setupStyle();
     loadSettings();
-    newConfig();
+
+    if (s_data.openLastFile && std::filesystem::exists(s_data.lastFile))
+        openConfigFile(s_data.lastFile);
+    else
+        newConfig();
 }
 
 void loadSettings()
@@ -62,6 +68,12 @@ void loadSettings()
 
         if (node["Node Groups Path"])
             s_data.nodeGroupsPath = node["Node Groups Path"].as<std::string>();
+
+        if (node["Open Last File"])
+            s_data.openLastFile = node["Open Last File"].as<bool>();
+
+        if (node["Last File"])
+            s_data.lastFile = node["Last File"].as<std::string>();
     }
 }
 
@@ -81,6 +93,12 @@ void saveSettings()
 
     out << YAML::Key << "Node Groups Path";
     out << YAML::Value << s_data.nodeGroupsPath.string();
+
+    out << YAML::Key << "Open Last File";
+    out << YAML::Value << s_data.openLastFile;
+
+    out << YAML::Key << "Last File";
+    out << YAML::Value << s_data.lastFile.string();
 
     out << YAML::EndMap;
 
@@ -169,6 +187,11 @@ void openConfig()
     if (path.empty())
         return;
 
+    openConfigFile(path);
+}
+
+void openConfigFile(std::filesystem::path& path)
+{
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
 
@@ -190,6 +213,8 @@ static void save(std::shared_ptr<Config>& config)
     configBinary.writeToFile(config->getFilepath());
 
     NotificationWindow::add({ "Saved - " + config->getFilepath().filename().string(), NotificationType::Success });
+
+    setLastFile(config->getFilepath());
 }
 
 void saveConfig()
@@ -277,6 +302,28 @@ const std::filesystem::path& getNodeGroupsPath()
 void setNodeGroupsPath(const std::filesystem::path& path)
 {
     s_data.nodeGroupsPath = path;
+    saveSettings();
+}
+
+bool getOpenLastFile()
+{
+    return s_data.openLastFile;
+}
+
+void setOpenLastFile(bool value)
+{
+    s_data.openLastFile = value;
+    saveSettings();
+}
+
+const std::filesystem::path& getLastFile()
+{
+    return s_data.lastFile;
+}
+
+void setLastFile(const std::filesystem::path& file)
+{
+    s_data.lastFile = file;
     saveSettings();
 }
 
