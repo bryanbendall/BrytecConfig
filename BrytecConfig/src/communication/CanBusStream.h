@@ -6,6 +6,7 @@
 #include <atomic>
 #include <deque>
 #include <functional>
+#include <map>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -18,11 +19,18 @@ struct CanBusStreamCallbackData {
     bool error = false;
 };
 
+struct ModuleStatus {
+    uint8_t address = 0;
+    bool deserializeOk = false;
+    EBrytecApp::Mode mode = EBrytecApp::Mode::Stopped;
+};
+
 class CanBusStream {
 
 public:
     CanBusStream() = default;
 
+    void requestStatus(uint8_t moduleAddress);
     void changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode);
     void reloadConfig(uint8_t moduleAddress);
     void reserveConfigSize(uint8_t moduleAddress, uint16_t size);
@@ -32,6 +40,8 @@ public:
     void send(std::function<void(CanBusStreamCallbackData)> callback);
     bool isSending() { return m_sending; }
 
+    std::map<uint8_t, ModuleStatus>& getModuleStatuses() { return m_moduleStatuses; }
+
     void canBusReceived(CanExtFrame frame);
 
 private:
@@ -40,6 +50,8 @@ private:
     CanBusStreamCallbackData m_callbackData;
     std::atomic_bool m_sending = false;
     std::function<void(CanExtFrame&)> m_sendFunction;
+
+    std::map<uint8_t, ModuleStatus> m_moduleStatuses;
 };
 
 }

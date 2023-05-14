@@ -56,6 +56,19 @@ void SerialWindow::drawWindow()
         else
             ImGui::Text("Sending %u out of %u", s_canData.leftToSend, s_canData.total);
 
+        if (ImGui::Button("Get statuses")) {
+            AppManager::getCanBusStream().requestStatus(CanCommands::AllModules);
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
+
+        ImGui::Separator();
+        ImGui::TextUnformatted("Module Statuses");
+        for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
+            ImGui::Indent();
+            ImGui::Text("Module: %d, mode: %d, deserialized: %d", ms.address, ms.mode, ms.deserializeOk);
+        }
+        ImGui::Separator();
+
     } else {
         std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
         std::string displayText = usb.getDevice().description;

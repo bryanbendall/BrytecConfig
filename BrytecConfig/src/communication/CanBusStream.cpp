@@ -5,6 +5,17 @@
 
 namespace Brytec {
 
+void CanBusStream::requestStatus(uint8_t moduleAddress)
+{
+    if (m_sending)
+        return;
+
+    CanCommands command;
+    command.moduleAddress = moduleAddress;
+    command.command = CanCommands::Command::RequestStatus;
+    m_commandsToSend.push_back(command.getFrame());
+}
+
 void CanBusStream::changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode)
 {
     if (m_sending)
@@ -98,24 +109,37 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
 
     CanCommands command(frame);
     switch (command.command) {
-    case CanCommands::Command::Ack:
-        m_commandsToSend.pop_front();
-        m_callbackData.leftToSend = m_commandsToSend.size();
-        if (m_commandsToSend.size() > 0) {
-            m_sendFunction(m_commandsToSend.front());
-        } else {
-            m_sending = false;
-        }
-        break;
+
     case CanCommands::Command::Nak:
         m_commandsToSend.clear();
         m_callbackData.error = true;
-        m_sending = false;
         break;
+
+    case CanCommands::Command::Ack:
+        m_commandsToSend.pop_front();
+        m_callbackData.leftToSend = m_commandsToSend.size();
+        if (m_commandsToSend.size() > 0)
+            m_sendFunction(m_commandsToSend.front());
+        break;
+
+    case CanCommands::Command::SendStatus:
+        // Maybe change for multiple modules
+        if (m_commandsToSend.size() > 0)
+            m_commandsToSend.pop_front();
+        m_moduleStatuses[command.moduleAddress] = {
+            command.moduleAddress,
+            (bool)command.data[1],
+            (EBrytecApp::Mode)command.data[0]
+        };
+        break;
+
     default:
         std::cout << "Unknow can command" << std::endl;
         break;
     }
+
+    if (m_commandsToSend.size() == 0)
+        m_sending = false;
 
     m_callback(m_callbackData);
 }
