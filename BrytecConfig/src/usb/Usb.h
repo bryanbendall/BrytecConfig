@@ -26,15 +26,10 @@ public:
     void setReceiveCallback(std::function<void(UsbPacket)> callback) { m_receiveCallback = callback; }
 
 private:
-    // UsbPacket getPacketFromRaw();
-
-private:
     serial::Serial m_serial;
     bool m_runThread = false;
 
     std::thread m_rxThread;
-    std::mutex m_rxMutex;
-    std::vector<uint8_t> m_rxData;
 
     std::thread m_txThread;
     std::mutex m_txMutex;

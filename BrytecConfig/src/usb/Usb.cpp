@@ -41,8 +41,10 @@ static UsbPacket getPacket(std::vector<uint8_t>& data)
     return packet;
 }
 
-static void usbRxThread(bool& run, serial::Serial& serial, std::mutex& rxMutex, std::vector<uint8_t>& rxData, std::function<void(UsbPacket)> callback)
+static void usbRxThread(bool& run, serial::Serial& serial, std::function<void(UsbPacket)> callback)
 {
+    std::vector<uint8_t> data;
+
     while (run) {
 
         if (serial.isOpen()) {
@@ -58,14 +60,10 @@ static void usbRxThread(bool& run, serial::Serial& serial, std::mutex& rxMutex, 
             }
 
             if (length > 0) {
-                rxMutex.lock();
-                rxData.insert(rxData.end(), std::begin(buffer), std::begin(buffer) + length);
+                data.insert(data.end(), std::begin(buffer), std::begin(buffer) + length);
 
-                while (UsbPacket packet = getPacket(rxData)) {
+                while (UsbPacket packet = getPacket(data))
                     callback(packet);
-                }
-
-                rxMutex.unlock();
             }
         }
     }
@@ -132,7 +130,7 @@ void Usb::open(std::string port)
         if (m_serial.isOpen()) {
             m_runThread = true;
             m_rxThread = std::thread(usbRxThread, std::ref(m_runThread), std::ref(m_serial),
-                std::ref(m_rxMutex), std::ref(m_rxData), m_receiveCallback);
+                m_receiveCallback);
             m_txThread = std::thread(usbTxThread, std::ref(m_runThread), std::ref(m_serial),
                 std::ref(m_txMutex), std::ref(m_txPackets));
         }
@@ -156,41 +154,4 @@ void Usb::send(const UsbPacket& packet)
     m_txPackets.push_back(packet);
     m_txMutex.unlock();
 }
-
-// void Usb::sendMultiple(const std::vector<UsbPacket>& packets)
-// {
-//     m_multipleThread = std::thread(usbMultipleThread, std::ref(m_serial), packets);
-// }
-
-// UsbPacket Usb::getPacketFromRaw()
-// {
-//     UsbPacket packet;
-
-//     if (m_rxData.size() <= 0)
-//         return packet;
-
-//     auto start = std::find(m_rxData.begin(), m_rxData.end(), PacketStart);
-//     if (start > m_rxData.begin()) {
-//         m_rxData.erase(m_rxData.begin(), start);
-//     }
-
-//     if (m_rxData.size() >= 2)
-//         packet.length = m_rxData[1];
-//     else
-//         return packet;
-
-//     if (packet.length > 64) {
-//         // Something wrong with packet, delete it and try again
-//         m_rxData.erase(m_rxData.begin());
-//         return packet;
-//     }
-
-//     if (m_rxData.size() >= packet.length + 2)
-//         memcpy(packet.data, &m_rxData[2], packet.length);
-//     else
-//         return packet;
-
-//     m_rxData.erase(m_rxData.begin(), m_rxData.begin() + packet.length + 2);
-//     return packet;
-// }
 }

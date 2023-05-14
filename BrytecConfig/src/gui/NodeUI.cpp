@@ -63,6 +63,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 case IOTypes::Types::Internal:
                     floatValue = true;
                     break;
+                default:
+                    break;
                 }
             }
 
