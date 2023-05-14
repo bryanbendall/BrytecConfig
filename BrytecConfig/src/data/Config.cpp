@@ -51,6 +51,16 @@ void Config::removeModule(std::shared_ptr<Module>& module)
     m_modules.erase(it);
 }
 
+std::shared_ptr<Module> Config::findModule(uint8_t address)
+{
+    for (auto& m : m_modules) {
+        if (m->getAddress() == address)
+            return m;
+    }
+
+    return nullptr;
+}
+
 void Config::removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     auto it = std::find(m_nodeGroups.begin(), m_nodeGroups.end(), nodeGroup);

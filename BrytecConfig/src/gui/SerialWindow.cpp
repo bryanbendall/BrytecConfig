@@ -64,8 +64,27 @@ void SerialWindow::drawWindow()
         ImGui::Separator();
         ImGui::TextUnformatted("Module Statuses");
         for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
+            std::string modeString;
+            switch (ms.mode) {
+            case EBrytecApp::Mode::Normal:
+                modeString = "Normal";
+                break;
+            case EBrytecApp::Mode::Programming:
+                modeString = "Programming";
+                break;
+            case EBrytecApp::Mode::Stopped:
+                modeString = "Stopped";
+                break;
+            }
+            auto module = AppManager::getConfig()->findModule(ms.address);
             ImGui::Indent();
-            ImGui::Text("Module: %d, mode: %d, deserialized: %d", ms.address, ms.mode, ms.deserializeOk);
+            ImGui::Text("Module Address: %s", module ? module->getName().c_str() : "Unknown");
+            ImGui::Indent();
+            ImGui::Text("Address: %d", ms.address);
+            ImGui::Text("Mode: %s", modeString.c_str());
+            ImGui::Text("Deserialized: %s", ms.deserializeOk ? "true" : "false");
+            ImGui::Unindent();
+            ImGui::Unindent();
         }
         ImGui::Separator();
 
