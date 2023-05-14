@@ -20,6 +20,8 @@ public:
     const std::vector<std::shared_ptr<Module>>& getModules() { return m_modules; }
     std::shared_ptr<Module> findModule(uint8_t address);
 
+    void updateAllInternalPins();
+
     std::shared_ptr<NodeGroup> addNodeGroup();
     void addNodeGroup(std::shared_ptr<NodeGroup> nodeGroup) { m_nodeGroups.push_back(nodeGroup); }
     std::shared_ptr<NodeGroup> addEmptyNodeGroup(UUID uuid);

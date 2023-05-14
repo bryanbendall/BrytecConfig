@@ -61,6 +61,12 @@ std::shared_ptr<Module> Config::findModule(uint8_t address)
     return nullptr;
 }
 
+void Config::updateAllInternalPins()
+{
+    for (auto& m : m_modules)
+        m->updateInternalPins();
+}
+
 void Config::removeNodeGroup(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     auto it = std::find(m_nodeGroups.begin(), m_nodeGroups.end(), nodeGroup);

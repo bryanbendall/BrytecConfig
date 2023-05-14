@@ -235,6 +235,8 @@ void NodeGroupWindow::handleDragDrop()
                 std::shared_ptr<Pin> oldPin = AppManager::getConfig()->getAssignedPin(nodeGroup);
                 if (oldPin)
                     oldPin->setNodeGroup(nullptr);
+
+                AppManager::getConfig()->updateAllInternalPins();
             }
         }
         ImGui::EndDragDropTarget();
