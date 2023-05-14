@@ -17,7 +17,6 @@ public:
 
 private:
     bool m_opened = true;
-    std::map<uint32_t, CanExtFrame> m_canMap;
 };
 
 }

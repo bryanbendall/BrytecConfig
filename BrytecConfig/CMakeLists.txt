@@ -75,6 +75,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/ENode.h
                 src/BrytecConfigEmbedded/IOTypes.cpp
                 src/BrytecConfigEmbedded/IOTypes.h
+                src/communication/CanBusStream.cpp
+                src/communication/CanBusStream.h
                 src/data/CanBus.cpp
                 src/data/CanBus.h
                 src/data/Config.cpp

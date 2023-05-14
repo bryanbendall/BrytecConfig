@@ -8,6 +8,13 @@
 
 namespace Brytec {
 
+static CanBusStreamCallbackData s_canData;
+
+static void sendingCallback(CanBusStreamCallbackData data)
+{
+    s_canData = data;
+}
+
 void SerialWindow::drawWindow()
 {
     if (!m_opened)
@@ -28,40 +35,26 @@ void SerialWindow::drawWindow()
 
         ImGui::SameLine();
 
-        // if (ImGui::Button("clear data")) {
-        //     m_canMap.clear();
-        // }
-
-        // ImGui::SameLine();
-
-        // if (ImGui::Button("send packet")) {
-        //     static int i = 0;
-        //     i++;
-        //     CanExtFrame can;
-        //     can.id = 52;
-        //     can.data[0] = i;
-        //     usb.send(can);
-        // }
-
-        // ImGui::SameLine();
-
         std::shared_ptr<Module> module = AppManager::getSelected<Module>();
-        ImGui::BeginDisabled(!AppManager::getUsbManager().getDoneSendingConfig() || !module);
+
+        ImGui::BeginDisabled(AppManager::getCanBusStream().isSending() || !module);
         if (ImGui::Button("Send Config")) {
 
             if (module) {
                 ModuleSerializer moduleSer(module);
                 BinarySerializer ser = moduleSer.serializeBinary();
-                AppManager::getUsbManager().sendConfig(module->getAddress(), ser.getData());
+                AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
+                AppManager::getCanBusStream().send(sendingCallback);
             }
         }
         ImGui::EndDisabled();
 
-        ImGui::Separator();
+        ImGui::ProgressBar((float)(s_canData.total - s_canData.leftToSend) / (float)s_canData.total);
 
-        ImGui::ProgressBar((float)(usb.getAmountToSend() - usb.getAmountLeftToSend()) / (float)usb.getAmountToSend());
-
-        ImGui::Text("Sending %u out of %u", usb.getAmountLeftToSend(), usb.getAmountToSend());
+        if (s_canData.error)
+            ImGui::TextUnformatted("Sending error!");
+        else
+            ImGui::Text("Sending %u out of %u", s_canData.leftToSend, s_canData.total);
 
     } else {
         std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
@@ -82,33 +75,6 @@ void SerialWindow::drawWindow()
 
         if (ImGui::Button("open serial"))
             usb.open();
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("clear data")) {
-            m_canMap.clear();
-        }
-    }
-
-    ImGui::Separator();
-
-    for (auto& frame : usb.getCanFrames()) {
-        m_canMap[frame.id] = frame;
-    }
-
-    for (auto& m : m_canMap) {
-        auto& f = m.second;
-        ImGui::Text("id: %d dlc: %d data: %d %d %d %d %d %d %d %d",
-            f.id,
-            f.dlc,
-            f.data[0],
-            f.data[1],
-            f.data[2],
-            f.data[3],
-            f.data[4],
-            f.data[5],
-            f.data[6],
-            f.data[7]);
     }
 
     ImGui::End();

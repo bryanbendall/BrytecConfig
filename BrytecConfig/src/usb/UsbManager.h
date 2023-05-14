@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Usb.h"
+#include "communication/CanBusStream.h"
 #include <deque>
 
 namespace Brytec {
@@ -8,7 +9,7 @@ namespace Brytec {
 class UsbManager {
 
 public:
-    UsbManager() = default;
+    UsbManager();
     void update();
 
     std::vector<serial::PortInfo> getAvailablePorts() { return serial::list_ports(); }
@@ -20,22 +21,13 @@ public:
     bool isOpen() { return m_usb.isOpen(); }
 
     void send(CanExtFrame& frame);
-    std::vector<CanExtFrame> getCanFrames();
-
-    bool getDoneSendingConfig() { return m_doneSendingConfig; }
-    void sendConfig(uint8_t moduleAddress, std::vector<uint8_t>& data);
-    uint32_t getAmountToSend() { return m_amountToSend; }
-    uint32_t getAmountLeftToSend() { return m_amountLeftToSend; }
+    void onReceive(UsbPacket packet);
 
 private:
     Usb m_usb;
     serial::PortInfo m_device;
-    std::vector<CanExtFrame> m_canFrames;
+    CanBusStream m_stream;
 
-    bool m_doneSendingConfig = true;
-    bool m_waitForReturn = false;
-    std::deque<CanExtFrame> m_canToSend;
-    uint32_t m_amountToSend = 0;
-    uint32_t m_amountLeftToSend = 0;
+    std::function<void(CanExtFrame)> m_canBusCallback;
 };
 }

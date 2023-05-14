@@ -29,6 +29,7 @@ struct AppManagerData {
     std::filesystem::path configsPath = std::filesystem::current_path();
     std::filesystem::path modulesPath = std::filesystem::current_path();
     std::filesystem::path nodeGroupsPath = std::filesystem::current_path();
+    CanBusStream canBusStream;
     UsbManager usbManager;
     bool openLastFile = true;
     std::filesystem::path lastFile = "";
@@ -131,6 +132,11 @@ std::shared_ptr<Config>& getConfig()
 UsbManager& getUsbManager()
 {
     return s_data.usbManager;
+}
+
+CanBusStream& getCanBusStream()
+{
+    return s_data.canBusStream;
 }
 
 std::weak_ptr<Selectable> getSelectedItem()

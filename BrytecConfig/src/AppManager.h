@@ -1,5 +1,6 @@
 #pragma once
 
+#include "communication/CanBusStream.h"
 #include "data/Config.h"
 #include "data/Selectable.h"
 #include "gui/MainWindow.h"
@@ -28,6 +29,7 @@ Version getVersion();
 std::shared_ptr<Config>& getConfig();
 
 UsbManager& getUsbManager();
+CanBusStream& getCanBusStream();
 
 // Selection ////////////////////////////////
 std::weak_ptr<Selectable> getSelectedItem();
