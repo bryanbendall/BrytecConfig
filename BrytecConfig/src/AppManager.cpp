@@ -11,7 +11,40 @@
 #include <imgui.h>
 #include <iostream>
 #include <memory>
+#include <serial/serial.h>
 #include <yaml-cpp/yaml.h>
+
+namespace YAML {
+template <>
+struct convert<serial::PortInfo> {
+    static Node encode(const serial::PortInfo& rhs)
+    {
+        Node node;
+        node.push_back(rhs.port);
+        node.push_back(rhs.description);
+        node.push_back(rhs.hardware_id);
+        return node;
+    }
+
+    static bool decode(const Node& node, serial::PortInfo& rhs)
+    {
+        if (!node.IsSequence() || node.size() != 3) {
+            return false;
+        }
+
+        rhs.port = node[0].as<std::string>();
+        rhs.description = node[1].as<std::string>();
+        rhs.hardware_id = node[2].as<std::string>();
+        return true;
+    }
+};
+}
+
+YAML::Emitter& operator<<(YAML::Emitter& out, const serial::PortInfo& v)
+{
+    out << YAML::BeginSeq << v.port << v.description << v.hardware_id << YAML::EndSeq;
+    return out;
+}
 
 namespace Brytec {
 
@@ -33,6 +66,7 @@ struct AppManagerData {
     UsbManager usbManager;
     bool openLastFile = true;
     std::filesystem::path lastFile = "";
+    serial::PortInfo lastSerialPort;
 };
 
 static AppManagerData s_data;
@@ -75,6 +109,9 @@ void loadSettings()
 
         if (node["Last File"])
             s_data.lastFile = node["Last File"].as<std::string>();
+
+        if (node["Last Serial Port"])
+            s_data.lastSerialPort = node["Last Serial Port"].as<serial::PortInfo>();
     }
 }
 
@@ -100,6 +137,9 @@ void saveSettings()
 
     out << YAML::Key << "Last File";
     out << YAML::Value << s_data.lastFile.string();
+
+    out << YAML::Key << "Last Serial Port";
+    out << YAML::Value << s_data.lastSerialPort;
 
     out << YAML::EndMap;
 
@@ -330,6 +370,17 @@ const std::filesystem::path& getLastFile()
 void setLastFile(const std::filesystem::path& file)
 {
     s_data.lastFile = file;
+    saveSettings();
+}
+
+serial::PortInfo& getLastSerialPort()
+{
+    return s_data.lastSerialPort;
+}
+
+void setLastSerialPort(serial::PortInfo& port)
+{
+    s_data.lastSerialPort = port;
     saveSettings();
 }
 

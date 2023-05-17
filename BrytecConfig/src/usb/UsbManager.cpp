@@ -16,8 +16,20 @@ UsbManager::UsbManager()
 
 void UsbManager::update()
 {
+    static bool first = true;
+    if (first) {
+        m_device = AppManager::getLastSerialPort();
+        first = false;
+    }
+
     if (!m_usb.isOpen())
         return;
+}
+
+void UsbManager::open()
+{
+    m_usb.open(m_device.port);
+    AppManager::setLastSerialPort(m_device);
 }
 
 void UsbManager::send(CanExtFrame& frame)

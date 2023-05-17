@@ -16,7 +16,7 @@ public:
     const serial::PortInfo& getDevice() { return m_device; }
     void setDevice(const serial::PortInfo& device) { m_device = device; }
 
-    void open() { m_usb.open(m_device.port); }
+    void open();
     void close() { m_usb.close(); }
     bool isOpen() { return m_usb.isOpen(); }
 
