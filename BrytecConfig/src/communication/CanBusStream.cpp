@@ -5,13 +5,25 @@
 
 namespace Brytec {
 
-void CanBusStream::requestStatus(uint8_t moduleAddress)
+void CanBusStream::requestModuleStatus(uint8_t moduleAddress)
 {
     if (m_sending)
         return;
 
     CanCommands command;
     command.moduleAddress = moduleAddress;
+    command.command = CanCommands::Command::RequestStatus;
+    m_commandsToSend.push_back(command.getFrame());
+}
+
+void CanBusStream::requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex)
+{
+    if (m_sending)
+        return;
+
+    CanCommands command;
+    command.moduleAddress = moduleAddress;
+    command.nodeGroupIndex = nodeGroupIndex;
     command.command = CanCommands::Command::RequestStatus;
     m_commandsToSend.push_back(command.getFrame());
 }
@@ -103,7 +115,17 @@ void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
 void CanBusStream::canBusReceived(CanExtFrame frame)
 {
     if (frame.isBroadcast()) {
-        // Do something with broadcast
+
+        auto it = std::find_if(m_nodeGroupStatuses.begin(), m_nodeGroupStatuses.end(), [frame](PinStatusBroadcast& bc) {
+            PinStatusBroadcast frameBc(frame);
+            return (frameBc.moduleAddress == bc.moduleAddress && frameBc.nodeGroupIndex == bc.nodeGroupIndex);
+        });
+
+        if (it != m_nodeGroupStatuses.end())
+            *it = frame;
+        else
+            m_nodeGroupStatuses.push_back(frame);
+
         return;
     }
 
@@ -116,8 +138,8 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
         break;
 
     case CanCommands::Command::Ack:
-        m_commandsToSend.pop_front();
-        m_callbackData.leftToSend = m_commandsToSend.size();
+        if (m_commandsToSend.size() > 0)
+            m_commandsToSend.pop_front();
         if (m_commandsToSend.size() > 0)
             m_sendFunction(m_commandsToSend.front());
         break;
@@ -141,6 +163,7 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
     if (m_commandsToSend.size() == 0)
         m_sending = false;
 
+    m_callbackData.leftToSend = m_commandsToSend.size();
     m_callback(m_callbackData);
 }
 

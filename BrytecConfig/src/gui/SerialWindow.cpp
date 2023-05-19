@@ -56,37 +56,29 @@ void SerialWindow::drawWindow()
         else
             ImGui::Text("Sending %u out of %u", s_canData.leftToSend, s_canData.total);
 
-        if (ImGui::Button("Get statuses")) {
-            AppManager::getCanBusStream().requestStatus(CanCommands::AllModules);
+        if (ImGui::Button("Get Module Statuses")) {
+            AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
             AppManager::getCanBusStream().send(sendingCallback);
         }
 
-        ImGui::Separator();
-        ImGui::TextUnformatted("Module Statuses");
-        for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
-            std::string modeString;
-            switch (ms.mode) {
-            case EBrytecApp::Mode::Normal:
-                modeString = "Normal";
-                break;
-            case EBrytecApp::Mode::Programming:
-                modeString = "Programming";
-                break;
-            case EBrytecApp::Mode::Stopped:
-                modeString = "Stopped";
-                break;
+        ImGui::SameLine();
+
+        std::shared_ptr<Pin> pin = AppManager::getSelected<Pin>();
+        std::shared_ptr<NodeGroup> nodeGroup = nullptr;
+        if (pin)
+            nodeGroup = pin->getNodeGroup();
+
+        ImGui::BeginDisabled(AppManager::getCanBusStream().isSending() || !nodeGroup);
+        if (ImGui::Button("Get Node Group Status")) {
+
+            if (nodeGroup) {
+                auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
+                auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
+                AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr);
+                AppManager::getCanBusStream().send(sendingCallback);
             }
-            auto module = AppManager::getConfig()->findModule(ms.address);
-            ImGui::Indent();
-            ImGui::Text("Module Address: %s", module ? module->getName().c_str() : "Unknown");
-            ImGui::Indent();
-            ImGui::Text("Address: %d", ms.address);
-            ImGui::Text("Mode: %s", modeString.c_str());
-            ImGui::Text("Deserialized: %s", ms.deserializeOk ? "true" : "false");
-            ImGui::Unindent();
-            ImGui::Unindent();
         }
-        ImGui::Separator();
+        ImGui::EndDisabled();
 
     } else {
         std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
@@ -107,6 +99,56 @@ void SerialWindow::drawWindow()
 
         if (ImGui::Button("open serial"))
             usb.open();
+    }
+
+    ImGui::Separator();
+    ImGui::TextUnformatted("Module Statuses");
+    for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
+        std::string modeString;
+        switch (ms.mode) {
+        case EBrytecApp::Mode::Normal:
+            modeString = "Normal";
+            break;
+        case EBrytecApp::Mode::Programming:
+            modeString = "Programming";
+            break;
+        case EBrytecApp::Mode::Stopped:
+            modeString = "Stopped";
+            break;
+        }
+        auto module = AppManager::getConfig()->findModule(ms.address);
+        ImGui::Indent();
+        ImGui::Text("Module Address: %s", module ? module->getName().c_str() : "Unknown");
+        ImGui::Indent();
+        ImGui::Text("Address: %d", ms.address);
+        ImGui::Text("Mode: %s", modeString.c_str());
+        ImGui::Text("Deserialized: %s", ms.deserializeOk ? "true" : "false");
+        ImGui::Unindent();
+        ImGui::Unindent();
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("Node Group Statuses");
+    for (auto& pinStatus : AppManager::getCanBusStream().getNodeGroupStatuses()) {
+
+        auto module = AppManager::getConfig()->findModule(pinStatus.moduleAddress);
+
+        std::shared_ptr<NodeGroup> nodeGroup = nullptr;
+        if (pinStatus.nodeGroupIndex >= module->getPhysicalPins().size()) {
+            nodeGroup = module->getInternalPins()[pinStatus.nodeGroupIndex - module->getPhysicalPins().size()]->getNodeGroup();
+        } else {
+            nodeGroup = module->getPhysicalPins()[pinStatus.nodeGroupIndex]->getNodeGroup();
+        }
+
+        if (nodeGroup) {
+            ImGui::Indent();
+            ImGui::Text("Module Addr: %d Node Group Index: %d", pinStatus.moduleAddress, pinStatus.nodeGroupIndex);
+            ImGui::Indent();
+            ImGui::Text("Current: %f", pinStatus.current);
+            ImGui::Text("Voltage: %f", pinStatus.voltage);
+            ImGui::Text("Value: %f", pinStatus.value);
+            ImGui::Unindent();
+            ImGui::Unindent();
+        }
     }
 
     ImGui::End();

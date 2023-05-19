@@ -7,9 +7,6 @@
 #include <deque>
 #include <functional>
 #include <map>
-#include <mutex>
-#include <thread>
-#include <vector>
 
 namespace Brytec {
 
@@ -30,7 +27,8 @@ class CanBusStream {
 public:
     CanBusStream() = default;
 
-    void requestStatus(uint8_t moduleAddress);
+    void requestModuleStatus(uint8_t moduleAddress);
+    void requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex);
     void changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode);
     void reloadConfig(uint8_t moduleAddress);
     void reserveConfigSize(uint8_t moduleAddress, uint16_t size);
@@ -41,6 +39,7 @@ public:
     bool isSending() { return m_sending; }
 
     std::map<uint8_t, ModuleStatus>& getModuleStatuses() { return m_moduleStatuses; }
+    std::vector<PinStatusBroadcast>& getNodeGroupStatuses() { return m_nodeGroupStatuses; }
 
     void canBusReceived(CanExtFrame frame);
 
@@ -52,6 +51,7 @@ private:
     std::function<void(CanExtFrame&)> m_sendFunction;
 
     std::map<uint8_t, ModuleStatus> m_moduleStatuses;
+    std::vector<PinStatusBroadcast> m_nodeGroupStatuses;
 };
 
 }
