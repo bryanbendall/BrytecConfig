@@ -10,6 +10,7 @@ class UsbManager {
 
 public:
     UsbManager();
+    ~UsbManager();
     void update();
 
     std::vector<serial::PortInfo> getAvailablePorts() { return serial::list_ports(); }

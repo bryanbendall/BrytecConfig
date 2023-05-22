@@ -27,6 +27,8 @@ class CanBusStream {
 public:
     CanBusStream() = default;
 
+    void update();
+
     void requestModuleStatus(uint8_t moduleAddress);
     void requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex);
     void changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode);
@@ -44,11 +46,17 @@ public:
     void canBusReceived(CanExtFrame frame);
 
 private:
+    float m_timer = 0.0f;
+
     std::deque<CanExtFrame> m_commandsToSend;
     std::function<void(CanBusStreamCallbackData)> m_callback;
     CanBusStreamCallbackData m_callbackData;
     std::atomic_bool m_sending = false;
+    uint8_t m_toModuleAddress;
     std::function<void(CanExtFrame&)> m_sendFunction;
+
+    uint8_t m_retires = 0;
+    static constexpr uint8_t s_maxRetries = 5;
 
     std::map<uint8_t, ModuleStatus> m_moduleStatuses;
     std::vector<PinStatusBroadcast> m_nodeGroupStatuses;

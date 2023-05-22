@@ -14,6 +14,11 @@ UsbManager::UsbManager()
     AppManager::getCanBusStream().setSendFunction(std::bind(&UsbManager::send, this, std::placeholders::_1));
 }
 
+UsbManager::~UsbManager()
+{
+    m_usb.close();
+}
+
 void UsbManager::update()
 {
     static bool first = true;
@@ -24,6 +29,8 @@ void UsbManager::update()
 
     if (!m_usb.isOpen())
         return;
+
+    AppManager::getCanBusStream().update();
 }
 
 void UsbManager::open()

@@ -33,8 +33,6 @@ void SerialWindow::drawWindow()
         if (ImGui::Button("close serial"))
             usb.close();
 
-        ImGui::SameLine();
-
         std::shared_ptr<Module> module = AppManager::getSelected<Module>();
 
         ImGui::BeginDisabled(AppManager::getCanBusStream().isSending() || !module);
@@ -46,6 +44,27 @@ void SerialWindow::drawWindow()
                 AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
                 AppManager::getCanBusStream().send(sendingCallback);
             }
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Set Stopped")) {
+            AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Stopped);
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Set Normal")) {
+            AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Normal);
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Reload")) {
+            AppManager::getCanBusStream().reloadConfig(module->getAddress());
+            AppManager::getCanBusStream().send(sendingCallback);
         }
         ImGui::EndDisabled();
 
@@ -130,21 +149,21 @@ void SerialWindow::drawWindow()
     ImGui::TextUnformatted("Node Group Statuses");
     for (auto& pinStatus : AppManager::getCanBusStream().getNodeGroupStatuses()) {
 
-        auto module = AppManager::getConfig()->findModule(pinStatus.moduleAddress);
+        if (auto module = AppManager::getConfig()->findModule(pinStatus.moduleAddress)) {
+            std::shared_ptr<NodeGroup> nodeGroup = nullptr;
+            if (pinStatus.nodeGroupIndex >= module->getPhysicalPins().size())
+                nodeGroup = module->getInternalPins()[pinStatus.nodeGroupIndex - module->getPhysicalPins().size()]->getNodeGroup();
+            else
+                nodeGroup = module->getPhysicalPins()[pinStatus.nodeGroupIndex]->getNodeGroup();
 
-        std::shared_ptr<NodeGroup> nodeGroup = nullptr;
-        if (pinStatus.nodeGroupIndex >= module->getPhysicalPins().size()) {
-            nodeGroup = module->getInternalPins()[pinStatus.nodeGroupIndex - module->getPhysicalPins().size()]->getNodeGroup();
-        } else {
-            nodeGroup = module->getPhysicalPins()[pinStatus.nodeGroupIndex]->getNodeGroup();
-        }
-
-        if (nodeGroup) {
             ImGui::Indent();
-            ImGui::Text("Module Addr: %d Node Group Index: %d", pinStatus.moduleAddress, pinStatus.nodeGroupIndex);
+            if (nodeGroup)
+                ImGui::Text("%s", nodeGroup->getName().c_str());
+            else
+                ImGui::Text("Module Addr: %d Node Group Index: %d", pinStatus.moduleAddress, pinStatus.nodeGroupIndex);
             ImGui::Indent();
-            ImGui::Text("Current: %f", pinStatus.current);
-            ImGui::Text("Voltage: %f", pinStatus.voltage);
+            // ImGui::Text("Current: %f", pinStatus.current);
+            // ImGui::Text("Voltage: %f", pinStatus.voltage);
             ImGui::Text("Value: %f", pinStatus.value);
             ImGui::Unindent();
             ImGui::Unindent();
