@@ -33,6 +33,16 @@ void UsbManager::update()
     AppManager::getCanBusStream().update();
 }
 
+bool UsbManager::isDeviceValid()
+{
+    std::vector<serial::PortInfo> ports = getAvailablePorts();
+    auto ret = std::find_if(ports.begin(), ports.end(), [this](const serial::PortInfo& info) {
+        return m_device.port == info.port;
+    });
+
+    return (ret != ports.end());
+}
+
 void UsbManager::open()
 {
     m_usb.open(m_device.port);

@@ -4,10 +4,14 @@
 #include "NotificationWindow.h"
 #include "fonts/droidsans.cpp"
 #include "fonts/fa-solid-900.cpp"
+#include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <functional>
 #include <imgui.h>
+
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui_internal.h>
 
 namespace Brytec {
 
@@ -259,6 +263,31 @@ void MainWindow::drawMenuBar()
     ToolbarSeperator();
 
     ToolbarButton(ICON_FA_CUBES, "Module Builder", [&]() { m_moduleBuilderWindow.setOpenedState(true); });
+
+    ToolbarSeperator();
+
+    {
+        // Connect Button
+        ImGui::SameLine();
+        ImVec2 connectButtonPos = ImGui::GetCursorScreenPos();
+        ImGui::BeginDisabled(!AppManager::getUsbManager().isDeviceValid());
+        if (AppManager::getUsbManager().isOpen())
+            ToolbarButton(ICON_FA_PLUG, "Disonnect", std::bind(&UsbManager::close, &AppManager::getUsbManager()));
+        else
+            ToolbarButton(ICON_FA_PLUG, "Connect", std::bind(&UsbManager::open, &AppManager::getUsbManager()));
+        ImGui::EndDisabled();
+
+        if (AppManager::getUsbManager().isOpen()) {
+            ImGui::PushFont(NULL);
+            connectButtonPos += { s_iconSize / 2, s_iconSize / 2 };
+            ImGui::GetWindowDrawList()->AddText(connectButtonPos, Colors::Notifications::Success, ICON_FA_CHECK_CIRCLE);
+            ImGui::PopFont();
+        }
+    }
+
+    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
+    ToolbarButton(ICON_FA_CHART_BAR, "Monitor", []() {});
+    ImGui::EndDisabled();
 
     if (anyItemHovered) {
         anyItemHovered = false;

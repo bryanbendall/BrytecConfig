@@ -16,6 +16,7 @@ public:
     std::vector<serial::PortInfo> getAvailablePorts() { return serial::list_ports(); }
     const serial::PortInfo& getDevice() { return m_device; }
     void setDevice(const serial::PortInfo& device) { m_device = device; }
+    bool isDeviceValid();
 
     void open();
     void close() { m_usb.close(); }
