@@ -131,6 +131,7 @@ void MainWindow::drawWindow()
     m_moduleBuilderWindow.drawWindow();
     m_settingsWindow.drawWindow();
     m_serialWindow.drawWindow();
+    m_monitorWindow.drawWindow();
 
     NotificationWindow::drawWindow();
 
@@ -185,6 +186,8 @@ void MainWindow::drawMenu()
                 m_nodeWindow.setOpenedState(true);
             if (ImGui::MenuItem("Properties Window", "", m_propertiesWindow.getOpenedState()))
                 m_propertiesWindow.setOpenedState(true);
+            if (ImGui::MenuItem("Monitor Window", "", m_monitorWindow.getOpenedState()))
+                m_monitorWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 
@@ -286,7 +289,7 @@ void MainWindow::drawMenuBar()
     }
 
     ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
-    ToolbarButton(ICON_FA_CHART_BAR, "Monitor", []() {});
+    ToolbarButton(ICON_FA_CHART_BAR, "Monitor", [this]() { m_monitorWindow.setOpenedState(true); });
     ImGui::EndDisabled();
 
     if (anyItemHovered) {

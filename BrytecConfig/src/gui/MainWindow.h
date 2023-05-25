@@ -2,6 +2,7 @@
 
 #include "ModuleBuilderWindow.h"
 #include "ModuleWindow.h"
+#include "MonitorWindow.h"
 #include "NodeGroupWindow.h"
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
@@ -36,6 +37,7 @@ private:
     ModuleBuilderWindow m_moduleBuilderWindow;
     SettingsWindow m_settingsWindow;
     SerialWindow m_serialWindow;
+    MonitorWindow m_monitorWindow;
     const char* m_ini_to_load = NULL;
 };
 

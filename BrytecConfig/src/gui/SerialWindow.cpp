@@ -120,56 +120,6 @@ void SerialWindow::drawWindow()
             usb.open();
     }
 
-    ImGui::Separator();
-    ImGui::TextUnformatted("Module Statuses");
-    for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
-        std::string modeString;
-        switch (ms.mode) {
-        case EBrytecApp::Mode::Normal:
-            modeString = "Normal";
-            break;
-        case EBrytecApp::Mode::Programming:
-            modeString = "Programming";
-            break;
-        case EBrytecApp::Mode::Stopped:
-            modeString = "Stopped";
-            break;
-        }
-        auto module = AppManager::getConfig()->findModule(ms.address);
-        ImGui::Indent();
-        ImGui::Text("Module Address: %s", module ? module->getName().c_str() : "Unknown");
-        ImGui::Indent();
-        ImGui::Text("Address: %d", ms.address);
-        ImGui::Text("Mode: %s", modeString.c_str());
-        ImGui::Text("Deserialized: %s", ms.deserializeOk ? "true" : "false");
-        ImGui::Unindent();
-        ImGui::Unindent();
-    }
-    ImGui::Separator();
-    ImGui::TextUnformatted("Node Group Statuses");
-    for (auto& pinStatus : AppManager::getCanBusStream().getNodeGroupStatuses()) {
-
-        if (auto module = AppManager::getConfig()->findModule(pinStatus.moduleAddress)) {
-            std::shared_ptr<NodeGroup> nodeGroup = nullptr;
-            if (pinStatus.nodeGroupIndex >= module->getPhysicalPins().size())
-                nodeGroup = module->getInternalPins()[pinStatus.nodeGroupIndex - module->getPhysicalPins().size()]->getNodeGroup();
-            else
-                nodeGroup = module->getPhysicalPins()[pinStatus.nodeGroupIndex]->getNodeGroup();
-
-            ImGui::Indent();
-            if (nodeGroup)
-                ImGui::Text("%s", nodeGroup->getName().c_str());
-            else
-                ImGui::Text("Module Addr: %d Node Group Index: %d", pinStatus.moduleAddress, pinStatus.nodeGroupIndex);
-            ImGui::Indent();
-            // ImGui::Text("Current: %f", pinStatus.current);
-            // ImGui::Text("Voltage: %f", pinStatus.voltage);
-            ImGui::Text("Value: %f", pinStatus.value);
-            ImGui::Unindent();
-            ImGui::Unindent();
-        }
-    }
-
     ImGui::End();
 }
 

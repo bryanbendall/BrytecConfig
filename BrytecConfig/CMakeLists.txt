@@ -100,6 +100,8 @@ add_executable(BrytecConfig
                 src/gui/ModuleBuilderWindow.h
                 src/gui/ModuleWindow.cpp
                 src/gui/ModuleWindow.h
+                src/gui/MonitorWindow.cpp
+                src/gui/MonitorWindow.h
                 src/gui/NodeGroupWindow.cpp
                 src/gui/NodeGroupWindow.h
                 src/gui/NodeUI.cpp
