@@ -67,6 +67,20 @@ void CanBusStream::changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode)
     m_commandsToSend.push_back(command.getFrame());
 }
 
+void CanBusStream::changeAddress(uint8_t moduleAddress, uint8_t newAddress)
+{
+    if (m_sending)
+        return;
+
+    m_toModuleAddress = moduleAddress;
+
+    CanCommands command;
+    command.moduleAddress = moduleAddress;
+    command.command = CanCommands::Command::ChangeAddress;
+    command.data[0] = newAddress;
+    m_commandsToSend.push_back(command.getFrame());
+}
+
 void CanBusStream::reloadConfig(uint8_t moduleAddress)
 {
     if (m_sending)
@@ -150,7 +164,7 @@ void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
 
 void CanBusStream::canBusReceived(CanExtFrame frame)
 {
-    if (frame.isBroadcast()) {
+    if (frame.isPinBroadcast()) {
 
         auto it = std::find_if(m_nodeGroupStatuses.begin(), m_nodeGroupStatuses.end(), [frame](PinStatusBroadcast& bc) {
             PinStatusBroadcast frameBc(frame);
@@ -161,6 +175,19 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
             *it = frame;
         else
             m_nodeGroupStatuses.push_back(frame);
+
+        return;
+    }
+
+    if (frame.isModuleBroadcast()) {
+        ModuleStatusBroadcast bc(frame);
+
+        ModuleStatus status;
+        status.address = bc.moduleAddress;
+        status.mode = (EBrytecApp::Mode)bc.mode;
+        status.deserializeOk = bc.deserializeOk;
+
+        m_moduleStatuses[bc.moduleAddress] = status;
 
         return;
     }
@@ -187,19 +214,9 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
             m_sendFunction(m_commandsToSend.front());
         break;
 
-    case CanCommands::Command::SendStatus:
-        if (m_commandsToSend.size() > 0 && isCorrectModule)
-            m_commandsToSend.pop_front();
-        m_moduleStatuses[command.moduleAddress] = {
-            command.moduleAddress,
-            (bool)command.data[1],
-            (EBrytecApp::Mode)command.data[0]
-        };
-        break;
-
     default:
         std::cout << "Unknow can command" << std::endl;
-        break;
+        return;
     }
 
     m_timer = 0.0f;

@@ -32,6 +32,7 @@ public:
     void requestModuleStatus(uint8_t moduleAddress);
     void requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex);
     void changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode);
+    void changeAddress(uint8_t moduleAddress, uint8_t newAddress);
     void reloadConfig(uint8_t moduleAddress);
     void reserveConfigSize(uint8_t moduleAddress, uint16_t size);
     void sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& data);

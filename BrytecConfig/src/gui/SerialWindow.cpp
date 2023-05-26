@@ -66,6 +66,18 @@ void SerialWindow::drawWindow()
             AppManager::getCanBusStream().reloadConfig(module->getAddress());
             AppManager::getCanBusStream().send(sendingCallback);
         }
+
+        static uint8_t newAddress = 0;
+        static bool showButtons = true;
+        ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &newAddress, &showButtons);
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Change Address")) {
+            AppManager::getCanBusStream().changeAddress(module->getAddress(), newAddress);
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
+
         ImGui::EndDisabled();
 
         ImGui::ProgressBar((float)(s_canData.total - s_canData.leftToSend) / (float)s_canData.total);
