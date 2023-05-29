@@ -304,15 +304,38 @@ void ModuleBuilderWindow::drawPinDialog(std::shared_ptr<PhysicalPin>& pin)
 
 void ModuleBuilderWindow::writeDefineFile(const std::filesystem::path& path)
 {
-    std::ofstream fout(path, std::ios::trunc);
-    fout << "#pragma once\n\n";
+    std::ofstream fout(path);
+    fout << "#pragma once"
+         << std::endl
+         << std::endl;
 
-    for (int i = 0; i < m_module->getPhysicalPins().size(); i++) {
-        auto& pin = m_module->getPhysicalPins()[i];
-        std::string pinout = pin->getPinoutName();
-        std::replace(pinout.begin(), pinout.end(), ' ', '_');
-        fout << "#define BT_PIN_" << pinout << " " << i << "\n";
+    fout << "#include <stdint.h>"
+         << std::endl
+         << std::endl;
+
+    {
+        fout << "// Pin Defines" << std::endl;
+        for (int i = 0; i < m_module->getPhysicalPins().size(); i++) {
+            auto& pin = m_module->getPhysicalPins()[i];
+            std::string pinout = pin->getPinoutName();
+            std::replace(pinout.begin(), pinout.end(), ' ', '_');
+            fout << "#define BT_PIN_" << pinout << " " << i << "\n";
+        }
+    }
+
+    fout << std::endl;
+
+    {
+        ModuleSerializer moduleSer(m_module);
+        BinarySerializer ser = moduleSer.serializeTemplateBinary();
+
+        fout << "// Module Template" << std::endl;
+        fout << "constexpr uint8_t moduleTemplate[] = {" << std::endl;
+        for (auto d : ser.getData()) {
+            fout << std::showbase << std::hex << (int)d << ",";
+        }
+        fout << std::endl
+             << "};" << std::endl;
     }
 }
-
 }

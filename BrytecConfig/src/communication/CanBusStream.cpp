@@ -144,6 +144,22 @@ void CanBusStream::sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& da
     reloadConfig(moduleAddress);
 }
 
+void CanBusStream::getModuleTemplate(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback)
+{
+    if (m_sending)
+        return;
+
+    m_toModuleAddress = moduleAddress;
+
+    m_moduleTemplateBuffer.clear();
+    m_moduleTemplateCallback = completeCallback;
+
+    CanCommands command;
+    command.moduleAddress = moduleAddress;
+    command.command = CanCommands::Command::RequestTemplateSize;
+    m_commandsToSend.push_back(command.getFrame());
+}
+
 void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
 {
     if (m_sending)
@@ -212,6 +228,43 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
             m_commandsToSend.pop_front();
         if (m_commandsToSend.size() > 0)
             m_sendFunction(m_commandsToSend.front());
+        break;
+
+    case CanCommands::Command::RequestTemplateSize: {
+        if (!isCorrectModule)
+            return;
+        if (m_commandsToSend.size() > 0)
+            m_commandsToSend.pop_front();
+
+        uint32_t size = *command.data;
+        m_moduleTemplateBuffer.reserve(size);
+
+        if (size > 0) {
+            CanCommands requestDataCommand;
+            requestDataCommand.command = CanCommands::RequestTemplateData;
+            requestDataCommand.moduleAddress = m_toModuleAddress;
+            for (uint8_t i = 0; i < ((size / 8) + 1); i++) {
+                *requestDataCommand.data = (i * 8);
+                m_commandsToSend.push_back(requestDataCommand.getFrame());
+            }
+            m_callbackData.total = m_commandsToSend.size();
+        }
+        break;
+    }
+
+    case CanCommands::Command::RequestTemplateData:
+        if (!isCorrectModule)
+            return;
+        if (m_commandsToSend.size() > 0)
+            m_commandsToSend.pop_front();
+
+        m_moduleTemplateBuffer.insert(m_moduleTemplateBuffer.end(), std::begin(command.data), std::end(command.data));
+
+        if (m_commandsToSend.size() > 0)
+            m_sendFunction(m_commandsToSend.front());
+        else
+            m_moduleTemplateCallback(m_moduleTemplateBuffer);
+
         break;
 
     default:

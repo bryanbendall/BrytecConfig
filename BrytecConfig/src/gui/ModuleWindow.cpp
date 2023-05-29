@@ -82,12 +82,12 @@ void ModuleWindow::drawMenubar()
                     for (auto d : ser.getData()) {
                         fout << std::showbase << std::hex << (int)d << ",";
                     }
-                fout << std::endl
-                     << "};" << std::endl;
+                    fout << std::endl
+                         << "};" << std::endl;
 
-                fout.close();
+                    fout.close();
 
-                NotificationWindow::add({ "Saved module - " + module->getName(), NotificationType::Success });
+                    NotificationWindow::add({ "Saved module - " + module->getName(), NotificationType::Success });
                 }
             }
         }

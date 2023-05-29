@@ -1,6 +1,7 @@
 #include "SerialWindow.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "imgui.h"
 #include "utils/ModuleSerializer.h"
@@ -79,6 +80,18 @@ void SerialWindow::drawWindow()
         }
 
         ImGui::EndDisabled();
+
+        if (ImGui::Button("Add module")) {
+            AppManager::getCanBusStream().getModuleTemplate(newAddress, [](const std::vector<uint8_t>& buffer) {
+                std::shared_ptr<Module> module = std::make_shared<Module>();
+                ModuleSerializer serializer(module);
+                BinaryArrayDeserializer des(buffer.data(), buffer.size());
+                if (serializer.deserializeTemplateBinary(des)) {
+                    AppManager::getConfig()->addModule(module);
+                }
+            });
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
 
         ImGui::ProgressBar((float)(s_canData.total - s_canData.leftToSend) / (float)s_canData.total);
 
