@@ -81,15 +81,37 @@ void SerialWindow::drawWindow()
 
         ImGui::EndDisabled();
 
-        if (ImGui::Button("Add module")) {
-            AppManager::getCanBusStream().getModuleTemplate(newAddress, [](const std::vector<uint8_t>& buffer) {
-                std::shared_ptr<Module> module = std::make_shared<Module>();
-                ModuleSerializer serializer(module);
-                BinaryArrayDeserializer des(buffer.data(), buffer.size());
-                if (serializer.deserializeTemplateBinary(des)) {
-                    AppManager::getConfig()->addModule(module);
-                }
-            });
+        if (ImGui::Button("Add module template")) {
+            AppManager::getCanBusStream().getModuleData(
+                newAddress,
+                [](const std::vector<uint8_t>& buffer) {
+                    std::shared_ptr<Module> module = std::make_shared<Module>();
+                    ModuleSerializer serializer(module);
+                    BinaryArrayDeserializer des(buffer.data(), buffer.size());
+                    if (serializer.deserializeTemplateBinary(des)) {
+                        AppManager::getConfig()->addModule(module);
+                    }
+                },
+                false);
+            AppManager::getCanBusStream().send(sendingCallback);
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Add full module")) {
+            AppManager::getCanBusStream().getModuleData(
+                newAddress,
+                [](const std::vector<uint8_t>& buffer) {
+                    std::shared_ptr<Module> module = AppManager::getConfig()->findModule(newAddress);
+                    if (module) {
+                        ModuleSerializer serializer(AppManager::getConfig(), module);
+                        BinaryArrayDeserializer des(buffer.data(), buffer.size());
+                        serializer.deserializeBinary(des);
+                    } else {
+                        std::cout << "Need to get module template first" << std::endl;
+                    }
+                },
+                true);
             AppManager::getCanBusStream().send(sendingCallback);
         }
 

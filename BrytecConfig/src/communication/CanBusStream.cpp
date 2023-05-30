@@ -144,25 +144,30 @@ void CanBusStream::sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& da
     reloadConfig(moduleAddress);
 }
 
-void CanBusStream::getModuleTemplate(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback)
+void CanBusStream::getModuleData(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback,
+    bool fullConfig)
 {
     if (m_sending)
         return;
 
     m_toModuleAddress = moduleAddress;
 
-    m_moduleTemplateBuffer.clear();
-    m_moduleTemplateCallback = completeCallback;
+    m_moduleDataBuffer.clear();
+    m_moduleDataCallback = completeCallback;
 
     CanCommands command;
     command.moduleAddress = moduleAddress;
-    command.command = CanCommands::Command::RequestTemplateSize;
+    command.command = CanCommands::Command::RequestDataSize;
+    command.data[7] = fullConfig;
     m_commandsToSend.push_back(command.getFrame());
 }
 
 void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
 {
     if (m_sending)
+        return;
+
+    if (m_commandsToSend.size() <= 0)
         return;
 
     m_callbackData.total = m_commandsToSend.size();
@@ -174,8 +179,7 @@ void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
     m_timer = 0.0f;
     m_retires = 0;
 
-    if (m_commandsToSend.size() > 0)
-        m_sendFunction(m_commandsToSend.front());
+    m_sendFunction(m_commandsToSend.front());
 }
 
 void CanBusStream::canBusReceived(CanExtFrame frame)
@@ -230,40 +234,46 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
             m_sendFunction(m_commandsToSend.front());
         break;
 
-    case CanCommands::Command::RequestTemplateSize: {
+    case CanCommands::Command::RequestDataSize: {
         if (!isCorrectModule)
             return;
         if (m_commandsToSend.size() > 0)
             m_commandsToSend.pop_front();
 
-        uint32_t size = *command.data;
-        m_moduleTemplateBuffer.reserve(size);
+        uint32_t size = *(uint32_t*)command.data;
+        m_moduleDataBuffer.reserve(size);
 
         if (size > 0) {
             CanCommands requestDataCommand;
-            requestDataCommand.command = CanCommands::RequestTemplateData;
+            requestDataCommand.command = CanCommands::RequestData;
             requestDataCommand.moduleAddress = m_toModuleAddress;
+            // Copy if full config or not flag
             for (uint8_t i = 0; i < ((size / 8) + 1); i++) {
                 *requestDataCommand.data = (i * 8);
+                requestDataCommand.data[7] = command.data[7];
                 m_commandsToSend.push_back(requestDataCommand.getFrame());
             }
             m_callbackData.total = m_commandsToSend.size();
         }
+
+        if (m_commandsToSend.size() > 0)
+            m_sendFunction(m_commandsToSend.front());
+
         break;
     }
 
-    case CanCommands::Command::RequestTemplateData:
+    case CanCommands::Command::RequestData:
         if (!isCorrectModule)
             return;
         if (m_commandsToSend.size() > 0)
             m_commandsToSend.pop_front();
 
-        m_moduleTemplateBuffer.insert(m_moduleTemplateBuffer.end(), std::begin(command.data), std::end(command.data));
+        m_moduleDataBuffer.insert(m_moduleDataBuffer.end(), std::begin(command.data), std::end(command.data));
 
         if (m_commandsToSend.size() > 0)
             m_sendFunction(m_commandsToSend.front());
         else
-            m_moduleTemplateCallback(m_moduleTemplateBuffer);
+            m_moduleDataCallback(m_moduleDataBuffer);
 
         break;
 

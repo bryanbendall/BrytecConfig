@@ -36,7 +36,7 @@ public:
     void reloadConfig(uint8_t moduleAddress);
     void reserveConfigSize(uint8_t moduleAddress, uint16_t size);
     void sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& data);
-    void getModuleTemplate(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback);
+    void getModuleData(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback, bool fullConfig);
 
     void setSendFunction(std::function<void(CanExtFrame&)> function) { m_sendFunction = function; }
     void send(std::function<void(CanBusStreamCallbackData)> callback);
@@ -57,8 +57,8 @@ private:
     uint8_t m_toModuleAddress;
     std::function<void(CanExtFrame&)> m_sendFunction;
 
-    std::vector<uint8_t> m_moduleTemplateBuffer;
-    std::function<void(const std::vector<uint8_t>&)> m_moduleTemplateCallback;
+    std::vector<uint8_t> m_moduleDataBuffer;
+    std::function<void(const std::vector<uint8_t>&)> m_moduleDataCallback;
 
     uint8_t m_retires
         = 0;
