@@ -1,6 +1,8 @@
 #include "CanBusStream.h"
 
 #include "AppManager.h"
+#include "Deserializer/BinaryBufferSerializer.h"
+#include <Deserializer/BinaryArrayDeserializer.h>
 #include <iostream>
 
 namespace Brytec {
@@ -158,7 +160,10 @@ void CanBusStream::getModuleData(uint8_t moduleAddress, std::function<void(const
     CanCommands command;
     command.moduleAddress = moduleAddress;
     command.command = CanCommands::Command::RequestDataSize;
-    command.data[7] = fullConfig;
+
+    BinaryBufferSerializer ser(command.data, 8);
+    ser.writeRaw<bool>(fullConfig);
+
     m_commandsToSend.push_back(command.getFrame());
 }
 
@@ -240,17 +245,26 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
         if (m_commandsToSend.size() > 0)
             m_commandsToSend.pop_front();
 
-        uint32_t size = *(uint32_t*)command.data;
+        BinaryArrayDeserializer des(command.data, 8);
+        uint32_t size = 0;
+        des.readRaw<uint32_t>(&size);
+        bool fullConfig = false;
+        des.readRaw<bool>(&fullConfig);
+
         m_moduleDataBuffer.reserve(size);
 
         if (size > 0) {
+
             CanCommands requestDataCommand;
             requestDataCommand.command = CanCommands::RequestData;
             requestDataCommand.moduleAddress = m_toModuleAddress;
             // Copy if full config or not flag
-            for (uint8_t i = 0; i < ((size / 8) + 1); i++) {
-                *requestDataCommand.data = (i * 8);
-                requestDataCommand.data[7] = command.data[7];
+            for (uint32_t i = 0; i < ((size / 8) + 1); i++) {
+
+                BinaryBufferSerializer ser(requestDataCommand.data, 8);
+                ser.writeRaw<uint32_t>(i * 8);
+                ser.writeRaw<bool>(fullConfig);
+
                 m_commandsToSend.push_back(requestDataCommand.getFrame());
             }
             m_callbackData.total = m_commandsToSend.size();
