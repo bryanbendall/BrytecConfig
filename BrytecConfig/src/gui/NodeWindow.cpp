@@ -2,6 +2,7 @@
 
 #include "AppManager.h"
 #include "NodeUI.h"
+#include "data/Pin.h"
 #include "data/Selectable.h"
 #include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
@@ -10,10 +11,6 @@
 #include <imgui_internal.h>
 #include <iostream>
 #include <misc/cpp/imgui_stdlib.h>
-
-#include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
-#include "BrytecConfigEmbedded/Nodes/EMathNode.h"
-#include "utils/BinarySerializer.h"
 
 namespace Brytec {
 

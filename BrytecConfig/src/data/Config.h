@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Module.h"
 #include "NodeGroup.h"
-#include "Pin.h"
 #include <filesystem>
 #include <memory>
 #include <vector>
 
 namespace Brytec {
+
+class Pin;
+class Module;
 
 class Config {
 

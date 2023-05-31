@@ -1,15 +1,15 @@
 #pragma once
 
 #include "CanBus.h"
-#include "InternalPin.h"
-#include "PhysicalPin.h"
-#include "Pin.h"
 #include "Selectable.h"
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace Brytec {
+
+class PhysicalPin;
+class InternalPin;
 
 class Module : public Selectable {
 

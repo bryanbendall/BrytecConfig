@@ -1,6 +1,9 @@
 #include "Config.h"
 
+#include "InternalPin.h"
 #include "Module.h"
+#include "PhysicalPin.h"
+#include "Pin.h"
 #include "utils/ModuleSerializer.h"
 
 namespace Brytec {

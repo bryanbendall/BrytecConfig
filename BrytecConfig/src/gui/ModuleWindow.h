@@ -8,6 +8,8 @@
 
 namespace Brytec {
 
+class Pin;
+
 class ModuleWindow {
 
 public:

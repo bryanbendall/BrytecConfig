@@ -2,6 +2,8 @@
 
 #include "AppManager.h"
 #include "NodeGroupSerializer.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
 #include <filesystem>
 #include <fstream>
 #include <iostream>

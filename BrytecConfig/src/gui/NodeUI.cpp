@@ -4,6 +4,7 @@
 #include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
+#include "data/PhysicalPin.h"
 #include "utils/Colors.h"
 #include <IconsFontAwesome5.h>
 #include <bitset>

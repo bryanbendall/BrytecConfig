@@ -1,6 +1,10 @@
 #include "PropertiesWindow.h"
 
 #include "AppManager.h"
+#include "data/InternalPin.h"
+#include "data/Module.h"
+#include "data/PhysicalPin.h"
+#include "data/Pin.h"
 #include <IconsFontAwesome5.h>
 #include <imgui.h>
 #include <memory>

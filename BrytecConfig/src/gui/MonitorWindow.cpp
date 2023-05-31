@@ -1,6 +1,8 @@
 #include "MonitorWindow.h"
 
 #include "AppManager.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
 #include <IconsFontAwesome5.h>
 #include <imgui.h>
 

@@ -2,6 +2,7 @@
 
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "PhysicalPin.h"
 #include "gui/NotificationWindow.h"
 #include "utils/ModuleSerializer.h"
 

@@ -3,6 +3,8 @@
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
 #include "NotificationWindow.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
 #include "utils/Colors.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"

@@ -1,6 +1,8 @@
 #include "ModuleBuilderWindow.h"
 
 #include "AppManager.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
 #include "utils/FileDialogs.h"
 #include "utils/ModuleSerializer.h"
 #include <IconsFontAwesome5.h>

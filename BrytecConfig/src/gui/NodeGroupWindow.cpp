@@ -2,6 +2,7 @@
 
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h"
+#include "data/Pin.h"
 #include "utils/Colors.h"
 #include "utils/FileDialogs.h"
 #include "utils/NodeGroupSerializer.h"

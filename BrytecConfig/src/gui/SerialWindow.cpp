@@ -3,6 +3,7 @@
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "data/Pin.h"
 #include "imgui.h"
 #include "utils/ModuleSerializer.h"
 #include <string>

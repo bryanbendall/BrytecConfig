@@ -1,9 +1,13 @@
 #pragma once
 
-#include "data/Module.h"
-#include "data/Pin.h"
+#include "data/CanBus.h"
+#include <memory>
 
 namespace Brytec {
+
+class Module;
+class Pin;
+class NodeGroup;
 
 class PropertiesWindow {
 
