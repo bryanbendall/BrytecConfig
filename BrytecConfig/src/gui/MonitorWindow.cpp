@@ -44,7 +44,46 @@ void MonitorWindow::drawWindow()
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
-        for (auto [addr, ms] : AppManager::getCanBusStream().getModuleStatuses()) {
+        std::vector<ModuleStatus>& map = AppManager::getCanBusStream().getModuleStatuses();
+
+        auto sortSpec = ImGui::TableGetSortSpecs();
+        bool decending = sortSpec->Specs->SortDirection == ImGuiSortDirection_Descending;
+        switch (sortSpec->Specs->ColumnIndex) {
+        case 0: // name
+            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+                if (decending)
+                    return a.address > b.address;
+                else
+                    return a.address < b.address;
+            });
+            break;
+        case 1: // address
+            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+                if (decending)
+                    return a.address > b.address;
+                else
+                    return a.address < b.address;
+            });
+            break;
+        case 2: // loaded
+            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+                if (decending)
+                    return a.deserializeOk > b.deserializeOk;
+                else
+                    return a.deserializeOk < b.deserializeOk;
+            });
+            break;
+        case 3: // mode
+            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+                if (decending)
+                    return a.mode > b.mode;
+                else
+                    return a.mode < b.mode;
+            });
+            break;
+        }
+
+        for (auto& ms : AppManager::getCanBusStream().getModuleStatuses()) {
             std::string modeString;
             switch (ms.mode) {
             case EBrytecApp::Mode::Normal:
@@ -59,7 +98,7 @@ void MonitorWindow::drawWindow()
             }
             auto module = AppManager::getConfig()->findModule(ms.address);
 
-            ImGui::PushID(addr);
+            ImGui::PushID(ms.address);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             if (module)
@@ -91,6 +130,64 @@ void MonitorWindow::drawWindow()
         ImGui::TableSetupColumn("Module", ImGuiTableColumnFlags_PreferSortDescending | ImGuiTableColumnFlags_WidthStretch, 0.0f);
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
+
+        {
+            // Sort
+            std::vector<PinStatusBroadcast>& vec = AppManager::getCanBusStream().getNodeGroupStatuses();
+
+            ImGuiTableSortSpecs* sortSpec = ImGui::TableGetSortSpecs();
+            bool decending = sortSpec->Specs->SortDirection == ImGuiSortDirection_Descending;
+            switch (sortSpec->Specs->ColumnIndex) {
+            case 0: // name
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.nodeGroupIndex > b.nodeGroupIndex;
+                    else
+                        return a.nodeGroupIndex < b.nodeGroupIndex;
+                });
+                break;
+            case 1: // value
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.value > b.value;
+                    else
+                        return a.value < b.value;
+                });
+                break;
+            case 2: // statusFlags
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.statusFlags > b.statusFlags;
+                    else
+                        return a.statusFlags < b.statusFlags;
+                });
+                break;
+            case 3: // current
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.current > b.current;
+                    else
+                        return a.current < b.current;
+                });
+                break;
+            case 4: // voltage
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.voltage > b.voltage;
+                    else
+                        return a.voltage < b.voltage;
+                });
+                break;
+            case 5: // module
+                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                    if (decending)
+                        return a.moduleAddress > b.moduleAddress;
+                    else
+                        return a.moduleAddress < b.moduleAddress;
+                });
+                break;
+            }
+        }
 
         for (auto& pinStatus : AppManager::getCanBusStream().getNodeGroupStatuses()) {
 

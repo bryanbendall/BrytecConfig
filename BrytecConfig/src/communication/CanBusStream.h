@@ -42,7 +42,7 @@ public:
     void send(std::function<void(CanBusStreamCallbackData)> callback);
     bool isSending() { return m_sending; }
 
-    std::map<uint8_t, ModuleStatus>& getModuleStatuses() { return m_moduleStatuses; }
+    std::vector<ModuleStatus>& getModuleStatuses() { return m_moduleStatuses; }
     std::vector<PinStatusBroadcast>& getNodeGroupStatuses() { return m_nodeGroupStatuses; }
 
     void canBusReceived(CanExtFrame frame);
@@ -64,7 +64,7 @@ private:
         = 0;
     static constexpr uint8_t s_maxRetries = 5;
 
-    std::map<uint8_t, ModuleStatus> m_moduleStatuses;
+    std::vector<ModuleStatus> m_moduleStatuses;
     std::vector<PinStatusBroadcast> m_nodeGroupStatuses;
 };
 

@@ -212,7 +212,14 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
         status.mode = (EBrytecApp::Mode)bc.mode;
         status.deserializeOk = bc.deserializeOk;
 
-        m_moduleStatuses[bc.moduleAddress] = status;
+        auto it = std::find_if(m_moduleStatuses.begin(), m_moduleStatuses.end(), [status](ModuleStatus& ms) {
+            return (status.address == ms.address);
+        });
+
+        if (it != m_moduleStatuses.end())
+            *it = status;
+        else
+            m_moduleStatuses.push_back(status);
 
         return;
     }
