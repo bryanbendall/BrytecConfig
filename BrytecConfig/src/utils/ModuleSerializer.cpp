@@ -230,6 +230,7 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
             NodeGroupSerializer serializer(nodeGroup);
             if (serializer.deserializeBinary(des)) {
                 m_module->getPhysicalPins()[pinIndex]->setNodeGroup(nodeGroup);
+                m_config->removeDuplicateNodeGroup(nodeGroup);
             } else
                 return false;
         }
@@ -247,6 +248,7 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
             if (serializer.deserializeBinary(des)) {
                 m_module->addInternalPin();
                 m_module->getInternalPins()[pinIndex - m_module->getPhysicalPins().size()]->setNodeGroup(nodeGroup);
+                m_config->removeDuplicateNodeGroup(nodeGroup);
             } else
                 return false;
         }

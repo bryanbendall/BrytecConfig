@@ -3,6 +3,8 @@
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
 #include "data/Pin.h"
 #include "imgui.h"
 #include "utils/ModuleSerializer.h"
@@ -105,6 +107,15 @@ void SerialWindow::drawWindow()
                 [](const std::vector<uint8_t>& buffer) {
                     std::shared_ptr<Module> module = AppManager::getConfig()->findModule(newAddress);
                     if (module) {
+
+                        // Remove all old node groups to get ready for new ones from reading module
+                        for (auto& phy : module->getPhysicalPins())
+                            phy->setNodeGroup(nullptr);
+
+                        for (auto& internal : module->getInternalPins())
+                            internal->setNodeGroup(nullptr);
+                        module->updateInternalPins();
+
                         ModuleSerializer serializer(AppManager::getConfig(), module);
                         BinaryArrayDeserializer des(buffer.data(), buffer.size());
                         serializer.deserializeBinary(des);

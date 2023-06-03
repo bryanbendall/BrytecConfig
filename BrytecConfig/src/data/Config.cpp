@@ -86,6 +86,16 @@ const std::shared_ptr<NodeGroup> Config::findNodeGroup(UUID uuid)
     return nullptr;
 }
 
+void Config::removeDuplicateNodeGroup(std::shared_ptr<NodeGroup>& newNodeGroup)
+{
+    for (auto& nodeGroup : m_nodeGroups) {
+        if (nodeGroup->getId() == newNodeGroup->getId() && nodeGroup != newNodeGroup) {
+            removeNodeGroup(nodeGroup);
+            return;
+        }
+    }
+}
+
 uint8_t Config::getAssignedModuleAddress(std::shared_ptr<NodeGroup> nodeGroup)
 {
     std::shared_ptr<Module> module = getAssignedModule(nodeGroup);

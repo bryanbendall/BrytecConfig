@@ -50,11 +50,12 @@ void NodeGroupWindow::drawMenubar()
         if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN)) {
             auto path = FileDialogs::OpenFile("btnodes", AppManager::getNodeGroupsPath());
             if (!path.empty()) {
-                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(UUID());
+                std::shared_ptr<NodeGroup> nodeGroup = AppManager::getConfig()->addEmptyNodeGroup(0);
                 NodeGroupSerializer serializer(nodeGroup);
                 BinaryPathDeserializer des(path);
                 if (serializer.deserializeBinary(des)) {
                     AppManager::setSelected(nodeGroup);
+                    nodeGroup->setId(UUID());
                 } else {
                     std::cout << "Could not deserialize node group file" << std::endl;
                     AppManager::getConfig()->removeNodeGroup(nodeGroup);
@@ -81,7 +82,7 @@ void NodeGroupWindow::drawMenubar()
         // Copy Node Group
         if (ImGui::MenuItem(ICON_FA_COPY, NULL, false, nodeGroupSelected)) {
             // Copy Constructor
-            auto newNodeGroup = std::make_shared<NodeGroup>(*nodeGroup.get());
+            auto newNodeGroup = std::make_shared<NodeGroup>(*nodeGroup);
             AppManager::getConfig()->addNodeGroup(newNodeGroup);
             AppManager::setSelected(newNodeGroup);
         }
