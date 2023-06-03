@@ -16,7 +16,7 @@ public:
     std::vector<IOTypes::Types>& getAvailableTypes() { return m_availableTypes; }
 
     std::shared_ptr<NodeGroup> getNodeGroup() { return m_nodeGroup.lock(); }
-    void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup, bool simulation = false);
+    void setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup);
 
 protected:
     std::vector<IOTypes::Types> m_availableTypes;

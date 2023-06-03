@@ -2,12 +2,12 @@
 
 namespace Brytec {
 
-void Pin::setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup, bool simulation)
+void Pin::setNodeGroup(std::shared_ptr<NodeGroup> nodeGroup)
 {
     if (auto oldNodeGroup = m_nodeGroup.lock())
         oldNodeGroup->setAssigned(false);
 
-    if (nodeGroup && !simulation)
+    if (nodeGroup)
         nodeGroup->setAssigned(true);
 
     m_nodeGroup = nodeGroup;

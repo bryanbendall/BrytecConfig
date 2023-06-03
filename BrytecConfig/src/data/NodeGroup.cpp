@@ -155,12 +155,12 @@ void NodeGroup::deleteNode(int nodeId)
 
 void NodeGroup::evaluateAllNodes()
 {
-    // Serialize node group
-    std::shared_ptr<NodeGroup> thisNodeGroup = shared_from_this();
+    // Serialize node group from copy
+    std::shared_ptr<NodeGroup> nodeGroupCopy = std::make_shared<NodeGroup>(*this);
 
     std::shared_ptr<Module> module = std::make_shared<Module>();
     module->addPhysicalPin();
-    module->getPhysicalPins()[0]->setNodeGroup(thisNodeGroup, true);
+    module->getPhysicalPins()[0]->setNodeGroup(nodeGroupCopy);
 
     ModuleSerializer moduleSer(module);
     BinarySerializer ser = moduleSer.serializeBinary();
@@ -176,18 +176,12 @@ void NodeGroup::evaluateAllNodes()
         auto eNode = EBrytecApp::getNode(index);
 
         // Outputs
-        {
-            for (int i = 0; i < node->getOutputs().size(); i++) {
-                node->getOutput(i) = *(eNode->GetOutput(i));
-            }
-        }
+        for (int i = 0; i < node->getOutputs().size(); i++)
+            node->getOutput(i) = *(eNode->GetOutput(i));
 
         // Values
-        {
-            for (int i = 0; i < node->getValues().size(); i++) {
-                node->getValue(i) = eNode->GetValue(i + node->getInputs().size());
-            }
-        }
+        for (int j = 0; j < node->getValues().size(); j++)
+            node->getValue(j) = eNode->GetValue(j + node->getInputs().size());
 
         if (node->getType() == NodeTypes::Node_Group) {
             // TODO
