@@ -8,6 +8,7 @@
 #include "PropertiesWindow.h"
 #include "SerialWindow.h"
 #include "SettingsWindow.h"
+#include "gui/CommunicationModals.h"
 #include <GLFW/glfw3.h>
 
 namespace Brytec {
@@ -38,6 +39,7 @@ private:
     SettingsWindow m_settingsWindow;
     SerialWindow m_serialWindow;
     MonitorWindow m_monitorWindow;
+    CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;
 };
 

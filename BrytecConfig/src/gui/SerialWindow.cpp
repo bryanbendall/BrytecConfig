@@ -3,6 +3,7 @@
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "CommunicationModals.h"
 #include "data/InternalPin.h"
 #include "data/PhysicalPin.h"
 #include "data/Pin.h"
@@ -50,26 +51,26 @@ void SerialWindow::drawWindow()
             }
         }
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
-        if (ImGui::Button("Set Stopped")) {
-            AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Stopped);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Set Stopped")) {
+        //     AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Stopped);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
-        if (ImGui::Button("Set Normal")) {
-            AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Normal);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Set Normal")) {
+        //     AppManager::getCanBusStream().changeMode(module->getAddress(), EBrytecApp::Mode::Normal);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
-        if (ImGui::Button("Reload")) {
-            AppManager::getCanBusStream().reloadConfig(module->getAddress());
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Reload")) {
+        //     AppManager::getCanBusStream().reloadConfig(module->getAddress());
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
         static uint8_t newAddress = 0;
         static bool showButtons = true;
@@ -77,10 +78,10 @@ void SerialWindow::drawWindow()
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Change Address")) {
-            AppManager::getCanBusStream().changeAddress(module->getAddress(), newAddress);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Change Address")) {
+        //     AppManager::getCanBusStream().changeAddress(module->getAddress(), newAddress);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
         ImGui::EndDisabled();
 

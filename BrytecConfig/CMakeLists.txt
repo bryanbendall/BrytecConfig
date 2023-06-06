@@ -94,6 +94,8 @@ add_executable(BrytecConfig
                 src/data/Pin.cpp
                 src/data/Pin.h
                 src/data/Selectable.h
+                src/gui/CommunicationModals.cpp
+                src/gui/CommunicationModals.h
                 src/gui/MainWindow.cpp
                 src/gui/MainWindow.h
                 src/gui/ModuleBuilderWindow.cpp
