@@ -7,17 +7,11 @@ namespace Brytec {
 class CommunicationModals {
 
 public:
-    enum State {
-        ModuleCommands,
-        SendReceive
-    };
-
-public:
-    void open(State state);
+    void open();
     void draw();
 
 private:
-    void drawTable(bool allModules);
+    void drawTable();
     void drawModuleCommands();
     void drawSendReceive();
     void drawProgressBar();
@@ -26,7 +20,6 @@ private:
 
 private:
     bool m_open = false;
-    State m_state;
     uint8_t m_selectedModuleAddr = CanCommands::AllModules;
     uint8_t m_newAddress = 1;
     bool m_changeModuleAddress = true;

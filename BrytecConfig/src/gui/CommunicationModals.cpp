@@ -9,10 +9,9 @@
 
 namespace Brytec {
 
-void CommunicationModals::open(State state)
+void CommunicationModals::open()
 {
     m_open = true;
-    m_state = state;
     AppManager::getCanBusStream().getModuleStatuses().clear();
     AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
     AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
@@ -30,19 +29,9 @@ void CommunicationModals::draw()
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
     if (ImGui::BeginPopupModal("Commands", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-        switch (m_state) {
-        case State::ModuleCommands:
-            drawTable(true);
-            drawModuleCommands();
-            break;
-        case State::SendReceive:
-            drawTable(false);
-            drawSendReceive();
-            break;
-        default:
-            break;
-        }
+        drawTable();
+        drawModuleCommands();
+        drawSendReceive();
 
         drawProgressBar();
         drawCloseButton();
@@ -51,7 +40,7 @@ void CommunicationModals::draw()
     }
 }
 
-void CommunicationModals::drawTable(bool allModules)
+void CommunicationModals::drawTable()
 {
     float bigColumn = ImGui::CalcTextSize("#####################").x;
     float smallColumn = ImGui::CalcTextSize("#######").x;
@@ -111,14 +100,12 @@ void CommunicationModals::drawTable(bool allModules)
             break;
         }
 
-        if (allModules) {
-            // All modules
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-            std::string label = "All Modules";
-            if (ImGui::Selectable(label.c_str(), m_selectedModuleAddr == CanCommands::AllModules, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap))
-                m_selectedModuleAddr = CanCommands::AllModules;
-        }
+        // All modules
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        std::string label = "All Modules";
+        if (ImGui::Selectable(label.c_str(), m_selectedModuleAddr == CanCommands::AllModules, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap))
+            m_selectedModuleAddr = CanCommands::AllModules;
 
         for (auto& ms : AppManager::getCanBusStream().getModuleStatuses()) {
             std::string modeString;
@@ -162,8 +149,6 @@ void CommunicationModals::drawTable(bool allModules)
 
 void CommunicationModals::drawModuleCommands()
 {
-    ImGui::TextUnformatted("Note: Module must be stopped to change address");
-
     if (ImGui::Button("Set Stopped")) {
         AppManager::getCanBusStream().changeMode(m_selectedModuleAddr, EBrytecApp::Mode::Stopped);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
@@ -192,12 +177,20 @@ void CommunicationModals::drawModuleCommands()
             isModuleStopped = (ms.mode == EBrytecApp::Mode::Stopped);
     }
 
-    ImGui::BeginDisabled((m_selectedModuleAddr == CanCommands::AllModules) || !isModuleStopped);
+    bool addressDisabled = (m_selectedModuleAddr == CanCommands::AllModules) || !isModuleStopped;
+    ImGui::BeginDisabled(addressDisabled);
 
     if (ImGui::Button("Change Address"))
         ImGui::OpenPopup("Address");
 
     ImGui::EndDisabled();
+
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && addressDisabled) {
+        if (m_selectedModuleAddr == CanCommands::AllModules)
+            ImGui::SetTooltip("%s", "Doesn't work for all modules");
+        else
+            ImGui::SetTooltip("%s", "Module must be stopped");
+    }
 
     // Always center this window when appearing
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
@@ -240,9 +233,8 @@ void CommunicationModals::drawSendReceive()
 {
     auto module = AppManager::getConfig()->findModule(m_selectedModuleAddr);
 
-    ImGui::TextUnformatted("You must have a module in your config to send or receive");
-
-    ImGui::BeginDisabled((bool)module || m_selectedModuleAddr == CanCommands::AllModules);
+    bool templateDisabled = (bool)module || m_selectedModuleAddr == CanCommands::AllModules;
+    ImGui::BeginDisabled(templateDisabled);
 
     if (ImGui::Button("Get Module Template")) {
         AppManager::getCanBusStream().getModuleData(
@@ -262,9 +254,17 @@ void CommunicationModals::drawSendReceive()
 
     ImGui::EndDisabled();
 
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && templateDisabled) {
+        if (m_selectedModuleAddr == CanCommands::AllModules)
+            ImGui::SetTooltip("%s", "Doesn't work for all modules");
+        else
+            ImGui::SetTooltip("%s", "There is already a module for selected");
+    }
+
     ImGui::SameLine();
 
-    ImGui::BeginDisabled(m_selectedModuleAddr == CanCommands::AllModules);
+    bool configDisabled = !module || m_selectedModuleAddr == CanCommands::AllModules;
+    ImGui::BeginDisabled(configDisabled);
 
     if (ImGui::Button("Get From Module")) {
         AppManager::getCanBusStream().getModuleData(
@@ -292,7 +292,18 @@ void CommunicationModals::drawSendReceive()
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
     }
 
+    ImGui::EndDisabled();
+
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && configDisabled) {
+        if (m_selectedModuleAddr == CanCommands::AllModules)
+            ImGui::SetTooltip("%s", "Doesn't work for all modules");
+        else
+            ImGui::SetTooltip("%s", "You must have a module for selected");
+    }
+
     ImGui::SameLine();
+
+    ImGui::BeginDisabled(configDisabled);
 
     if (ImGui::Button("Send To Module")) {
         if (module) {
@@ -304,6 +315,13 @@ void CommunicationModals::drawSendReceive()
     }
 
     ImGui::EndDisabled();
+
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled) && configDisabled) {
+        if (m_selectedModuleAddr == CanCommands::AllModules)
+            ImGui::SetTooltip("%s", "Doesn't work for all modules");
+        else
+            ImGui::SetTooltip("%s", "You must have a module for selected");
+    }
 }
 
 void CommunicationModals::drawProgressBar()
