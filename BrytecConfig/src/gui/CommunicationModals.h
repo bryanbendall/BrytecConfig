@@ -8,7 +8,8 @@ class CommunicationModals {
 
 public:
     enum State {
-        ChangeModuleState
+        ModuleCommands,
+        SendReceive
     };
 
 public:
@@ -16,7 +17,11 @@ public:
     void draw();
 
 private:
-    void drawChangeModuleState();
+    void drawTable(bool allModules);
+    void drawModuleCommands();
+    void drawSendReceive();
+    void drawProgressBar();
+    void drawCloseButton();
     void callback(CanBusStreamCallbackData data);
 
 private:

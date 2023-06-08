@@ -293,7 +293,8 @@ void MainWindow::drawMenuBar()
     ToolbarButton(ICON_FA_CHART_BAR, "Monitor", [this]() { m_monitorWindow.setOpenedState(true); });
 
     ImGui::EndDisabled();
-    ToolbarButton(ICON_FA_CIRCLE_NOTCH, "Change Module State", std::bind(&CommunicationModals::open, &m_communicationModals, CommunicationModals::State::ChangeModuleState));
+    ToolbarButton(ICON_FA_CIRCLE_NOTCH, "Module Commands", std::bind(&CommunicationModals::open, &m_communicationModals, CommunicationModals::State::ModuleCommands));
+    ToolbarButton(ICON_FA_CIRCLE, "Send and Receive", std::bind(&CommunicationModals::open, &m_communicationModals, CommunicationModals::State::SendReceive));
 
     if (anyItemHovered) {
         anyItemHovered = false;

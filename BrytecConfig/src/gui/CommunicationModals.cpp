@@ -1,6 +1,10 @@
 #include "CommunicationModals.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
+#include "data/InternalPin.h"
+#include "data/PhysicalPin.h"
+#include "utils/ModuleSerializer.h"
 #include <imgui.h>
 
 namespace Brytec {
@@ -28,18 +32,26 @@ void CommunicationModals::draw()
     if (ImGui::BeginPopupModal("Commands", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 
         switch (m_state) {
-        case State::ChangeModuleState:
-            drawChangeModuleState();
+        case State::ModuleCommands:
+            drawTable(true);
+            drawModuleCommands();
+            break;
+        case State::SendReceive:
+            drawTable(false);
+            drawSendReceive();
             break;
         default:
             break;
         }
 
+        drawProgressBar();
+        drawCloseButton();
+
         ImGui::EndPopup();
     }
 }
 
-void CommunicationModals::drawChangeModuleState()
+void CommunicationModals::drawTable(bool allModules)
 {
     float bigColumn = ImGui::CalcTextSize("#####################").x;
     float smallColumn = ImGui::CalcTextSize("#######").x;
@@ -99,7 +111,7 @@ void CommunicationModals::drawChangeModuleState()
             break;
         }
 
-        {
+        if (allModules) {
             // All modules
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
@@ -146,6 +158,11 @@ void CommunicationModals::drawChangeModuleState()
 
         ImGui::EndTable();
     }
+}
+
+void CommunicationModals::drawModuleCommands()
+{
+    ImGui::TextUnformatted("Note: Module must be stopped to change address");
 
     if (ImGui::Button("Set Stopped")) {
         AppManager::getCanBusStream().changeMode(m_selectedModuleAddr, EBrytecApp::Mode::Stopped);
@@ -168,7 +185,14 @@ void CommunicationModals::drawChangeModuleState()
 
     ImGui::SameLine();
 
-    ImGui::BeginDisabled(m_selectedModuleAddr == CanCommands::AllModules);
+    // Check if module is stopped
+    bool isModuleStopped = false;
+    for (auto& ms : AppManager::getCanBusStream().getModuleStatuses()) {
+        if (ms.address == m_selectedModuleAddr)
+            isModuleStopped = (ms.mode == EBrytecApp::Mode::Stopped);
+    }
+
+    ImGui::BeginDisabled((m_selectedModuleAddr == CanCommands::AllModules) || !isModuleStopped);
 
     if (ImGui::Button("Change Address"))
         ImGui::OpenPopup("Address");
@@ -182,6 +206,7 @@ void CommunicationModals::drawChangeModuleState()
     if (ImGui::BeginPopupModal("Address", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 
         ImGui::Text("Select new address");
+        ImGui::Text("Note: You must send a new config to make address permanent");
 
         static bool showButtons = true;
         ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &m_newAddress, &showButtons);
@@ -209,17 +234,92 @@ void CommunicationModals::drawChangeModuleState()
 
         ImGui::EndPopup();
     }
+}
 
+void CommunicationModals::drawSendReceive()
+{
+    auto module = AppManager::getConfig()->findModule(m_selectedModuleAddr);
+
+    ImGui::TextUnformatted("You must have a module in your config to send or receive");
+
+    ImGui::BeginDisabled((bool)module || m_selectedModuleAddr == CanCommands::AllModules);
+
+    if (ImGui::Button("Get Module Template")) {
+        AppManager::getCanBusStream().getModuleData(
+            m_selectedModuleAddr,
+            [=](const std::vector<uint8_t>& buffer) {
+                std::shared_ptr<Module> module = std::make_shared<Module>();
+                ModuleSerializer serializer(module);
+                BinaryArrayDeserializer des(buffer.data(), buffer.size());
+                if (serializer.deserializeTemplateBinary(des)) {
+                    module->setAddress(m_selectedModuleAddr);
+                    AppManager::getConfig()->addModule(module);
+                }
+            },
+            false);
+        AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+    }
+
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    ImGui::BeginDisabled(m_selectedModuleAddr == CanCommands::AllModules);
+
+    if (ImGui::Button("Get From Module")) {
+        AppManager::getCanBusStream().getModuleData(
+            m_selectedModuleAddr,
+            [=](const std::vector<uint8_t>& buffer) {
+                std::shared_ptr<Module> module = AppManager::getConfig()->findModule(m_selectedModuleAddr);
+                if (module) {
+
+                    // Remove all old node groups to get ready for new ones from reading module
+                    for (auto& phy : module->getPhysicalPins())
+                        phy->setNodeGroup(nullptr);
+
+                    for (auto& internal : module->getInternalPins())
+                        internal->setNodeGroup(nullptr);
+                    module->updateInternalPins();
+
+                    ModuleSerializer serializer(AppManager::getConfig(), module);
+                    BinaryArrayDeserializer des(buffer.data(), buffer.size());
+                    serializer.deserializeBinary(des);
+                } else {
+                    std::cout << "Need to get module template first" << std::endl;
+                }
+            },
+            true);
+        AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Send To Module")) {
+        if (module) {
+            ModuleSerializer moduleSer(module);
+            BinarySerializer ser = moduleSer.serializeBinary();
+            AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
+            AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        }
+    }
+
+    ImGui::EndDisabled();
+}
+
+void CommunicationModals::drawProgressBar()
+{
     if (!m_callbackData.error)
         ImGui::ProgressBar((float)(m_callbackData.total - m_callbackData.leftToSend) / (float)m_callbackData.total);
     else
         ImGui::TextUnformatted("Error Sending Data");
+}
 
+void CommunicationModals::drawCloseButton()
+{
     ImGui::Separator();
 
-    if (ImGui::Button("Close", ImVec2(120, 0))) {
+    if (ImGui::Button("Close", ImVec2(120, 0)))
         ImGui::CloseCurrentPopup();
-    }
 }
 
 void CommunicationModals::callback(CanBusStreamCallbackData data)

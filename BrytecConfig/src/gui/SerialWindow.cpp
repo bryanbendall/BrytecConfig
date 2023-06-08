@@ -35,21 +35,21 @@ void SerialWindow::drawWindow()
         ImGui::Text("Hardware id: %s", usb.getDevice().hardware_id.c_str());
         ImGui::Text("Port: %s", usb.getDevice().port.c_str());
 
-        if (ImGui::Button("close serial"))
-            usb.close();
+        // if (ImGui::Button("close serial"))
+        //     usb.close();
 
-        std::shared_ptr<Module> module = AppManager::getSelected<Module>();
+        // std::shared_ptr<Module> module = AppManager::getSelected<Module>();
 
-        ImGui::BeginDisabled(AppManager::getCanBusStream().isSending() || !module);
-        if (ImGui::Button("Send Config")) {
+        // ImGui::BeginDisabled(AppManager::getCanBusStream().isSending() || !module);
+        // if (ImGui::Button("Send Config")) {
 
-            if (module) {
-                ModuleSerializer moduleSer(module);
-                BinarySerializer ser = moduleSer.serializeBinary();
-                AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
-                AppManager::getCanBusStream().send(sendingCallback);
-            }
-        }
+        //     if (module) {
+        //         ModuleSerializer moduleSer(module);
+        //         BinarySerializer ser = moduleSer.serializeBinary();
+        //         AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
+        //         AppManager::getCanBusStream().send(sendingCallback);
+        //     }
+        // }
 
         // ImGui::SameLine();
 
@@ -72,75 +72,75 @@ void SerialWindow::drawWindow()
         //     AppManager::getCanBusStream().send(sendingCallback);
         // }
 
-        static uint8_t newAddress = 0;
-        static bool showButtons = true;
-        ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &newAddress, &showButtons);
+        // static uint8_t newAddress = 0;
+        // static bool showButtons = true;
+        // ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &newAddress, &showButtons);
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
         // if (ImGui::Button("Change Address")) {
         //     AppManager::getCanBusStream().changeAddress(module->getAddress(), newAddress);
         //     AppManager::getCanBusStream().send(sendingCallback);
         // }
 
-        ImGui::EndDisabled();
+        // ImGui::EndDisabled();
 
-        if (ImGui::Button("Add module template")) {
-            AppManager::getCanBusStream().getModuleData(
-                newAddress,
-                [](const std::vector<uint8_t>& buffer) {
-                    std::shared_ptr<Module> module = std::make_shared<Module>();
-                    ModuleSerializer serializer(module);
-                    BinaryArrayDeserializer des(buffer.data(), buffer.size());
-                    if (serializer.deserializeTemplateBinary(des)) {
-                        AppManager::getConfig()->addModule(module);
-                    }
-                },
-                false);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Add module template")) {
+        //     AppManager::getCanBusStream().getModuleData(
+        //         newAddress,
+        //         [](const std::vector<uint8_t>& buffer) {
+        //             std::shared_ptr<Module> module = std::make_shared<Module>();
+        //             ModuleSerializer serializer(module);
+        //             BinaryArrayDeserializer des(buffer.data(), buffer.size());
+        //             if (serializer.deserializeTemplateBinary(des)) {
+        //                 AppManager::getConfig()->addModule(module);
+        //             }
+        //         },
+        //         false);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
-        if (ImGui::Button("Add full module")) {
-            AppManager::getCanBusStream().getModuleData(
-                newAddress,
-                [](const std::vector<uint8_t>& buffer) {
-                    std::shared_ptr<Module> module = AppManager::getConfig()->findModule(newAddress);
-                    if (module) {
+        // if (ImGui::Button("Add full module")) {
+        //     AppManager::getCanBusStream().getModuleData(
+        //         newAddress,
+        //         [](const std::vector<uint8_t>& buffer) {
+        //             std::shared_ptr<Module> module = AppManager::getConfig()->findModule(newAddress);
+        //             if (module) {
 
-                        // Remove all old node groups to get ready for new ones from reading module
-                        for (auto& phy : module->getPhysicalPins())
-                            phy->setNodeGroup(nullptr);
+        //                 // Remove all old node groups to get ready for new ones from reading module
+        //                 for (auto& phy : module->getPhysicalPins())
+        //                     phy->setNodeGroup(nullptr);
 
-                        for (auto& internal : module->getInternalPins())
-                            internal->setNodeGroup(nullptr);
-                        module->updateInternalPins();
+        //                 for (auto& internal : module->getInternalPins())
+        //                     internal->setNodeGroup(nullptr);
+        //                 module->updateInternalPins();
 
-                        ModuleSerializer serializer(AppManager::getConfig(), module);
-                        BinaryArrayDeserializer des(buffer.data(), buffer.size());
-                        serializer.deserializeBinary(des);
-                    } else {
-                        std::cout << "Need to get module template first" << std::endl;
-                    }
-                },
-                true);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        //                 ModuleSerializer serializer(AppManager::getConfig(), module);
+        //                 BinaryArrayDeserializer des(buffer.data(), buffer.size());
+        //                 serializer.deserializeBinary(des);
+        //             } else {
+        //                 std::cout << "Need to get module template first" << std::endl;
+        //             }
+        //         },
+        //         true);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
-        ImGui::ProgressBar((float)(s_canData.total - s_canData.leftToSend) / (float)s_canData.total);
+        // ImGui::ProgressBar((float)(s_canData.total - s_canData.leftToSend) / (float)s_canData.total);
 
-        if (s_canData.error)
-            ImGui::TextUnformatted("Sending error!");
-        else
-            ImGui::Text("Sending %u out of %u", s_canData.leftToSend, s_canData.total);
+        // if (s_canData.error)
+        //     ImGui::TextUnformatted("Sending error!");
+        // else
+        //     ImGui::Text("Sending %u out of %u", s_canData.leftToSend, s_canData.total);
 
-        if (ImGui::Button("Get Module Statuses")) {
-            AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
-            AppManager::getCanBusStream().send(sendingCallback);
-        }
+        // if (ImGui::Button("Get Module Statuses")) {
+        //     AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
+        //     AppManager::getCanBusStream().send(sendingCallback);
+        // }
 
-        ImGui::SameLine();
+        // ImGui::SameLine();
 
         std::shared_ptr<Pin> pin = AppManager::getSelected<Pin>();
         std::shared_ptr<NodeGroup> nodeGroup = nullptr;
