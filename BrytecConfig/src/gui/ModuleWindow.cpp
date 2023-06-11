@@ -105,12 +105,10 @@ void ModuleWindow::drawMenubar()
 
                 BrytecBoard::updateConfig(ser.getData().data(), ser.getData().size(), 0);
 
-                EBrytecApp::deserializeModule();
+                EBrytecApp::initalize();
 
                 if (EBrytecApp::isDeserializeOk()) {
                         std::cout << "Deserialize completed succesfully" << std::endl;
-                        EBrytecApp::setMode(EBrytecApp::Mode::Normal);
-                        std::cout << "Done module setup" << std::endl;
                         m_simulateModule = true;
                 } else {
                         std::cout << "Deserialize failed!!!!" << std::endl;
