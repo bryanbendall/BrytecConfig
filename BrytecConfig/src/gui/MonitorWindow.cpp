@@ -22,17 +22,51 @@ void MonitorWindow::drawWindow()
     float cellPadding = ImGui::GetStyle().CellPadding.x;
 
     ImGui::SetNextWindowSize(ImVec2(500.0f, 500.0f), ImGuiCond_FirstUseEver);
-    ImGui::Begin(ICON_FA_CHART_BAR " Monitor", &m_opened, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-
-    drawMenubar();
+    ImGui::Begin(ICON_FA_CHART_BAR " Monitor", &m_opened, ImGuiWindowFlags_HorizontalScrollbar);
 
     static ImGuiTableFlags flags = ImGuiTableFlags_Sortable | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter
         | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY;
 
     float tableWidth = bigColumn + (smallColumn * 3) + (cellPadding * 8);
 
+    float columnWidth = tableWidth + ImGui::GetStyle().WindowPadding.x + ImGui::GetStyle().ItemSpacing.x;
+
+    // Module Buttons
+    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
+    if (ImGui::Button("Update##Modules")) {
+        AppManager::getCanBusStream().getModuleStatuses().clear();
+        AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
+        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine(columnWidth);
+
+    // Node Group Buttons
+    if (ImGui::Button("Clear##Node Groups"))
+        AppManager::getCanBusStream().getNodeGroupStatuses().clear();
+
+    ImGui::SameLine();
+
+    std::shared_ptr<Pin> pin = AppManager::getSelected<Pin>();
+    std::shared_ptr<NodeGroup> nodeGroup = nullptr;
+    if (pin)
+        nodeGroup = pin->getNodeGroup();
+
+    ImGui::BeginDisabled(!nodeGroup);
+    if (ImGui::Button("Get Status")) {
+        if (nodeGroup) {
+            auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
+            auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
+            AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr);
+            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+        }
+    }
+    ImGui::EndDisabled();
+
+    // Headers
     ImGui::Text(ICON_FA_HDD " Modules");
-    ImGui::SameLine(tableWidth + ImGui::GetStyle().WindowPadding.x + ImGui::GetStyle().ItemSpacing.x);
+    ImGui::SameLine(columnWidth);
     ImGui::Text(ICON_FA_DICE_D6 " Node Groups");
 
     if (ImGui::BeginTable("Modules", 4, flags, ImVec2(tableWidth, 0.0f))) {
@@ -228,18 +262,5 @@ void MonitorWindow::drawWindow()
     }
 
     ImGui::End();
-}
-
-void MonitorWindow::drawMenubar()
-{
-    if (ImGui::BeginMenuBar()) {
-
-        if (ImGui::MenuItem("Clear")) {
-            AppManager::getCanBusStream().getModuleStatuses().clear();
-            AppManager::getCanBusStream().getNodeGroupStatuses().clear();
-        }
-
-        ImGui::EndMenuBar();
-    }
 }
 }

@@ -11,9 +11,6 @@ public:
     void setOpenedState(bool state) { m_opened = state; }
 
 private:
-    void drawMenubar();
-
-private:
     bool m_opened = true;
 };
 }
