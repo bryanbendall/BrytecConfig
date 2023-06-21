@@ -1,8 +1,8 @@
 #include "CanBusStream.h"
 
 #include "AppManager.h"
+#include "Deserializer/BinaryArrayDeserializer.h"
 #include "Deserializer/BinaryBufferSerializer.h"
-#include <Deserializer/BinaryArrayDeserializer.h>
 #include <iostream>
 
 namespace Brytec {
@@ -207,19 +207,14 @@ void CanBusStream::canBusReceived(CanExtFrame frame)
     if (frame.isModuleBroadcast()) {
         ModuleStatusBroadcast bc(frame);
 
-        ModuleStatus status;
-        status.address = bc.moduleAddress;
-        status.mode = (EBrytecApp::Mode)bc.mode;
-        status.deserializeOk = bc.deserializeOk;
-
-        auto it = std::find_if(m_moduleStatuses.begin(), m_moduleStatuses.end(), [status](ModuleStatus& ms) {
-            return (status.address == ms.address);
+        auto it = std::find_if(m_moduleStatuses.begin(), m_moduleStatuses.end(), [bc](ModuleStatusBroadcast& ms) {
+            return (bc.moduleAddress == ms.moduleAddress);
         });
 
         if (it != m_moduleStatuses.end())
-            *it = status;
+            *it = bc;
         else
-            m_moduleStatuses.push_back(status);
+            m_moduleStatuses.push_back(bc);
 
         return;
     }

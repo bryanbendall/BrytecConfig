@@ -1,6 +1,7 @@
 #include "CommunicationModals.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Can/EBrytecCan.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h"
 #include "data/InternalPin.h"
 #include "data/PhysicalPin.h"
@@ -61,29 +62,29 @@ void CommunicationModals::drawTable()
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
-        std::vector<ModuleStatus>& map = AppManager::getCanBusStream().getModuleStatuses();
+        std::vector<ModuleStatusBroadcast>& map = AppManager::getCanBusStream().getModuleStatuses();
 
         auto sortSpec = ImGui::TableGetSortSpecs();
         bool decending = sortSpec->Specs->SortDirection == ImGuiSortDirection_Descending;
         switch (sortSpec->Specs->ColumnIndex) {
         case 0: // name
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
-                    return a.address > b.address;
+                    return a.moduleAddress > b.moduleAddress;
                 else
-                    return a.address < b.address;
+                    return a.moduleAddress < b.moduleAddress;
             });
             break;
         case 1: // address
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
-                    return a.address > b.address;
+                    return a.moduleAddress > b.moduleAddress;
                 else
-                    return a.address < b.address;
+                    return a.moduleAddress < b.moduleAddress;
             });
             break;
         case 2: // loaded
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
                     return a.deserializeOk > b.deserializeOk;
                 else
@@ -91,7 +92,7 @@ void CommunicationModals::drawTable()
             });
             break;
         case 3: // mode
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
                     return a.mode > b.mode;
                 else
@@ -120,22 +121,22 @@ void CommunicationModals::drawTable()
                 modeString = "Stopped";
                 break;
             }
-            auto module = AppManager::getConfig()->findModule(ms.address);
+            auto module = AppManager::getConfig()->findModule(ms.moduleAddress);
 
-            ImGui::PushID(ms.address);
+            ImGui::PushID(ms.moduleAddress);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             std::string label;
             if (module)
                 label = module->getName();
             else
-                label = "Module: " + std::to_string(ms.address);
+                label = "Module: " + std::to_string(ms.moduleAddress);
 
-            if (ImGui::Selectable(label.c_str(), m_selectedModuleAddr == ms.address, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap))
-                m_selectedModuleAddr = ms.address;
+            if (ImGui::Selectable(label.c_str(), m_selectedModuleAddr == ms.moduleAddress, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowItemOverlap))
+                m_selectedModuleAddr = ms.moduleAddress;
 
             ImGui::TableNextColumn();
-            ImGui::Text("%d", ms.address);
+            ImGui::Text("%d", ms.moduleAddress);
             ImGui::TableNextColumn();
             ImGui::Text("%s", ms.deserializeOk ? "Yes" : "No");
             ImGui::TableNextColumn();
@@ -173,7 +174,7 @@ void CommunicationModals::drawModuleCommands()
     // Check if module is stopped
     bool isModuleStopped = false;
     for (auto& ms : AppManager::getCanBusStream().getModuleStatuses()) {
-        if (ms.address == m_selectedModuleAddr)
+        if (ms.moduleAddress == m_selectedModuleAddr)
             isModuleStopped = (ms.mode == EBrytecApp::Mode::Stopped);
     }
 

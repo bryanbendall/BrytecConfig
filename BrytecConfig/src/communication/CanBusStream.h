@@ -16,12 +16,6 @@ struct CanBusStreamCallbackData {
     bool error = false;
 };
 
-struct ModuleStatus {
-    uint8_t address = 0;
-    bool deserializeOk = false;
-    EBrytecApp::Mode mode = EBrytecApp::Mode::Stopped;
-};
-
 class CanBusStream {
 
 public:
@@ -42,7 +36,7 @@ public:
     void send(std::function<void(CanBusStreamCallbackData)> callback);
     bool isSending() { return m_sending; }
 
-    std::vector<ModuleStatus>& getModuleStatuses() { return m_moduleStatuses; }
+    std::vector<ModuleStatusBroadcast>& getModuleStatuses() { return m_moduleStatuses; }
     std::vector<PinStatusBroadcast>& getNodeGroupStatuses() { return m_nodeGroupStatuses; }
 
     void canBusReceived(CanExtFrame frame);
@@ -60,11 +54,10 @@ private:
     std::vector<uint8_t> m_moduleDataBuffer;
     std::function<void(const std::vector<uint8_t>&)> m_moduleDataCallback;
 
-    uint8_t m_retires
-        = 0;
+    uint8_t m_retires = 0;
     static constexpr uint8_t s_maxRetries = 5;
 
-    std::vector<ModuleStatus> m_moduleStatuses;
+    std::vector<ModuleStatusBroadcast> m_moduleStatuses;
     std::vector<PinStatusBroadcast> m_nodeGroupStatuses;
 };
 

@@ -27,7 +27,7 @@ void MonitorWindow::drawWindow()
     static ImGuiTableFlags flags = ImGuiTableFlags_Sortable | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter
         | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY;
 
-    float tableWidth = bigColumn + (smallColumn * 3) + (cellPadding * 8);
+    float tableWidth = bigColumn + (smallColumn * 4) + (cellPadding * 8);
 
     float columnWidth = tableWidth + ImGui::GetStyle().WindowPadding.x + ImGui::GetStyle().ItemSpacing.x;
 
@@ -69,38 +69,39 @@ void MonitorWindow::drawWindow()
     ImGui::SameLine(columnWidth);
     ImGui::Text(ICON_FA_DICE_D6 " Node Groups");
 
-    if (ImGui::BeginTable("Modules", 4, flags, ImVec2(tableWidth, 0.0f))) {
+    if (ImGui::BeginTable("Modules", 5, flags, ImVec2(tableWidth, 0.0f))) {
 
         ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_DefaultSort | ImGuiTableColumnFlags_WidthFixed, bigColumn);
         ImGui::TableSetupColumn("Address", ImGuiTableColumnFlags_WidthFixed, smallColumn);
+        ImGui::TableSetupColumn("Node Array", ImGuiTableColumnFlags_WidthFixed, smallColumn);
         ImGui::TableSetupColumn("Loaded", ImGuiTableColumnFlags_WidthFixed, smallColumn);
         ImGui::TableSetupColumn("Mode", ImGuiTableColumnFlags_PreferSortDescending | ImGuiTableColumnFlags_WidthStretch, smallColumn);
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
-        std::vector<ModuleStatus>& map = AppManager::getCanBusStream().getModuleStatuses();
+        std::vector<ModuleStatusBroadcast>& map = AppManager::getCanBusStream().getModuleStatuses();
 
         auto sortSpec = ImGui::TableGetSortSpecs();
         bool decending = sortSpec->Specs->SortDirection == ImGuiSortDirection_Descending;
         switch (sortSpec->Specs->ColumnIndex) {
         case 0: // name
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
-                    return a.address > b.address;
+                    return a.moduleAddress > b.moduleAddress;
                 else
-                    return a.address < b.address;
+                    return a.moduleAddress < b.moduleAddress;
             });
             break;
         case 1: // address
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
-                    return a.address > b.address;
+                    return a.moduleAddress > b.moduleAddress;
                 else
-                    return a.address < b.address;
+                    return a.moduleAddress < b.moduleAddress;
             });
             break;
         case 2: // loaded
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
                     return a.deserializeOk > b.deserializeOk;
                 else
@@ -108,7 +109,7 @@ void MonitorWindow::drawWindow()
             });
             break;
         case 3: // mode
-            std::sort(map.begin(), map.end(), [decending](ModuleStatus a, ModuleStatus b) {
+            std::sort(map.begin(), map.end(), [decending](ModuleStatusBroadcast a, ModuleStatusBroadcast b) {
                 if (decending)
                     return a.mode > b.mode;
                 else
@@ -130,17 +131,19 @@ void MonitorWindow::drawWindow()
                 modeString = "Stopped";
                 break;
             }
-            auto module = AppManager::getConfig()->findModule(ms.address);
+            auto module = AppManager::getConfig()->findModule(ms.moduleAddress);
 
-            ImGui::PushID(ms.address);
+            ImGui::PushID(ms.moduleAddress);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
             if (module)
                 ImGui::Text("%s", module->getName().c_str());
             else
-                ImGui::Text("Module: %d", ms.address);
+                ImGui::Text("Module: %d", ms.moduleAddress);
             ImGui::TableNextColumn();
-            ImGui::Text("%d", ms.address);
+            ImGui::Text("%d", ms.moduleAddress);
+            ImGui::TableNextColumn();
+            ImGui::Text("%d", ms.nodeArraySize);
             ImGui::TableNextColumn();
             ImGui::Text("%s", ms.deserializeOk ? "Yes" : "No");
             ImGui::TableNextColumn();
