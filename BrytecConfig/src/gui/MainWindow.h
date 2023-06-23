@@ -6,7 +6,6 @@
 #include "NodeGroupWindow.h"
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
-#include "SerialWindow.h"
 #include "SettingsWindow.h"
 #include "gui/CommunicationModals.h"
 #include <GLFW/glfw3.h>
@@ -37,7 +36,6 @@ private:
     NodeGroupWindow m_nodeGroupWindow;
     ModuleBuilderWindow m_moduleBuilderWindow;
     SettingsWindow m_settingsWindow;
-    SerialWindow m_serialWindow;
     MonitorWindow m_monitorWindow;
     CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;

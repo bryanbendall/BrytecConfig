@@ -114,8 +114,6 @@ add_executable(BrytecConfig
                 src/gui/NotificationWindow.h
                 src/gui/PropertiesWindow.cpp
                 src/gui/PropertiesWindow.h
-                src/gui/SerialWindow.cpp
-                src/gui/SerialWindow.h
                 src/gui/SettingsWindow.cpp
                 src/gui/SettingsWindow.h
                 src/usb/Usb.cpp

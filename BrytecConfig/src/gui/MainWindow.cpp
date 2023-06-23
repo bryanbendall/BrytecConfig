@@ -130,7 +130,6 @@ void MainWindow::drawWindow()
     m_nodeGroupWindow.drawWindow();
     m_moduleBuilderWindow.drawWindow();
     m_settingsWindow.drawWindow();
-    m_serialWindow.drawWindow();
     m_monitorWindow.drawWindow();
     m_communicationModals.draw();
 
@@ -291,9 +290,8 @@ void MainWindow::drawMenuBar()
 
     ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
     ToolbarButton(ICON_FA_CHART_BAR, "Monitor", [this]() { m_monitorWindow.setOpenedState(true); });
-
-    ImGui::EndDisabled();
     ToolbarButton(ICON_FA_SYNC, "Module Commands", std::bind(&CommunicationModals::open, &m_communicationModals));
+    ImGui::EndDisabled();
 
     if (anyItemHovered) {
         anyItemHovered = false;

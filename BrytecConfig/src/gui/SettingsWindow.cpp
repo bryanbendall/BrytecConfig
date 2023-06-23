@@ -100,6 +100,30 @@ void SettingsWindow::drawWindow()
             AppManager::setOpenLastFile(value);
         ImGui::PopID();
 
+        // Serial Port
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Serial Port");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+
+        std::vector<serial::PortInfo> availablePorts = AppManager::getUsbManager().getAvailablePorts();
+        std::string displayText = AppManager::getUsbManager().getDevice().description;
+
+        auto ret = std::find_if(availablePorts.begin(), availablePorts.end(), [&](serial::PortInfo info) { return info.description == displayText; });
+        if (ret == availablePorts.end())
+            displayText = "";
+
+        if (ImGui::BeginCombo("##Serial Port", displayText.c_str())) {
+            for (auto& device : availablePorts) {
+                if (ImGui::Selectable(device.description.c_str(), device.description == displayText)) {
+                    AppManager::getUsbManager().setDevice(device);
+                }
+            }
+            ImGui::EndCombo();
+        }
+
         ImGui::EndTable();
     }
 
