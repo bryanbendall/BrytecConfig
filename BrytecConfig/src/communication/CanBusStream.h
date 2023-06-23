@@ -24,7 +24,7 @@ public:
     void update();
 
     void requestModuleStatus(uint8_t moduleAddress);
-    void requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex);
+    void requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex, bool monitor);
     void changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode);
     void changeAddress(uint8_t moduleAddress, uint8_t newAddress);
     void reloadConfig(uint8_t moduleAddress);

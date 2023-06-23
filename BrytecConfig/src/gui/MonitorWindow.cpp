@@ -28,11 +28,12 @@ void MonitorWindow::drawWindow()
         | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY;
 
     float tableWidth = bigColumn + (smallColumn * 4) + (cellPadding * 8);
-
     float columnWidth = tableWidth + ImGui::GetStyle().WindowPadding.x + ImGui::GetStyle().ItemSpacing.x;
 
+    bool isUsbOpen = AppManager::getUsbManager().isOpen();
+
     // Module Buttons
-    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
+    ImGui::BeginDisabled(!isUsbOpen);
     if (ImGui::Button("Update##Modules")) {
         AppManager::getCanBusStream().getModuleStatuses().clear();
         AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
@@ -53,12 +54,26 @@ void MonitorWindow::drawWindow()
     if (pin)
         nodeGroup = pin->getNodeGroup();
 
-    ImGui::BeginDisabled(!nodeGroup);
-    if (ImGui::Button("Get Status")) {
+    ImGui::BeginDisabled(!isUsbOpen || !nodeGroup);
+    if (ImGui::Button("Monitor Status")) {
         if (nodeGroup) {
             auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
             auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
-            AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr);
+            AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr, true);
+            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+        }
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+
+    bool onBus = nodeGroup ? AppManager::getConfig()->getUsedOnBus(nodeGroup) : false;
+    ImGui::BeginDisabled(!isUsbOpen || !nodeGroup || onBus);
+    if (ImGui::Button("Un-monitor Status")) {
+        if (nodeGroup) {
+            auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
+            auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
+            AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr, false);
             AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
         }
     }

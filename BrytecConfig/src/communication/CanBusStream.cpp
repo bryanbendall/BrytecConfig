@@ -41,7 +41,7 @@ void CanBusStream::requestModuleStatus(uint8_t moduleAddress)
     m_commandsToSend.push_back(command.getFrame());
 }
 
-void CanBusStream::requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex)
+void CanBusStream::requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGroupIndex, bool monitor)
 {
     if (m_sending)
         return;
@@ -52,6 +52,7 @@ void CanBusStream::requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGr
     command.moduleAddress = moduleAddress;
     command.nodeGroupIndex = nodeGroupIndex;
     command.command = CanCommands::Command::RequestStatus;
+    command.data[0] = monitor;
     m_commandsToSend.push_back(command.getFrame());
 }
 
