@@ -26,7 +26,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Convert (Experamental)",
     "Pin Current",
     "PID (Experamental)",
-    "Counter"
+    "Counter",
+    "Color"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -206,6 +207,13 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // Last up
         m_values.push_back(0.0f); // Last down
         m_values.push_back(0.0f); // Output value
+        break;
+
+    case NodeTypes::Color:
+        m_inputs.push_back(NodeConnection()); // R
+        m_inputs.push_back(NodeConnection()); // G
+        m_inputs.push_back(NodeConnection()); // B
+        m_outputs.push_back(0.0f);
         break;
 
     case NodeTypes::Count:

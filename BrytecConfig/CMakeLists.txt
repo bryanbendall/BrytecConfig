@@ -21,6 +21,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECanBusNode.h
+                src/BrytecConfigEmbedded/Nodes/EColorNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EColorNode.h
                 src/BrytecConfigEmbedded/Nodes/ECompareNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECompareNode.h                
                 src/BrytecConfigEmbedded/Nodes/EConvertNode.cpp

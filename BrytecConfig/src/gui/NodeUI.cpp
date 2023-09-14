@@ -43,6 +43,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             bool onOff = false;
             bool floatValue = false;
             bool percentValue = false;
+            bool color = false;
 
             if (!nodeGroup.expired()) {
                 auto ng = nodeGroup.lock();
@@ -64,6 +65,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 case IOTypes::Types::Internal:
                     floatValue = true;
                     break;
+                case IOTypes::Types::Color:
+                    color = true;
+                    break;
                 default:
                     break;
                 }
@@ -71,14 +75,21 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
             float& value = node->getInputValue(0);
 
-            if (onOff) {
+            if (onOff)
                 UI::OnOffButton(node, value, false);
-            } else if (floatValue) {
+
+            if (floatValue) {
                 std::stringstream stream;
                 stream << std::fixed << std::setprecision(2) << value;
                 UI::SameHeightText(stream.str());
-            } else if (percentValue) {
+            }
+
+            if (percentValue)
                 ImGui::ProgressBar(value, ImVec2(nodeWidth, 0.0f));
+
+            if (color) {
+                ImVec4 vColor = ImGui::ColorConvertU32ToFloat4((uint32_t)value);
+                ImGui::ColorButton("##testcol", vColor, 0, ImVec2(nodeWidth, 0));
             }
         }
         break;
@@ -406,6 +417,36 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 1, "Down");
         UI::InputFloat(node, 2, "Min", 0);
         UI::InputFloat(node, 3, "Max", 0);
+        UI::Ouput(node, 0, "Value");
+        break;
+    }
+
+    case NodeTypes::Color: {
+        UI::InputFloat(node, 0, "Red", 2, 0.0f, 1.0f, 0.01f);
+        UI::InputFloat(node, 1, "Green", 2, 0.0f, 1.0f, 0.01f);
+        UI::InputFloat(node, 2, "Blue", 2, 0.0f, 1.0f, 0.01f);
+
+        ImVec4 vecCol(
+            node->getInput(0).DefaultValue,
+            node->getInput(1).DefaultValue,
+            node->getInput(2).DefaultValue,
+            1.0f);
+
+        if (ImGui::ColorButton("##b", vecCol, 0, ImVec2(s_nodeWidth, 0.0f))) {
+            // Store current color and open a picker
+            ImGui::GetCurrentContext()->ColorPickerRef = vecCol;
+            ImGui::OpenPopup("picker");
+        }
+
+        if (ImGui::BeginPopup("picker")) {
+            if (ImGui::ColorPicker4("##picker", &vecCol.x, ImGuiColorEditFlags_NoAlpha, &ImGui::GetCurrentContext()->ColorPickerRef.x)) {
+                node->getInput(0).DefaultValue = vecCol.x;
+                node->getInput(1).DefaultValue = vecCol.y;
+                node->getInput(2).DefaultValue = vecCol.z;
+            }
+            ImGui::EndPopup();
+        }
+
         UI::Ouput(node, 0, "Value");
         break;
     }
