@@ -71,6 +71,9 @@ void UsbManager::onReceive(UsbPacket packet)
     case UsbPacketType::Unknown:
         std::cout << "Unknown Usb packet type!" << std::endl;
         break;
+    case UsbPacketType::DebugPrint:
+        std::cout.write((char*)&packet.data[1], packet.length - 1);
+        break;
     }
 }
 }
