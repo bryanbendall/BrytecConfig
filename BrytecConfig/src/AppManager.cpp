@@ -398,19 +398,19 @@ void updateWindowTitle()
 
 void handleKeyEvents()
 {
-    bool control = ImGui::IsKeyDown(GLFW_KEY_LEFT_CONTROL) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_CONTROL);
-    bool shift = ImGui::IsKeyDown(GLFW_KEY_LEFT_SHIFT) || ImGui::IsKeyDown(GLFW_KEY_RIGHT_SHIFT);
+    bool control = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
+    bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
 
     // New
-    if (control && ImGui::IsKeyPressed(GLFW_KEY_N, false))
+    if (control && ImGui::IsKeyPressed(ImGuiKey_N, false))
         newConfig();
 
     // Open
-    if (control && ImGui::IsKeyPressed(GLFW_KEY_O, false))
+    if (control && ImGui::IsKeyPressed(ImGuiKey_O, false))
         openConfig();
 
     // Save
-    if (control && ImGui::IsKeyPressed(GLFW_KEY_S, false)) {
+    if (control && ImGui::IsKeyPressed(ImGuiKey_S, false)) {
         if (shift)
             saveAsConfig();
         else
@@ -418,7 +418,7 @@ void handleKeyEvents()
     }
 
     // Delete
-    if (ImGui::IsKeyPressed(GLFW_KEY_DELETE, false)) {
+    if (ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
         if (!s_data.mainWindow->isNodeWindowFocused()) {
             std::shared_ptr<Selectable> selected = s_data.SelectedItem.lock();
             if (!selected)
@@ -438,9 +438,9 @@ void handleKeyEvents()
     }
 
     // Zoom
-    if (control && ImGui::IsKeyPressed(GLFW_KEY_EQUAL, false))
+    if (control && ImGui::IsKeyPressed(ImGuiKey_Equal, false))
         zoom(true);
-    if (control && ImGui::IsKeyPressed(GLFW_KEY_MINUS, false))
+    if (control && ImGui::IsKeyPressed(ImGuiKey_Minus, false))
         zoom(false);
 }
 

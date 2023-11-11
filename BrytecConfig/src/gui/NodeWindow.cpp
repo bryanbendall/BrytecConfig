@@ -16,30 +16,30 @@ namespace Brytec {
 
 NodeWindow::NodeWindow()
 {
-    imnodes::Initialize();
-    imnodes::StyleColorsDark();
-    defaultContext = imnodes::EditorContextCreate();
-    imnodes::EditorContextSet(defaultContext);
+    ImNodes::CreateContext();
+    ImNodes::StyleColorsDark();
+    defaultContext = ImNodes::EditorContextCreate();
+    ImNodes::EditorContextSet(defaultContext);
 
-    imnodes::SetNodeGridSpacePos(1, ImVec2(10.0f, 10.0f));
+    ImNodes::SetNodeGridSpacePos(1, ImVec2(10.0f, 10.0f));
 
-    imnodes::Style& style = imnodes::GetStyle();
-    style.colors[imnodes::ColorStyle_NodeBackground] = Colors::Node::NodeBackground;
-    style.colors[imnodes::ColorStyle_TitleBarSelected] = Colors::Node::TitleBarSelected;
-    style.colors[imnodes::ColorStyle_TitleBarHovered] = Colors::Node::TitleBarHovered;
-    style.colors[imnodes::ColorStyle_NodeBackgroundSelected] = style.colors[imnodes::ColorStyle_NodeBackground];
-    style.colors[imnodes::ColorStyle_NodeBackgroundHovered] = style.colors[imnodes::ColorStyle_NodeBackground];
-    style.colors[imnodes::ColorStyle_Pin] = Colors::NodeConnections::AnyValue;
-    style.colors[imnodes::ColorStyle_PinHovered] = Colors::NodeConnections::Gray;
-    style.colors[imnodes::ColorStyle_Link] = Colors::NodeConnections::Gray;
+    ImNodesStyle& style = ImNodes::GetStyle();
+    style.Colors[ImNodesCol_NodeBackground] = Colors::Node::NodeBackground;
+    style.Colors[ImNodesCol_TitleBarSelected] = Colors::Node::TitleBarSelected;
+    style.Colors[ImNodesCol_TitleBarHovered] = Colors::Node::TitleBarHovered;
+    style.Colors[ImNodesCol_NodeBackgroundSelected] = style.Colors[ImNodesCol_NodeBackground];
+    style.Colors[ImNodesCol_NodeBackgroundHovered] = style.Colors[ImNodesCol_NodeBackground];
+    style.Colors[ImNodesCol_Pin] = Colors::NodeConnections::AnyValue;
+    style.Colors[ImNodesCol_PinHovered] = Colors::NodeConnections::Gray;
+    style.Colors[ImNodesCol_Link] = Colors::NodeConnections::Gray;
 }
 
 NodeWindow::~NodeWindow()
 {
-    imnodes::EditorContextFree(defaultContext);
+    ImNodes::EditorContextFree(defaultContext);
 
     for (auto c : m_contexts)
-        imnodes::EditorContextFree(c.second);
+        ImNodes::EditorContextFree(c.second);
 }
 
 void NodeWindow::drawWindow()
@@ -48,20 +48,20 @@ void NodeWindow::drawWindow()
         return;
 
     // Reset context in case it has been deleted
-    imnodes::EditorContextSet(defaultContext);
+    ImNodes::EditorContextSet(defaultContext);
 
     m_nodeGroup.reset();
 
     std::shared_ptr<NodeGroup> nodeGroup = AppManager::getSelected<NodeGroup>();
     if (nodeGroup) {
-        imnodes::EditorContextSet(getContext(nodeGroup));
+        ImNodes::EditorContextSet(getContext(nodeGroup));
         m_nodeGroup = nodeGroup;
     }
 
     auto pin = AppManager::getSelected<Pin>();
     if (pin && pin->getNodeGroup()) {
         nodeGroup = pin->getNodeGroup();
-        imnodes::EditorContextSet(getContext(nodeGroup));
+        ImNodes::EditorContextSet(getContext(nodeGroup));
         m_nodeGroup = nodeGroup;
     }
 
@@ -73,16 +73,15 @@ void NodeWindow::drawWindow()
 
     drawMenubar();
 
-    imnodes::BeginNodeEditor();
+    ImNodes::BeginNodeEditor();
 
     bool nodeGraphFocus = ImGui::IsWindowFocused(ImGuiFocusedFlags_DockHierarchy);
     m_isFocused = windowFocus || nodeGraphFocus;
 
     float linkThickness = std::clamp(AppManager::getZoom() / 5.0f, 2.0f, 6.0f);
-    imnodes::PushStyleVar(imnodes::StyleVar_LinkThickness, linkThickness);
-    imnodes::PushStyleVar(imnodes::StyleVar_PinCircleRadius, linkThickness);
-    imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingHorizontal, AppManager::getZoom() / 2.0f);
-    imnodes::PushStyleVar(imnodes::StyleVar_NodePaddingVertical, 4.0f);
+    ImNodes::PushStyleVar(ImNodesStyleVar_LinkThickness, linkThickness);
+    ImNodes::PushStyleVar(ImNodesStyleVar_PinCircleRadius, linkThickness);
+    ImNodes::PushStyleVar(ImNodesStyleVar_NodePadding, ImVec2(AppManager::getZoom() / 2.0f, 4.0f));
 
     drawPopupMenu(nodeGroup);
 
@@ -95,12 +94,11 @@ void NodeWindow::drawWindow()
         addLinkData(nodeGroup);
     }
 
-    imnodes::EndNodeEditor();
+    ImNodes::EndNodeEditor();
 
-    imnodes::PopStyleVar();
-    imnodes::PopStyleVar();
-    imnodes::PopStyleVar();
-    imnodes::PopStyleVar();
+    ImNodes::PopStyleVar();
+    ImNodes::PopStyleVar();
+    ImNodes::PopStyleVar();
 
     if (nodeGroup) {
         saveNodePositions(nodeGroup);
@@ -121,7 +119,7 @@ void NodeWindow::drawWindow()
 
 void NodeWindow::removeContext(std::shared_ptr<NodeGroup>& nodeGroup)
 {
-    imnodes::EditorContextFree(m_contexts[nodeGroup]);
+    ImNodes::EditorContextFree(m_contexts[nodeGroup]);
     m_contexts.erase(nodeGroup);
 }
 
@@ -152,7 +150,7 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
 
     // Open context menu
     if (ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-        if (imnodes::IsEditorHovered()) {
+        if (ImNodes::IsEditorHovered()) {
             open_context_menu = true;
         }
     if (open_context_menu) {
@@ -172,7 +170,7 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
 
             if (ImGui::MenuItem(Node::s_nodeName[i], NULL, false, enabled)) {
                 nodeGroup->addNode((NodeTypes)i);
-                imnodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
+                ImNodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
             }
         }
 
@@ -188,23 +186,23 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
         return;
 
     if (m_lastSelected.lock() != AppManager::getSelectedItem().lock())
-        imnodes::SetNodeGridSpacePos(node->getId(), node->getPosition());
+        ImNodes::SetNodeGridSpacePos(node->getId(), node->getPosition());
 
     // Style for nodes
     ImVec2 label_size = ImGui::CalcTextSize("This is a node box size");
     if (node->getLoopFound()) {
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackground, Colors::Node::Error);
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundHovered, Colors::Node::Error);
-        imnodes::PushColorStyle(imnodes::ColorStyle_NodeBackgroundSelected, Colors::Node::Error);
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBar, Colors::Node::Error);
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarHovered, Colors::Node::Error);
-        imnodes::PushColorStyle(imnodes::ColorStyle_TitleBarSelected, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_NodeBackground, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_NodeBackgroundHovered, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_NodeBackgroundSelected, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_TitleBar, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, Colors::Node::Error);
+        ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, Colors::Node::Error);
     }
 
-    imnodes::BeginNode(node->getId());
+    ImNodes::BeginNode(node->getId());
 
     // Node title
-    imnodes::BeginNodeTitleBar();
+    ImNodes::BeginNodeTitleBar();
     ImGui::PushItemWidth(label_size.x);
 
     static int editingId = -1;
@@ -240,7 +238,7 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
     }
     ImGui::PopItemWidth();
 
-    imnodes::EndNodeTitleBar();
+    ImNodes::EndNodeTitleBar();
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10.0f, 3.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2.0f, 4.0f));
@@ -249,15 +247,15 @@ void NodeWindow::drawNode(std::shared_ptr<Node>& node)
 
     ImGui::PopStyleVar(2);
     ImGui::PopItemWidth();
-    imnodes::EndNode();
+    ImNodes::EndNode();
 
     if (node->getLoopFound()) {
-        imnodes::PopColorStyle();
-        imnodes::PopColorStyle();
-        imnodes::PopColorStyle();
-        imnodes::PopColorStyle();
-        imnodes::PopColorStyle();
-        imnodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
+        ImNodes::PopColorStyle();
     }
 }
 
@@ -278,19 +276,19 @@ void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup)
                 if (m_mode == Mode::Simulation) {
                     float outputValue = fromNode->getInput(fromLinkAttribute).ConnectedNode.lock()->getOutput(fromNode->getInput(fromLinkAttribute).OutputIndex);
                     if (outputValue > 0.0f) {
-                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, Colors::NodeConnections::LinkOn);
+                        ImNodes::PushColorStyle(ImNodesCol_Link, Colors::NodeConnections::LinkOn);
                     } else {
-                        imnodes::PushColorStyle(imnodes::ColorStyle_Link, Colors::NodeConnections::Gray);
+                        ImNodes::PushColorStyle(ImNodesCol_Link, Colors::NodeConnections::Gray);
                     }
                 }
 
-                imnodes::Link(
+                ImNodes::Link(
                     (fromNode->getId() << 16) + (toNode.lock()->getId() << 8) + fromLinkAttribute,
                     (toNode.lock()->getId() << 8) + fromNode->getInput(fromLinkAttribute).OutputIndex,
                     (fromNode->getId() << 8) + fromLinkAttribute + fromNode->getOutputs().size());
 
                 if (m_mode == Mode::Simulation) {
-                    imnodes::PopColorStyle();
+                    ImNodes::PopColorStyle();
                 }
             }
         }
@@ -300,7 +298,7 @@ void NodeWindow::addLinkData(std::shared_ptr<NodeGroup>& nodeGroup)
 void NodeWindow::isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     int begin, end;
-    if (imnodes::IsLinkCreated(&begin, &end)) {
+    if (ImNodes::IsLinkCreated(&begin, &end)) {
         unsigned char beginNodeIndex = begin >> 8;
         unsigned char beginAttributeIndex = begin & 0xFF;
         unsigned char endNodeIndex = end >> 8;
@@ -339,11 +337,11 @@ void NodeWindow::isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup)
 
 void NodeWindow::isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 {
-    const int num_selected = imnodes::NumSelectedLinks();
+    const int num_selected = ImNodes::NumSelectedLinks();
     if (num_selected > 0 && ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
         static std::vector<int> selected_links;
         selected_links.resize(static_cast<size_t>(num_selected));
-        imnodes::GetSelectedLinks(selected_links.data());
+        ImNodes::GetSelectedLinks(selected_links.data());
         for (const int link_id : selected_links) {
             int nodeId = (link_id >> 16) & 0xFF;
             int linkAttribute = link_id & 0xFF;
@@ -358,11 +356,11 @@ void NodeWindow::isLinkDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 
 void NodeWindow::isNodeDeleted(std::shared_ptr<NodeGroup>& nodeGroup)
 {
-    const int num_selected = imnodes::NumSelectedNodes();
+    const int num_selected = ImNodes::NumSelectedNodes();
     if (num_selected > 0 && ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Delete))) {
         static std::vector<int> selected_nodes;
         selected_nodes.resize(static_cast<size_t>(num_selected));
-        imnodes::GetSelectedNodes(selected_nodes.data());
+        ImNodes::GetSelectedNodes(selected_nodes.data());
         for (const int node_id : selected_nodes) {
 
             if (!nodeGroup)
@@ -380,22 +378,22 @@ void NodeWindow::saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup)
         return;
 
     for (auto n : nodeGroup->getNodes()) {
-        n->getPosition() = imnodes::GetNodeGridSpacePos(n->getId());
+        n->getPosition() = ImNodes::GetNodeGridSpacePos(n->getId());
     }
 }
 
 void NodeWindow::doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup)
 {
     int hovered;
-    if (m_mode == Mode::Simulation && imnodes::IsPinHovered(&hovered))
+    if (m_mode == Mode::Simulation && ImNodes::IsPinHovered(&hovered))
         ImGui::SetTooltip("%.2f", nodeGroup->getValue(hovered));
 }
 
-imnodes::EditorContext* NodeWindow::getContext(std::shared_ptr<NodeGroup>& nodeGroup)
+ImNodesEditorContext* NodeWindow::getContext(std::shared_ptr<NodeGroup>& nodeGroup)
 {
 
     if (m_contexts.find(nodeGroup) == m_contexts.end())
-        m_contexts[nodeGroup] = imnodes::EditorContextCreate();
+        m_contexts[nodeGroup] = ImNodes::EditorContextCreate();
 
     return m_contexts[nodeGroup];
 }

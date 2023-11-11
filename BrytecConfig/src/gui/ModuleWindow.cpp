@@ -240,7 +240,7 @@ void ModuleWindow::drawModule(std::shared_ptr<Module>& m)
         { rectMax.x, rectMin.y + titleBarHeight },
         titleHovered ? Colors::Module::TitleBarHovered : Colors::Module::TitleBar,
         4,
-        ImDrawCornerFlags_Top);
+        ImDrawFlags_RoundCornersTop);
     // outline
     drawList->AddRect(
         rectMin,

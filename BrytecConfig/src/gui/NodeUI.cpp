@@ -105,7 +105,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::Node_Group: {
-        imnodes::BeginStaticAttribute(node->getValueId(0));
+        ImNodes::BeginStaticAttribute(node->getValueId(0));
 
         static std::shared_ptr<NodeGroup> thisNodeGroup;
 
@@ -194,12 +194,12 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
             ImGui::EndCombo();
         }
-        imnodes::EndStaticAttribute();
+        ImNodes::EndStaticAttribute();
 
         UI::InputFloat(node, 0, "Default Value");
         UI::InputFloat(node, 1, "Timeout", 2, 0.01f, 1000.0f, 0.01f);
 
-        imnodes::BeginStaticAttribute(node->getValueId(1));
+        ImNodes::BeginStaticAttribute(node->getValueId(1));
         if (mode == NodeWindow::Mode::Simulation) {
 
             ImGui::DragFloat("###float1", &node->getValue(0), 1.0f, 0.0f, 10000.0f, "%.2f");
@@ -226,7 +226,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             ImGui::PopStyleColor(3);
         }
 
-        imnodes::EndStaticAttribute();
+        ImNodes::EndStaticAttribute();
 
         UI::Ouput(node, 0, "Result");
         break;
@@ -473,7 +473,7 @@ void UI::SameHeightText(std::string text)
 
 void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals, float min, float max, float speed)
 {
-    imnodes::BeginInputAttribute(node->getIntputId(attribute));
+    ImNodes::BeginInputAttribute(node->getIntputId(attribute));
 
     if (node->getInput(attribute).ConnectedNode.expired()) {
         std::stringstream stream;
@@ -494,13 +494,13 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
         SameHeightText(label);
     }
 
-    imnodes::EndInputAttribute();
+    ImNodes::EndInputAttribute();
 }
 
 void UI::InputBool(std::shared_ptr<Node>& node, int attribute, std::string label)
 {
-    imnodes::PushColorStyle(imnodes::ColorStyle_Pin, Colors::NodeConnections::Boolean);
-    imnodes::BeginInputAttribute(node->getIntputId(attribute));
+    ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::Boolean);
+    ImNodes::BeginInputAttribute(node->getIntputId(attribute));
 
     if (node->getInput(attribute).ConnectedNode.expired()) {
         bool value = node->getInput(attribute).DefaultValue;
@@ -512,13 +512,13 @@ void UI::InputBool(std::shared_ptr<Node>& node, int attribute, std::string label
         SameHeightText(label);
     }
 
-    imnodes::EndInputAttribute();
-    imnodes::PopColorStyle();
+    ImNodes::EndInputAttribute();
+    ImNodes::PopColorStyle();
 }
 
 void UI::ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min, float max, float speed)
 {
-    imnodes::BeginStaticAttribute(node->getValueId(attribute));
+    ImNodes::BeginStaticAttribute(node->getValueId(attribute));
 
     std::stringstream stream;
     stream << std::fixed << std::setprecision(2) << node->getValue(attribute);
@@ -534,30 +534,30 @@ void UI::ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
     label += stream.str();
 
     ImGui::DragFloat("###DragFloat", &node->getValue(attribute), speed, min, max, label.c_str());
-    imnodes::EndStaticAttribute();
+    ImNodes::EndStaticAttribute();
 }
 
 void UI::ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count)
 {
-    imnodes::BeginStaticAttribute(node->getValueId(attribute));
+    ImNodes::BeginStaticAttribute(node->getValueId(attribute));
 
     int type = (int)node->getValue(attribute);
     if (ImGui::Combo("###Combo", &type, items, items_count))
         node->setValue(attribute, (float)type);
 
-    imnodes::EndStaticAttribute();
+    ImNodes::EndStaticAttribute();
 }
 
 void UI::Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color)
 {
-    imnodes::PushColorStyle(imnodes::ColorStyle_Pin, color);
+    ImNodes::PushColorStyle(ImNodesCol_Pin, color);
 
-    imnodes::BeginOutputAttribute(node->getOutputId(attribute));
+    ImNodes::BeginOutputAttribute(node->getOutputId(attribute));
     ImGui::Indent(s_nodeWidth - ImGui::CalcTextSize(label.c_str()).x);
     SameHeightText(label);
-    imnodes::EndOutputAttribute();
+    ImNodes::EndOutputAttribute();
 
-    imnodes::PopColorStyle();
+    ImNodes::PopColorStyle();
 }
 
 void UI::OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact)

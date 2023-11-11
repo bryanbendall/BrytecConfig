@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "AppManager.h"
 #include "NotificationWindow.h"
 #include "fonts/droidsans.cpp"
@@ -9,8 +11,6 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <functional>
 #include <imgui.h>
-
-#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 
 namespace Brytec {
@@ -282,7 +282,7 @@ void MainWindow::drawMenuBar()
 
         if (AppManager::getUsbManager().isOpen()) {
             ImGui::PushFont(NULL);
-            connectButtonPos += { s_iconSize / 2, s_iconSize / 2 };
+            connectButtonPos = connectButtonPos + ImVec2(s_iconSize / 2, s_iconSize / 2);
             ImGui::GetWindowDrawList()->AddText(connectButtonPos, Colors::Notifications::Success, ICON_FA_CHECK_CIRCLE);
             ImGui::PopFont();
         }

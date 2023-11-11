@@ -1,5 +1,7 @@
 #pragma once
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "data/NodeGroup.h"
 #include "data/Selectable.h"
 #include <imnodes.h>
@@ -32,7 +34,7 @@ private:
     void isNodeDeleted(std::shared_ptr<NodeGroup>& nodeGroup);
     void saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup);
     void doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup);
-    imnodes::EditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
+    ImNodesEditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
 
 public:
     enum class Mode {
@@ -47,8 +49,8 @@ private:
     std::weak_ptr<Selectable> m_lastSelected;
     Mode m_mode = Mode::Build;
     std::weak_ptr<NodeGroup> m_nodeGroup;
-    imnodes::EditorContext* defaultContext;
-    std::map<std::shared_ptr<NodeGroup>, imnodes::EditorContext*> m_contexts;
+    ImNodesEditorContext* defaultContext;
+    std::map<std::shared_ptr<NodeGroup>, ImNodesEditorContext*> m_contexts;
 };
 
 }

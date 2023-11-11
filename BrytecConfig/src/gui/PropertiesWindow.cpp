@@ -364,7 +364,7 @@ void PropertiesWindow::drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup)
             if (nodeGroup->getAssigned())
                 ImGui::Text("%s %s", ICON_FA_LOCK, IOTypes::getString(nodeGroup->getType()));
             else
-                ImGui::Combo("###Node Group Type", (int*)&nodeGroup->getType(), IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 10);
+                ImGui::Combo("###Node Group Type", (int*)&nodeGroup->getType(), IOTypes::Strings, IM_ARRAYSIZE(IOTypes::Strings), 20);
 
             // Current limit
             ImGui::TableNextRow();

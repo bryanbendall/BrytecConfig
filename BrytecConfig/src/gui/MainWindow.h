@@ -1,5 +1,7 @@
 #pragma once
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "ModuleBuilderWindow.h"
 #include "ModuleWindow.h"
 #include "MonitorWindow.h"
