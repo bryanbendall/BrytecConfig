@@ -94,6 +94,7 @@ void NodeWindow::drawWindow()
         addLinkData(nodeGroup);
     }
 
+    ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
     ImNodes::EndNodeEditor();
 
     ImNodes::PopStyleVar();
