@@ -16,7 +16,6 @@ public:
 private:
     void drawMenubar();
     void drawModuleTable();
-    void drawPinDialog(std::shared_ptr<PhysicalPin>& pin);
     void writeDefineFile(const std::filesystem::path& path);
 
 private:
