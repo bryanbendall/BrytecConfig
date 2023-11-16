@@ -112,7 +112,7 @@ void Usb::open(std::string port)
 {
     if (!port.empty()) {
         m_serial.setPort(port);
-        serial::Timeout timeout = serial::Timeout::simpleTimeout(100);
+        serial::Timeout timeout = serial::Timeout::simpleTimeout(0);
         m_serial.setTimeout(timeout);
         m_serial.setBaudrate(115200);
 
