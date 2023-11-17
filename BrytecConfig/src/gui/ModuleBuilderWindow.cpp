@@ -129,7 +129,7 @@ void ModuleBuilderWindow::drawModuleTable()
 
         ImGui::EndTable();
 
-        const int columns_count = (int)IOTypes::Types::Count + 2;
+        const int columns_count = (int)IOTypes::Types::Count + 3;
         static ImGuiTableFlags table_flags = ImGuiTableFlags_PadOuterX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY | ImGuiTableFlags_HighlightHoveredColumn | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_NoSavedSettings;
         float columnWidth = ImGui::GetFrameHeight();
 
@@ -140,6 +140,8 @@ void ModuleBuilderWindow::drawModuleTable()
             ImGui::TableSetupColumn("Pwm", ImGuiTableColumnFlags_AngledHeader | ImGuiTableColumnFlags_WidthFixed, columnWidth);
             for (int n = 1; n < (int)IOTypes::Types::Count; n++)
                 ImGui::TableSetupColumn(IOTypes::Strings[n], ImGuiTableColumnFlags_AngledHeader | ImGuiTableColumnFlags_WidthFixed, columnWidth);
+
+            ImGui::TableSetupColumn("##Delete", ImGuiTableColumnFlags_WidthStretch);
 
             ImGui::TableSetupScrollFreeze(1, 2);
 
@@ -187,6 +189,26 @@ void ModuleBuilderWindow::drawModuleTable()
                     }
                     ImGui::PopID();
                 }
+
+                // Move up
+                ImGui::TableNextColumn();
+                if (ImGui::Button(ICON_FA_ARROW_UP)) {
+                    if (i != 0)
+                        std::swap(pin, m_module->getPhysicalPins()[i - 1]);
+                }
+
+                // Move down
+                ImGui::SameLine();
+                if (ImGui::Button(ICON_FA_ARROW_DOWN)) {
+                    if (i != m_module->getPhysicalPins().size() - 1)
+                        std::swap(pin, m_module->getPhysicalPins()[i + 1]);
+                }
+
+                // Delete
+                ImGui::SameLine();
+                if (ImGui::Button("Delete"))
+                    m_module->deletePin(pin);
+
                 ImGui::PopID();
             }
             ImGui::EndTable();
