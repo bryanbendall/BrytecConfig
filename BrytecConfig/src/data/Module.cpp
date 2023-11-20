@@ -8,11 +8,6 @@ namespace Brytec {
 
 Module::Module()
 {
-    addCanBus({ "Can 0", CanTypes::Types::Brytec });
-    addCanBus({ "Can 1" });
-    addCanBus({ "Can 2" });
-    addCanBus({ "Can 3" });
-
     addInternalPin();
 }
 
@@ -47,4 +42,21 @@ void Module::updateInternalPins()
     addInternalPin();
 }
 
+CanBus& Module::addCanBus()
+{
+    CanBus can;
+
+    // Default first can to Brytec
+    if (m_canBus.size() == 0)
+        can.setType(CanTypes::Types::Brytec);
+
+    m_canBus.push_back(can);
+
+    return m_canBus.back();
+}
+
+void Module::deleteCanBus(uint8_t index)
+{
+    m_canBus.erase(m_canBus.begin() + index);
+}
 }

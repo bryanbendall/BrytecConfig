@@ -20,7 +20,7 @@ public:
 
 private:
     void drawModuleProps(std::shared_ptr<Module> module);
-    void drawCanBus(CanBus& can);
+    void drawCanBus(CanBus& can, uint8_t index);
     void drawPinProps(std::shared_ptr<Pin> pin);
     void drawNodeGroupProps(std::shared_ptr<NodeGroup> nodeGroup);
 

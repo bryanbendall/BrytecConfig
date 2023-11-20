@@ -146,47 +146,78 @@ void PropertiesWindow::drawModuleProps(std::shared_ptr<Module> module)
 
             ImGui::EndTable();
 
-            for (auto& canBus : module->getCanBuss()) {
-                drawCanBus(canBus);
+            for (int i = 0; i < module->getCanBuses().size(); i++) {
+                ImGui::PushID(i);
+                drawCanBus(module->getCanBus(i), i);
+                ImGui::PopID();
             }
         }
     }
 }
 
-void PropertiesWindow::drawCanBus(CanBus& can)
+void PropertiesWindow::drawCanBus(CanBus& can, uint8_t index)
 {
     // Can Bus
-    if (ImGui::CollapsingHeader(can.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+    std::string headerName = "Can ";
+    headerName += std::to_string(index);
+    if (ImGui::CollapsingHeader(headerName.c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 
         if (ImGui::BeginTable("CanProps", 2, flags)) {
 
             ImGui::TableSetupColumn("CanProps", ImGuiTableColumnFlags_NoHide | ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
+            // Pinouts
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Indent();
+            ImGui::TextUnformatted("Can Hi");
+            ImGui::Unindent();
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::TextUnformatted(can.getHiPinout().c_str());
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Indent();
+            ImGui::TextUnformatted("Can Lo");
+            ImGui::Unindent();
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::TextUnformatted(can.getLoPinout().c_str());
+
             // Can Type
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Indent();
             ImGui::TextUnformatted("Type");
+            ImGui::Unindent();
             ImGui::TableNextColumn();
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::Combo("###CanType", (int*)&can.type, CanTypes::Strings, IM_ARRAYSIZE(CanTypes::Strings));
+            int type = (int)can.getType();
+            if (ImGui::Combo("###CanType", &type, CanTypes::Strings, IM_ARRAYSIZE(CanTypes::Strings)))
+                can.setType((CanTypes::Types)type);
 
-            if (can.type == CanTypes::Types::Custom) {
+            if (can.getType() != CanTypes::Types::Disabled) {
 
                 // Can Speed
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
+                ImGui::AlignTextToFramePadding();
+                ImGui::Indent();
                 ImGui::TextUnformatted("Speed");
+                ImGui::Unindent();
                 ImGui::TableNextColumn();
                 ImGui::SetNextItemWidth(-FLT_MIN);
-                ImGui::Combo("###CanSpeed", (int*)&can.speed, CanSpeed::Strings, IM_ARRAYSIZE(CanSpeed::Strings));
-
-                // Can Format
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::TextUnformatted("Format");
-                ImGui::TableNextColumn();
-                ImGui::SetNextItemWidth(-FLT_MIN);
-                ImGui::Combo("###CanFormat", (int*)&can.format, CanFormat::Strings, IM_ARRAYSIZE(CanFormat::Strings));
+                if (can.getType() == CanTypes::Types::Custom) {
+                    int speed = (int)can.getSpeed();
+                    if (ImGui::Combo("###CanSpeed", &speed, CanSpeed::Strings, IM_ARRAYSIZE(CanSpeed::Strings))) {
+                        can.setSpeed((CanSpeed::Types)speed);
+                    }
+                } else
+                    ImGui::TextUnformatted(CanSpeed::getString(can.getSpeed()));
             }
 
             ImGui::EndTable();

@@ -6,6 +6,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
                 src/BrytecConfigEmbedded/Can/EBrytecCan.h
                 src/BrytecConfigEmbedded/Can/EBrytecCan.cpp
+                src/BrytecConfigEmbedded/Can/ECanBus.h
+                src/BrytecConfigEmbedded/Can/ECanBus.cpp
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.cpp
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
                 src/BrytecConfigEmbedded/Can/ECanCommandQueue.cpp

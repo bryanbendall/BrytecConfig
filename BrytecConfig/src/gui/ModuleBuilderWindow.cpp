@@ -127,6 +127,53 @@ void ModuleBuilderWindow::drawModuleTable()
         ImGui::SetNextItemWidth(-FLT_MIN);
         ImGui::InputScalar("###ModuleAddressInput", ImGuiDataType_U8, &m_module->getAddress(), &showButtons);
 
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Can Bus Networks");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        if (ImGui::Button("Add Can Bus"))
+            m_module->addCanBus();
+
+        for (uint8_t c; c < m_module->getCanBuses().size(); c++) {
+            ImGui::PushID(c);
+            Brytec::CanBus& can = m_module->getCanBus(c);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Indent();
+            ImGui::AlignTextToFramePadding();
+            ImGui::Text("Can Bus %u", c);
+            ImGui::TableNextColumn();
+            if (ImGui::Button("Delete"))
+                m_module->deleteCanBus(c);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Indent();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Can Hi Pinout");
+            ImGui::Unindent();
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputText("###CanHiPinout", &can.getHiPinout(), ImGuiInputTextFlags_AutoSelectAll);
+
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Indent();
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextUnformatted("Can Lo Pinout");
+            ImGui::Unindent();
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputText("###CanLoPinout", &can.getLoPinout(), ImGuiInputTextFlags_AutoSelectAll);
+
+            ImGui::Unindent();
+
+            ImGui::PopID();
+        }
+
         ImGui::EndTable();
 
         const int columns_count = (int)IOTypes::Types::Count + 3;
@@ -236,7 +283,19 @@ void ModuleBuilderWindow::writeDefineFile(const std::filesystem::path& path)
             fout << "#define BT_PIN_" << pinout << " " << i << "\n";
         }
     }
+    fout << std::endl;
 
+    {
+        fout << "// Can Bus Defines" << std::endl;
+        for (int i = 0; i < m_module->getCanBuses().size(); i++) {
+            auto& can = m_module->getCanBus(i);
+            std::string hiPinout = can.getHiPinout();
+            std::replace(hiPinout.begin(), hiPinout.end(), ' ', '_');
+            std::string loPinout = can.getLoPinout();
+            std::replace(loPinout.begin(), loPinout.end(), ' ', '_');
+            fout << "#define BT_CAN_" << hiPinout << "_" << loPinout << " " << i << "\n";
+        }
+    }
     fout << std::endl;
 
     {

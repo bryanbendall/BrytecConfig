@@ -1,27 +1,20 @@
 #include "CanBus.h"
 
+#include "EBrytecConfig.h"
+
 namespace Brytec {
 
-const char* CanTypes::Strings[] = {
-    "Disabled",
-    "Brytec",
-    "Custom"
-};
+void CanBus::setType(CanTypes::Types type)
+{
+    m_type = type;
 
-const char* CanFormat::Strings[] = {
-    "Standard",
-    "Extended"
-};
+    switch (type) {
+    case CanTypes::Types::Brytec:
+        m_speed = DEFAULT_BRYTEC_CAN_SPEED;
+        break;
 
-const char* CanSpeed::Strings[] = {
-    "1 MBps",
-    "500 kBps",
-    "200 kBps",
-    "250 kBps",
-    "125 kBps",
-    "100 kBps",
-    "50 kBps",
-    "20 kBps"
-};
-
+    default:
+        break;
+    }
+}
 }

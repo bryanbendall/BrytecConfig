@@ -39,9 +39,10 @@ public:
     std::vector<std::shared_ptr<InternalPin>>& getInternalPins() { return m_internalPins; }
     void updateInternalPins();
 
-    void addCanBus(CanBus canBus) { m_canBus.push_back(canBus); }
+    CanBus& addCanBus();
     CanBus& getCanBus(int index) { return m_canBus[index]; }
-    std::vector<CanBus>& getCanBuss() { return m_canBus; }
+    std::vector<CanBus>& getCanBuses() { return m_canBus; }
+    void deleteCanBus(uint8_t index);
 
 private:
     std::vector<std::shared_ptr<PhysicalPin>> m_physicalPins;

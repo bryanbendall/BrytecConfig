@@ -39,6 +39,13 @@ BinarySerializer ModuleSerializer::serializeTemplateBinary()
     ser.writeRaw<std::string>(m_module->getBoardName());
     ser.writeRaw<uint8_t>(m_module->getAddress());
 
+    // Can Bus
+    ser.writeRaw<uint8_t>(m_module->getCanBuses().size());
+    for (auto& can : m_module->getCanBuses()) {
+        ser.writeRaw(can.getHiPinout());
+        ser.writeRaw(can.getLoPinout());
+    }
+
     // Prototype pins
     ser.writeRaw<uint16_t>(m_module->getPhysicalPins().size());
     for (auto pin : m_module->getPhysicalPins()) {
@@ -85,6 +92,21 @@ bool ModuleSerializer::deserializeTemplateBinary(BinaryDeserializer& des)
     uint8_t address;
     des.readRaw<uint8_t>(&address);
     m_module->setAddress(address);
+
+    // Can Bus
+    uint8_t canCount;
+    des.readRaw<uint8_t>(&canCount);
+    for (int c = 0; c < canCount; c++) {
+        auto& can = m_module->addCanBus();
+
+        std::string hiPinout;
+        des.readRaw<std::string>(&hiPinout);
+        can.getHiPinout() = hiPinout;
+
+        std::string loPinout;
+        des.readRaw<std::string>(&loPinout);
+        can.getLoPinout() = loPinout;
+    }
 
     // Pins
     uint16_t pinCount;
@@ -133,11 +155,19 @@ BinarySerializer ModuleSerializer::serializeBinary()
     ser.writeRaw<uint8_t>(AppManager::getVersion().Minor);
 
     // Basic info
+    // TODO remove what is in template
     ser.writeRaw<std::string>(m_module->getName());
     ser.writeRaw<std::string>(m_module->getManufacturerName());
     ser.writeRaw<std::string>(m_module->getBoardName());
     ser.writeRaw<uint8_t>(m_module->getAddress());
     ser.writeRaw<uint8_t>(m_module->getEnabled());
+
+    // Can Bus
+    ser.writeRaw<uint8_t>(m_module->getCanBuses().size());
+    for (auto& can : m_module->getCanBuses()) {
+        ser.writeRaw<uint8_t>((uint8_t)can.getType());
+        ser.writeRaw<uint8_t>((uint8_t)can.getSpeed());
+    }
 
     // Node Group Count
     uint16_t physicalNodeGroupCount = 0;
@@ -215,6 +245,23 @@ bool ModuleSerializer::deserializeBinary(BinaryDeserializer& des)
     uint8_t enabled;
     des.readRaw<uint8_t>(&enabled);
     m_module->setEnabled(enabled);
+
+    // Can Bus
+    uint8_t canCount;
+    des.readRaw<uint8_t>(&canCount);
+    if (canCount > m_module->getCanBuses().size())
+        return false;
+    for (int c = 0; c < canCount; c++) {
+        auto& can = m_module->getCanBus(c);
+
+        uint8_t type;
+        des.readRaw<uint8_t>(&type);
+        can.setType((CanTypes::Types)type);
+
+        uint8_t speed;
+        des.readRaw<uint8_t>(&speed);
+        can.setSpeed((CanSpeed::Types)speed);
+    }
 
     uint16_t totalNodeGroups;
     des.readRaw<uint16_t>(&totalNodeGroups);

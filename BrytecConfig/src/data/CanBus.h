@@ -1,54 +1,28 @@
 #pragma once
 
+#include "Can/ECanBus.h"
 #include <string>
 
 namespace Brytec {
 
-struct CanTypes {
-    enum class Types {
-        Disabled,
-        Brytec,
-        Custom,
-        Count
-    };
+class CanBus {
 
-    static const char* Strings[(size_t)Types::Count];
-    static const char* getString(Types type) { return Strings[(int)type]; }
+public:
+    CanBus() = default;
+
+    std::string& getHiPinout() { return m_hiPinout; }
+    std::string& getLoPinout() { return m_loPinout; }
+
+    CanTypes::Types getType() { return m_type; }
+    void setType(CanTypes::Types type);
+
+    CanSpeed::Types getSpeed() { return m_speed; }
+    void setSpeed(CanSpeed::Types speed) { m_speed = speed; }
+
+private:
+    std::string m_hiPinout = "Hi";
+    std::string m_loPinout = "Lo";
+    CanTypes::Types m_type = CanTypes::Types::Disabled;
+    CanSpeed::Types m_speed = CanSpeed::Types::Speed_1MBps;
 };
-
-struct CanFormat {
-    enum class Types {
-        Std,
-        Ext,
-        Count
-    };
-
-    static const char* Strings[(size_t)Types::Count];
-    static const char* getString(Types type) { return Strings[(int)type]; }
-};
-
-struct CanSpeed {
-    enum class Types {
-        Speed_1MBps,
-        Speed_500kBps,
-        Speed_250kBps,
-        Speed_200kBps,
-        Speed_125kBps,
-        Speed_100kBps,
-        Speed_50kBps,
-        Speed_20kBps,
-        Count
-    };
-
-    static const char* Strings[(size_t)Types::Count];
-    static const char* getString(Types type) { return Strings[(int)type]; }
-};
-
-struct CanBus {
-    std::string name;
-    CanTypes::Types type = CanTypes::Types::Disabled;
-    CanFormat::Types format = CanFormat::Types::Std;
-    CanSpeed::Types speed = CanSpeed::Types::Speed_1MBps;
-};
-
 }
