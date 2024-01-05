@@ -57,6 +57,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EPinCurrentNode.h
                 src/BrytecConfigEmbedded/Nodes/EPushButtonNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EPushButtonNode.h
+                src/BrytecConfigEmbedded/Nodes/ERacepakSwitchPanelNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ERacepakSwitchPanelNode.h
                 src/BrytecConfigEmbedded/Nodes/ESwitchNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ESwitchNode.h
                 src/BrytecConfigEmbedded/Nodes/EToggleNode.cpp

@@ -27,7 +27,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Pin Current",
     "PID (Experamental)",
     "Counter",
-    "Color"
+    "Color",
+    "Racepak Switch Panel"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -214,6 +215,17 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // G
         m_inputs.push_back(NodeConnection()); // B
         m_outputs.push_back(0.0f);
+        break;
+
+    case NodeTypes::Racepak_Switch_Panel:
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
+        m_inputs.push_back(NodeConnection());
         break;
 
     case NodeTypes::Count:

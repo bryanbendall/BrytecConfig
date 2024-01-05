@@ -451,6 +451,18 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
+    case NodeTypes::Racepak_Switch_Panel: {
+        UI::InputFloat(node, 0, "Switch 1");
+        UI::InputFloat(node, 1, "Switch 2");
+        UI::InputFloat(node, 2, "Switch 3");
+        UI::InputFloat(node, 3, "Switch 4");
+        UI::InputFloat(node, 4, "Switch 5");
+        UI::InputFloat(node, 5, "Switch 6");
+        UI::InputFloat(node, 6, "Switch 7");
+        UI::InputFloat(node, 7, "Switch 8");
+        break;
+    }
+
     default:
         drawUnimplimentedNode(node);
         break;
