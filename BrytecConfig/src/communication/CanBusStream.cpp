@@ -188,7 +188,7 @@ void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
     m_sendFunction(m_commandsToSend.front());
 }
 
-void CanBusStream::canBusReceived(CanExtFrame frame)
+void CanBusStream::canBusReceived(CanFrame frame)
 {
     if (frame.isPinBroadcast()) {
 

@@ -49,10 +49,10 @@ void UsbManager::open()
     AppManager::setLastSerialPort(m_device);
 }
 
-void UsbManager::send(CanExtFrame& frame)
+void UsbManager::send(CanFrame& frame)
 {
     UsbPacket packet;
-    packet.set<CanExtFrame>(frame);
+    packet.set<CanFrame>(frame);
     m_usb.send(packet);
 }
 
@@ -63,7 +63,7 @@ void UsbManager::onReceive(UsbPacket packet)
 
         break;
     case UsbPacketType::Can: {
-        m_canBusCallback(packet.as<CanExtFrame>());
+        m_canBusCallback(packet.as<CanFrame>());
     } break;
     case UsbPacketType::Status:
 

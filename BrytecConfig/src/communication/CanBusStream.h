@@ -32,24 +32,24 @@ public:
     void sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& data);
     void getModuleData(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback, bool fullConfig);
 
-    void setSendFunction(std::function<void(CanExtFrame&)> function) { m_sendFunction = function; }
+    void setSendFunction(std::function<void(CanFrame&)> function) { m_sendFunction = function; }
     void send(std::function<void(CanBusStreamCallbackData)> callback);
     bool isSending() { return m_sending; }
 
     std::vector<ModuleStatusBroadcast>& getModuleStatuses() { return m_moduleStatuses; }
     std::vector<PinStatusBroadcast>& getNodeGroupStatuses() { return m_nodeGroupStatuses; }
 
-    void canBusReceived(CanExtFrame frame);
+    void canBusReceived(CanFrame frame);
 
 private:
     float m_timer = 0.0f;
 
-    std::deque<CanExtFrame> m_commandsToSend;
+    std::deque<CanFrame> m_commandsToSend;
     std::function<void(CanBusStreamCallbackData)> m_callback;
     CanBusStreamCallbackData m_callbackData;
     std::atomic_bool m_sending = false;
     uint8_t m_toModuleAddress;
-    std::function<void(CanExtFrame&)> m_sendFunction;
+    std::function<void(CanFrame&)> m_sendFunction;
 
     std::vector<uint8_t> m_moduleDataBuffer;
     std::function<void(const std::vector<uint8_t>&)> m_moduleDataCallback;

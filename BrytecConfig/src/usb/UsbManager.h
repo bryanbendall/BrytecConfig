@@ -22,7 +22,7 @@ public:
     void close() { m_usb.close(); }
     bool isOpen() { return m_usb.isOpen(); }
 
-    void send(CanExtFrame& frame);
+    void send(CanFrame& frame);
     void onReceive(UsbPacket packet);
 
 private:
@@ -30,6 +30,6 @@ private:
     serial::PortInfo m_device;
     CanBusStream m_stream;
 
-    std::function<void(CanExtFrame)> m_canBusCallback;
+    std::function<void(CanFrame)> m_canBusCallback;
 };
 }
