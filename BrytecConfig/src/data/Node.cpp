@@ -28,7 +28,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "PID (Experamental)",
     "Counter",
     "Color",
-    "Racepak Switch Panel"
+    "Racepak Switch Panel (Experamental)",
+    "Holley Broadcast (Experamental)"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -226,6 +227,11 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection());
         m_inputs.push_back(NodeConnection());
         m_inputs.push_back(NodeConnection());
+        break;
+
+    case NodeTypes::Holley_Broadcast:
+        m_outputs.push_back(0.0f); // Output value
+        m_values.push_back(0.0f); // Data channel
         break;
 
     case NodeTypes::Count:

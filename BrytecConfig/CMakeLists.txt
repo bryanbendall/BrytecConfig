@@ -12,6 +12,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
                 src/BrytecConfigEmbedded/Can/ECanCommandQueue.cpp
                 src/BrytecConfigEmbedded/Can/ECanCommandQueue.h
+                src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.cpp
+                src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.cpp
                 src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
@@ -37,6 +39,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EDelayNode.h
                 src/BrytecConfigEmbedded/Nodes/EFinalValueNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EFinalValueNode.h
+                src/BrytecConfigEmbedded/Nodes/EHolleyBroadcastNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EHolleyBroadcastNode.h
                 src/BrytecConfigEmbedded/Nodes/EInitialValueNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EInitialValueNode.h
                 src/BrytecConfigEmbedded/Nodes/EInvertNode.cpp
