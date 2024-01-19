@@ -2,6 +2,7 @@
 
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "communication/ModuleDebug.h"
 #include <chrono>
 #include <iostream>
 
@@ -72,7 +73,8 @@ void UsbManager::onReceive(UsbPacket packet)
         std::cout << "Unknown Usb packet type!" << std::endl;
         break;
     case UsbPacketType::DebugPrint:
-        std::cout.write((char*)&packet.data[1], packet.length - 1);
+        // std::cout.write((char*)&packet.data[1], packet.length - 1);
+        ModuleDebug::push((char*)&packet.data[1], packet.length - 1);
         break;
     }
 }

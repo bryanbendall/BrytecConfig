@@ -87,6 +87,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/IOTypes.h
                 src/communication/CanBusStream.cpp
                 src/communication/CanBusStream.h
+                src/communication/ModuleDebug.cpp
+                src/communication/ModuleDebug.h
                 src/data/CanBus.cpp
                 src/data/CanBus.h
                 src/data/Config.cpp
@@ -110,6 +112,8 @@ add_executable(BrytecConfig
                 src/gui/MainWindow.h
                 src/gui/ModuleBuilderWindow.cpp
                 src/gui/ModuleBuilderWindow.h
+                src/gui/ModuleDebugWindow.cpp
+                src/gui/ModuleDebugWindow.h
                 src/gui/ModuleWindow.cpp
                 src/gui/ModuleWindow.h
                 src/gui/MonitorWindow.cpp

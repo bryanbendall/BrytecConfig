@@ -131,6 +131,7 @@ void MainWindow::drawWindow()
     m_moduleBuilderWindow.drawWindow();
     m_settingsWindow.drawWindow();
     m_monitorWindow.drawWindow();
+    m_moduleDebugWindow.drawWindow();
     m_communicationModals.draw();
 
     NotificationWindow::drawWindow();
@@ -188,6 +189,8 @@ void MainWindow::drawMenu()
                 m_propertiesWindow.setOpenedState(true);
             if (ImGui::MenuItem("Monitor Window", "", m_monitorWindow.getOpenedState()))
                 m_monitorWindow.setOpenedState(true);
+            if (ImGui::MenuItem("Debug Module Window", "", m_moduleDebugWindow.getOpenedState()))
+                m_moduleDebugWindow.setOpenedState(true);
             ImGui::EndMenu();
         }
 

@@ -2,14 +2,15 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+#include "CommunicationModals.h"
 #include "ModuleBuilderWindow.h"
+#include "ModuleDebugWindow.h"
 #include "ModuleWindow.h"
 #include "MonitorWindow.h"
 #include "NodeGroupWindow.h"
 #include "NodeWindow.h"
 #include "PropertiesWindow.h"
 #include "SettingsWindow.h"
-#include "gui/CommunicationModals.h"
 #include <GLFW/glfw3.h>
 
 namespace Brytec {
@@ -39,6 +40,7 @@ private:
     ModuleBuilderWindow m_moduleBuilderWindow;
     SettingsWindow m_settingsWindow;
     MonitorWindow m_monitorWindow;
+    ModuleDebugWindow m_moduleDebugWindow;
     CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;
 };
