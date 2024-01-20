@@ -4,7 +4,7 @@ namespace Brytec {
 
 static ImGuiTextBuffer m_log;
 
-bool ModuleDebug::m_newData = true;
+bool ModuleDebug::m_newData = false;
 
 void ModuleDebug::push(const char* str, uint32_t length)
 {

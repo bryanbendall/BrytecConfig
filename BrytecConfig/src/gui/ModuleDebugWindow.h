@@ -14,7 +14,7 @@ private:
     void drawMenubar();
 
 private:
-    bool m_opened = true;
+    bool m_opened = false;
     bool m_openOnMessage = true;
 };
 }

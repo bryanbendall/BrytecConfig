@@ -158,7 +158,7 @@ void MonitorWindow::drawWindow()
             ImGui::TableNextColumn();
             ImGui::Text("%d", ms.moduleAddress);
             ImGui::TableNextColumn();
-            ImGui::Text("%d", ms.nodeArraySize);
+            ImGui::Text("%d%%", ms.nodePercent);
             ImGui::TableNextColumn();
             ImGui::Text("%s", ms.deserializeOk ? "Yes" : "No");
             ImGui::TableNextColumn();
