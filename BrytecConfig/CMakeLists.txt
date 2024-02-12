@@ -35,6 +35,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/ECounterNode.h
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.cpp
                 src/BrytecConfigEmbedded/Nodes/ECurveNode.h
+                src/BrytecConfigEmbedded/Nodes/EInterpolateNode.cpp
+                src/BrytecConfigEmbedded/Nodes/EInterpolateNode.h
                 src/BrytecConfigEmbedded/Nodes/EDelayNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EDelayNode.h
                 src/BrytecConfigEmbedded/Nodes/EFinalValueNode.cpp

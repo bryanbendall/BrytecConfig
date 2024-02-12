@@ -3,6 +3,7 @@
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
+#include "BrytecConfigEmbedded/Nodes/EInterpolateNode.h"
 #include "BrytecConfigEmbedded/Nodes/EMathNode.h"
 #include "data/PhysicalPin.h"
 #include "utils/Colors.h"
@@ -969,6 +970,23 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         }
         ImNodes::EndStaticAttribute();
 
+        UI::Ouput(node, 0, "Output");
+        break;
+    }
+
+    case NodeTypes::Interpolate: {
+        static const char* s_interpolateNames[(int)InterpolateType::Count] = {
+            "Linear",
+            "In Expo",
+            "Out Expo",
+            "In Out Expo",
+            "In Cubic",
+            "Out Cubic",
+            "In Out Cubic"
+        };
+        UI::InputFloat(node, 0, "Input");
+        UI::InputFloat(node, 1, "Time");
+        UI::ValueCombo(node, 0, s_interpolateNames, (int)InterpolateType::Count);
         UI::Ouput(node, 0, "Output");
         break;
     }
