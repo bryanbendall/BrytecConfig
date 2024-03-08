@@ -20,6 +20,7 @@ namespace Brytec {
 
 namespace UI {
 static void SameHeightText(std::string text);
+static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
@@ -234,21 +235,21 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::And: {
-        UI::InputBool(node, 0, "Input");
-        UI::InputBool(node, 1, "Input");
-        UI::InputBool(node, 2, "Input");
-        UI::InputBool(node, 3, "Input");
-        UI::InputBool(node, 4, "Input");
+        UI::InputOnly(node, 0, "Input");
+        UI::InputOnly(node, 1, "Input");
+        UI::InputOnly(node, 2, "Input");
+        UI::InputOnly(node, 3, "Input");
+        UI::InputOnly(node, 4, "Input");
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
     }
 
     case NodeTypes::Or: {
-        UI::InputBool(node, 0, "Input");
-        UI::InputBool(node, 1, "Input");
-        UI::InputBool(node, 2, "Input");
-        UI::InputBool(node, 3, "Input");
-        UI::InputBool(node, 4, "Input");
+        UI::InputOnly(node, 0, "Input");
+        UI::InputOnly(node, 1, "Input");
+        UI::InputOnly(node, 2, "Input");
+        UI::InputOnly(node, 3, "Input");
+        UI::InputOnly(node, 4, "Input");
         UI::Ouput(node, 0, "Result", Colors::NodeConnections::Boolean);
         break;
     }
@@ -1009,6 +1010,17 @@ void UI::SameHeightText(std::string text)
     ImGui::Text(text.c_str(), "");
     ImGui::Dummy(ImVec2(1.0f, 3.0f));
     ImGui::PopStyleVar();
+}
+
+void UI::InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label)
+{
+    ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::Boolean);
+    ImNodes::BeginInputAttribute(node->getIntputId(attribute));
+
+    SameHeightText(label);
+
+    ImNodes::EndInputAttribute();
+    ImNodes::PopColorStyle();
 }
 
 void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals, float min, float max, float speed)
