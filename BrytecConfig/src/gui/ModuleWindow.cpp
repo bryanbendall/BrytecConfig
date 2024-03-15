@@ -94,6 +94,32 @@ void ModuleWindow::drawMenubar()
             }
         }
 
+        if (ImGui::MenuItem(ICON_FA_FILE_DOWNLOAD, NULL, false, moduleSelected)) {
+            if (module) {
+
+                auto path = FileDialogs::SaveFile("h");
+                if (!path.empty()) {
+
+                    std::ofstream fout(path);
+                    fout << "#pragma once" << std::endl;
+                    fout << std::endl;
+                    fout << "// Internal pin definitions" << std::endl;
+
+                    for (int i = 0; i < module->getInternalPins().size(); i++) {
+                        auto& internalPin = module->getInternalPins()[i];
+                        if (internalPin->getNodeGroup()) {
+                            std::string name = internalPin->getNodeGroup()->getName();
+                            std::replace(name.begin(), name.end(), ' ', '_');
+                            fout << "#define "
+                                 << "BT_INTERNAL_" << name << " " << module->getPhysicalPins().size() + i << std::endl;
+                        }
+                    }
+
+                    NotificationWindow::add({ "Saved internal pins - " + module->getName(), NotificationType::Success });
+                }
+            }
+        }
+
         // Start Simulation
         if (!m_simulateModule) {
             if (ImGui::MenuItem(ICON_FA_PLAY, NULL, false, moduleSelected)) {
