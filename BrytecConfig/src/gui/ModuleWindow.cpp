@@ -75,6 +75,9 @@ void ModuleWindow::drawMenubar()
                 auto path = FileDialogs::SaveFile("h");
                 if (!path.empty()) {
 
+                    if (path.extension().empty())
+                        path.replace_extension("h");
+
                     std::ofstream fout(path);
 
                     ModuleSerializer moduleSer(module);
@@ -99,6 +102,9 @@ void ModuleWindow::drawMenubar()
 
                 auto path = FileDialogs::SaveFile("h");
                 if (!path.empty()) {
+
+                    if (path.extension().empty())
+                        path.replace_extension("h");
 
                     std::ofstream fout(path);
                     fout << "#pragma once" << std::endl;

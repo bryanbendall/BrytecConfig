@@ -344,7 +344,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             "Add",
             "Subtract",
             "Multiply",
-            "Divide"
+            "Divide",
+            "Min",
+            "Max"
         };
         UI::InputFloat(node, 0, "Value");
         UI::InputFloat(node, 1, "Value");
