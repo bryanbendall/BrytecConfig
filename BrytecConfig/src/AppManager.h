@@ -15,79 +15,83 @@ class PortInfo;
 
 namespace Brytec {
 
-namespace AppManager {
-
     struct Version {
         const uint8_t Major = 0;
         const uint8_t Minor = 1;
     };
 
-    void init(GLFWwindow* window);
-    void loadSettings();
-    void saveSettings();
-    void preFrame();
-    void update();
+    class AppManager {
 
-    Version getVersion();
+    public:
+        static void init(GLFWwindow* window);
+        static void loadSettings();
+        static void saveSettings();
+        static void preFrame();
+        static void update();
 
-    std::shared_ptr<Config>& getConfig();
+        static Version getVersion();
 
-    UsbManager& getUsbManager();
-    CanBusStream& getCanBusStream();
+        static std::shared_ptr<Config>& getConfig();
 
-    // Selection ////////////////////////////////
-    std::weak_ptr<Selectable> getSelectedItem();
-    void setSelected(std::weak_ptr<Selectable> sel);
-    void clearSelected();
+        static UsbManager& getUsbManager();
+        static CanBusStream& getCanBusStream();
 
-    template <typename T>
-    std::shared_ptr<T> getSelected()
-    {
-        return std::dynamic_pointer_cast<T>(getSelectedItem().lock());
-    }
+        // Selection ////////////////////////////////
+        static std::weak_ptr<Selectable> getSelectedItem();
+        static void setSelected(std::weak_ptr<Selectable> sel);
+        static void clearSelected();
 
-    template <typename T>
-    bool isSelected(std::shared_ptr<T> other)
-    {
-        return getSelected<T>() == other;
-    }
-    /////////////////////////////////////////////
+        template <typename T>
+        static std::shared_ptr<T> getSelected()
+        {
+            return std::dynamic_pointer_cast<T>(getSelectedItem().lock());
+        }
 
-    void setDragType(IOTypes::Types type);
-    IOTypes::Types getDragType();
-    void clearDragType();
+        template <typename T>
+        static bool isSelected(std::shared_ptr<T> other)
+        {
+            return getSelected<T>() == other;
+        }
+        /////////////////////////////////////////////
 
-    void setBigIconFont(ImFont* font);
-    ImFont* getBigIconFont();
+        static void setDragType(IOTypes::Types type);
+        static IOTypes::Types getDragType();
+        static void clearDragType();
 
-    // Commands
-    void newConfig();
-    void openConfig();
-    void openConfigFile(std::filesystem::path& path);
-    void saveConfig();
-    void saveAsConfig();
-    void exit();
+        static void setBigIconFont(ImFont* font);
+        static ImFont* getBigIconFont();
 
-    void zoom(bool plus);
-    int getZoom();
-    void setZoom(int zoom);
+        // Commands
+        static void newConfig();
+        static void openConfig();
+        static void openConfigFile(std::filesystem::path& path);
+        static void saveConfig();
+        static void saveAsConfig();
+        static void exit();
 
-    const std::filesystem::path& getConfigsPath();
-    void setConfigsPath(const std::filesystem::path& path);
-    const std::filesystem::path& getModulesPath();
-    void setModulesPath(const std::filesystem::path& path);
-    const std::filesystem::path& getNodeGroupsPath();
-    void setNodeGroupsPath(const std::filesystem::path& path);
+        static void zoom(bool plus);
+        static int getZoom();
+        static void setZoom(int zoom);
 
-    bool getOpenLastFile();
-    void setOpenLastFile(bool value);
-    const std::filesystem::path& getLastFile();
-    void setLastFile(const std::filesystem::path& file);
+        static const std::filesystem::path& getConfigsPath();
+        static void setConfigsPath(const std::filesystem::path& path);
+        static const std::filesystem::path& getModulesPath();
+        static void setModulesPath(const std::filesystem::path& path);
+        static const std::filesystem::path& getNodeGroupsPath();
+        static void setNodeGroupsPath(const std::filesystem::path& path);
 
-    serial::PortInfo& getLastSerialPort();
-    void setLastSerialPort(serial::PortInfo& port);
+        static bool getOpenLastFile();
+        static void setOpenLastFile(bool value);
+        static const std::filesystem::path& getLastFile();
+        static void setLastFile(const std::filesystem::path& file);
 
-    void updateWindowTitle();
-    void handleKeyEvents();
-}
+        static serial::PortInfo& getLastSerialPort();
+        static void setLastSerialPort(serial::PortInfo& port);
+
+    private:
+        static void updateWindowTitle();
+        static void handleKeyEvents();
+
+        static void save(std::shared_ptr<Config>& config);
+    };
 }

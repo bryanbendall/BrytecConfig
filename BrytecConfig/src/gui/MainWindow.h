@@ -43,6 +43,8 @@ private:
     ModuleDebugWindow m_moduleDebugWindow;
     CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;
+
+    friend class AppManager;
 };
 
 }

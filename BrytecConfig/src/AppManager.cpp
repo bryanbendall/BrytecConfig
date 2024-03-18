@@ -48,8 +48,6 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const serial::PortInfo& v)
 
 namespace Brytec {
 
-namespace AppManager {
-
 struct AppManagerData {
     std::shared_ptr<Config> config;
     std::weak_ptr<Selectable> SelectedItem;
@@ -71,7 +69,7 @@ struct AppManagerData {
 
 static AppManagerData s_data;
 
-void init(GLFWwindow* window)
+void AppManager::init(GLFWwindow* window)
 {
     s_data.mainWindow = std::make_unique<MainWindow>();
     s_data.GLFWWindow = window;
@@ -87,7 +85,7 @@ void init(GLFWwindow* window)
         newConfig();
 }
 
-void loadSettings()
+void AppManager::loadSettings()
 {
     if (std::filesystem::exists("BtSettings.yaml")) {
         YAML::Node node = YAML::LoadFile("BtSettings.yaml");
@@ -112,10 +110,28 @@ void loadSettings()
 
         if (node["Last Serial Port"])
             s_data.lastSerialPort = node["Last Serial Port"].as<serial::PortInfo>();
+
+        if (node["Module Window State"])
+            s_data.mainWindow->m_moduleWindow.setOpenedState(node["Module Window State"].as<bool>());
+
+        if (node["Node Group Window State"])
+            s_data.mainWindow->m_nodeGroupWindow.setOpenedState(node["Node Group Window State"].as<bool>());
+
+        if (node["Node Window State"])
+            s_data.mainWindow->m_nodeWindow.setOpenedState(node["Node Window State"].as<bool>());
+
+        if (node["Properties Window State"])
+            s_data.mainWindow->m_propertiesWindow.setOpenedState(node["Properties Window State"].as<bool>());
+
+        if (node["Monitor Window State"])
+            s_data.mainWindow->m_monitorWindow.setOpenedState(node["Monitor Window State"].as<bool>());
+
+        if (node["Debug Window State"])
+            s_data.mainWindow->m_moduleDebugWindow.setOpenedState(node["Debug Window State"].as<bool>());
     }
 }
 
-void saveSettings()
+void AppManager::saveSettings()
 {
     YAML::Emitter out;
     out << YAML::BeginMap;
@@ -141,85 +157,103 @@ void saveSettings()
     out << YAML::Key << "Last Serial Port";
     out << YAML::Value << s_data.lastSerialPort;
 
+    out << YAML::Key << "Module Window State";
+    out << YAML::Value << s_data.mainWindow->m_moduleWindow.getOpenedState();
+
+    out << YAML::Key << "Node Group Window State";
+    out << YAML::Value << s_data.mainWindow->m_nodeGroupWindow.getOpenedState();
+
+    out << YAML::Key << "Node Window State";
+    out << YAML::Value << s_data.mainWindow->m_nodeWindow.getOpenedState();
+
+    out << YAML::Key << "Properties Window State";
+    out << YAML::Value << s_data.mainWindow->m_propertiesWindow.getOpenedState();
+
+    out << YAML::Key << "Monitor Window State";
+    out << YAML::Value << s_data.mainWindow->m_monitorWindow.getOpenedState();
+
+    out << YAML::Key << "Debug Window State";
+    out << YAML::Value << s_data.mainWindow->m_moduleDebugWindow.getOpenedState();
+
     out << YAML::EndMap;
 
     std::ofstream fout("BtSettings.yaml");
     fout << out.c_str();
 }
 
-void preFrame()
+void AppManager::preFrame()
 {
     s_data.mainWindow->setupFonts(s_data.fontSize, s_data.fontSize + 4);
 }
 
-void update()
+void AppManager::update()
 {
     s_data.mainWindow->drawWindow();
     handleKeyEvents();
     s_data.usbManager.update();
 }
 
-Version getVersion()
+Version AppManager::getVersion()
 {
     return s_data.version;
 }
 
-std::shared_ptr<Config>& getConfig()
+std::shared_ptr<Config>& AppManager::getConfig()
 {
     return s_data.config;
 }
 
-UsbManager& getUsbManager()
+UsbManager& AppManager::getUsbManager()
 {
     return s_data.usbManager;
 }
 
-CanBusStream& getCanBusStream()
+CanBusStream& AppManager::getCanBusStream()
 {
     return s_data.canBusStream;
 }
 
-std::weak_ptr<Selectable> getSelectedItem()
+std::weak_ptr<Selectable> AppManager::getSelectedItem()
 {
     return s_data.SelectedItem;
 }
 
-void setSelected(std::weak_ptr<Selectable> sel)
+void AppManager::setSelected(std::weak_ptr<Selectable> sel)
 {
     s_data.SelectedItem = sel;
 }
 
-void clearSelected()
+void AppManager::clearSelected()
 {
     setSelected(std::weak_ptr<Selectable>());
 }
 
-void setDragType(IOTypes::Types type)
+void AppManager::setDragType(IOTypes::Types type)
 {
     s_data.dragType = type;
 }
 
-IOTypes::Types getDragType()
+IOTypes::Types AppManager::getDragType()
 {
     return s_data.dragType;
 }
 
-void clearDragType()
+void AppManager::clearDragType()
 {
     s_data.dragType = IOTypes::Types::Undefined;
 }
 
-void setBigIconFont(ImFont* font)
+void AppManager::setBigIconFont(ImFont* font)
 {
     s_data.BigIcons = font;
 }
 
-ImFont* getBigIconFont()
+ImFont* AppManager::getBigIconFont()
 {
     return s_data.BigIcons;
 }
 
-void newConfig()
+void AppManager::newConfig()
 {
     clearSelected();
     s_data.config = std::make_shared<Config>("");
@@ -227,7 +261,7 @@ void newConfig()
     NotificationWindow::add({ "New Configuration", NotificationType::Info });
 }
 
-void openConfig()
+void AppManager::openConfig()
 {
     auto path = FileDialogs::OpenFile("btconfig", s_data.configsPath);
     if (path.empty())
@@ -236,7 +270,7 @@ void openConfig()
     openConfigFile(path);
 }
 
-void openConfigFile(std::filesystem::path& path)
+void AppManager::openConfigFile(std::filesystem::path& path)
 {
     std::shared_ptr<Config> config = std::make_shared<Config>(path);
     ConfigSerializer serializer(config);
@@ -252,18 +286,7 @@ void openConfigFile(std::filesystem::path& path)
     }
 }
 
-static void save(std::shared_ptr<Config>& config)
-{
-    ConfigSerializer serializer(config);
-    auto configBinary = serializer.serializeBinary();
-    configBinary.writeToFile(config->getFilepath());
-
-    NotificationWindow::add({ "Saved - " + config->getFilepath().filename().string(), NotificationType::Success });
-
-    setLastFile(config->getFilepath());
-}
-
-void saveConfig()
+void AppManager::saveConfig()
 {
     if (s_data.config->getFilepath().empty())
         saveAsConfig();
@@ -271,7 +294,7 @@ void saveConfig()
         save(s_data.config);
 }
 
-void saveAsConfig()
+void AppManager::saveAsConfig()
 {
     auto path = FileDialogs::SaveFile("btconfig", s_data.configsPath);
 
@@ -287,8 +310,10 @@ void saveAsConfig()
     updateWindowTitle();
 }
 
-void exit()
+void AppManager::exit()
 {
+    saveSettings();
+
     // TODO
     // Check should close
     bool shouldClose = true;
@@ -298,7 +323,7 @@ void exit()
         glfwSetWindowShouldClose(s_data.GLFWWindow, GL_FALSE);
 }
 
-void zoom(bool plus)
+void AppManager::zoom(bool plus)
 {
     if (plus)
         setZoom(s_data.fontSize + 2);
@@ -306,85 +331,85 @@ void zoom(bool plus)
         setZoom(s_data.fontSize - 2);
 }
 
-int getZoom()
+int AppManager::getZoom()
 {
     return s_data.fontSize;
 }
 
-void setZoom(int zoom)
+void AppManager::setZoom(int zoom)
 {
     zoom = std::clamp(zoom, 8, 26);
     s_data.fontSize = zoom;
     saveSettings();
 }
 
-const std::filesystem::path& getConfigsPath()
+const std::filesystem::path& AppManager::getConfigsPath()
 {
     return s_data.configsPath;
 }
 
-void setConfigsPath(const std::filesystem::path& path)
+void AppManager::setConfigsPath(const std::filesystem::path& path)
 {
     s_data.configsPath = path;
     saveSettings();
 }
 
-const std::filesystem::path& getModulesPath()
+const std::filesystem::path& AppManager::getModulesPath()
 {
     return s_data.modulesPath;
 }
 
-void setModulesPath(const std::filesystem::path& path)
+void AppManager::setModulesPath(const std::filesystem::path& path)
 {
     s_data.modulesPath = path;
     saveSettings();
 }
 
-const std::filesystem::path& getNodeGroupsPath()
+const std::filesystem::path& AppManager::getNodeGroupsPath()
 {
     return s_data.nodeGroupsPath;
 }
 
-void setNodeGroupsPath(const std::filesystem::path& path)
+void AppManager::setNodeGroupsPath(const std::filesystem::path& path)
 {
     s_data.nodeGroupsPath = path;
     saveSettings();
 }
 
-bool getOpenLastFile()
+bool AppManager::getOpenLastFile()
 {
     return s_data.openLastFile;
 }
 
-void setOpenLastFile(bool value)
+void AppManager::setOpenLastFile(bool value)
 {
     s_data.openLastFile = value;
     saveSettings();
 }
 
-const std::filesystem::path& getLastFile()
+const std::filesystem::path& AppManager::getLastFile()
 {
     return s_data.lastFile;
 }
 
-void setLastFile(const std::filesystem::path& file)
+void AppManager::setLastFile(const std::filesystem::path& file)
 {
     s_data.lastFile = file;
     saveSettings();
 }
 
-serial::PortInfo& getLastSerialPort()
+serial::PortInfo& AppManager::getLastSerialPort()
 {
     return s_data.lastSerialPort;
 }
 
-void setLastSerialPort(serial::PortInfo& port)
+void AppManager::setLastSerialPort(serial::PortInfo& port)
 {
     s_data.lastSerialPort = port;
     saveSettings();
 }
 
-void updateWindowTitle()
+void AppManager::updateWindowTitle()
 {
     std::string title = "Brytec Config - ";
 
@@ -396,7 +421,7 @@ void updateWindowTitle()
     glfwSetWindowTitle(s_data.GLFWWindow, title.c_str());
 }
 
-void handleKeyEvents()
+void AppManager::handleKeyEvents()
 {
     bool control = ImGui::IsKeyDown(ImGuiKey_LeftCtrl) || ImGui::IsKeyDown(ImGuiKey_RightCtrl);
     bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift) || ImGui::IsKeyDown(ImGuiKey_RightShift);
@@ -444,5 +469,14 @@ void handleKeyEvents()
         zoom(false);
 }
 
+void AppManager::save(std::shared_ptr<Config>& config)
+{
+    ConfigSerializer serializer(config);
+    auto configBinary = serializer.serializeBinary();
+    configBinary.writeToFile(config->getFilepath());
+
+    NotificationWindow::add({ "Saved - " + config->getFilepath().filename().string(), NotificationType::Success });
+
+    setLastFile(config->getFilepath());
 }
 }
