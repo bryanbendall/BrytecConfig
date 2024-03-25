@@ -319,8 +319,6 @@ void AppManager::exit()
     bool shouldClose = true;
     if (shouldClose)
         glfwSetWindowShouldClose(s_data.GLFWWindow, GL_TRUE);
-    else
-        glfwSetWindowShouldClose(s_data.GLFWWindow, GL_FALSE);
 }
 
 void AppManager::zoom(bool plus)
@@ -340,7 +338,6 @@ void AppManager::setZoom(int zoom)
 {
     zoom = std::clamp(zoom, 8, 26);
     s_data.fontSize = zoom;
-    saveSettings();
 }
 
 const std::filesystem::path& AppManager::getConfigsPath()
@@ -351,7 +348,6 @@ const std::filesystem::path& AppManager::getConfigsPath()
 void AppManager::setConfigsPath(const std::filesystem::path& path)
 {
     s_data.configsPath = path;
-    saveSettings();
 }
 
 const std::filesystem::path& AppManager::getModulesPath()
@@ -362,7 +358,6 @@ const std::filesystem::path& AppManager::getModulesPath()
 void AppManager::setModulesPath(const std::filesystem::path& path)
 {
     s_data.modulesPath = path;
-    saveSettings();
 }
 
 const std::filesystem::path& AppManager::getNodeGroupsPath()
@@ -373,7 +368,6 @@ const std::filesystem::path& AppManager::getNodeGroupsPath()
 void AppManager::setNodeGroupsPath(const std::filesystem::path& path)
 {
     s_data.nodeGroupsPath = path;
-    saveSettings();
 }
 
 bool AppManager::getOpenLastFile()
@@ -384,7 +378,6 @@ bool AppManager::getOpenLastFile()
 void AppManager::setOpenLastFile(bool value)
 {
     s_data.openLastFile = value;
-    saveSettings();
 }
 
 const std::filesystem::path& AppManager::getLastFile()
@@ -395,7 +388,6 @@ const std::filesystem::path& AppManager::getLastFile()
 void AppManager::setLastFile(const std::filesystem::path& file)
 {
     s_data.lastFile = file;
-    saveSettings();
 }
 
 serial::PortInfo& AppManager::getLastSerialPort()
@@ -406,7 +398,6 @@ serial::PortInfo& AppManager::getLastSerialPort()
 void AppManager::setLastSerialPort(serial::PortInfo& port)
 {
     s_data.lastSerialPort = port;
-    saveSettings();
 }
 
 void AppManager::updateWindowTitle()
