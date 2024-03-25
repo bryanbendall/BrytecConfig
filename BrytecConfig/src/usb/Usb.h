@@ -3,6 +3,7 @@
 #include "BrytecConfigEmbedded/Can/EBrytecCan.h"
 #include "BrytecConfigEmbedded/Usb/UsbDefs.h"
 #include "functional"
+#include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <serial/serial.h>
@@ -34,6 +35,7 @@ private:
     std::thread m_txThread;
     std::mutex m_txMutex;
     std::deque<UsbPacket> m_txPackets;
+    std::condition_variable m_txCondition;
 
     std::function<void(UsbPacket)> m_receiveCallback;
 };

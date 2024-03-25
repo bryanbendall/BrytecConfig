@@ -69,7 +69,7 @@ static void usbRxThread(bool& run, serial::Serial& serial, std::function<void(Us
     }
 }
 
-static void usbTxThread(bool& run, serial::Serial& serial, std::mutex& txMutex, std::deque<UsbPacket>& txPackets)
+static void usbTxThread(bool& run, serial::Serial& serial, std::mutex& txMutex, std::deque<UsbPacket>& txPackets, std::condition_variable& condition)
 {
     while (run) {
 
@@ -96,9 +96,12 @@ static void usbTxThread(bool& run, serial::Serial& serial, std::mutex& txMutex, 
                 }
 
                 if (length != sendPacket.length + 2) {
-                    std::cout << "Didnt send all of the data";
+                    std::cout << "Didnt send all of the data" << std::endl;
                 }
             }
+
+            std::unique_lock<std::mutex> lk(txMutex);
+            condition.wait(lk);
         }
     }
 }
@@ -122,6 +125,7 @@ void Usb::open(std::string port)
             std::cerr << "Exception: " << e.what() << std::endl;
         }
 
+        m_txCondition.notify_all();
         if (!m_runThread && m_rxThread.joinable())
             m_rxThread.join();
         if (!m_runThread && m_txThread.joinable())
@@ -132,7 +136,7 @@ void Usb::open(std::string port)
             m_rxThread = std::thread(usbRxThread, std::ref(m_runThread), std::ref(m_serial),
                 m_receiveCallback);
             m_txThread = std::thread(usbTxThread, std::ref(m_runThread), std::ref(m_serial),
-                std::ref(m_txMutex), std::ref(m_txPackets));
+                std::ref(m_txMutex), std::ref(m_txPackets), std::ref(m_txCondition));
         }
     }
 }
@@ -140,6 +144,7 @@ void Usb::open(std::string port)
 void Usb::close()
 {
     m_runThread = false;
+    m_txCondition.notify_all();
     if (m_serial.isOpen())
         m_serial.close();
     if (m_rxThread.joinable())
@@ -153,5 +158,6 @@ void Usb::send(const UsbPacket& packet)
     m_txMutex.lock();
     m_txPackets.push_back(packet);
     m_txMutex.unlock();
+    m_txCondition.notify_all();
 }
 }
