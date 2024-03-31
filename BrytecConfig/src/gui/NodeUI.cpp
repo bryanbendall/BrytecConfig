@@ -20,10 +20,12 @@ namespace Brytec {
 
 namespace UI {
 static void SameHeightText(std::string text);
+static void DragFloat(std::shared_ptr<Node>& node, float& value, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
-static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+static void ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);
 static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = Colors::NodeConnections::AnyValue);
 static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
@@ -370,15 +372,15 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::CanBus: {
-        UI::InputFloat(node, 0, "Id", 0, 0.0f, 300.0f);
-        UI::Ouput(node, 0, "Data 0");
-        UI::Ouput(node, 1, "Data 1");
-        UI::Ouput(node, 2, "Data 2");
-        UI::Ouput(node, 3, "Data 3");
-        UI::Ouput(node, 4, "Data 4");
-        UI::Ouput(node, 5, "Data 5");
-        UI::Ouput(node, 6, "Data 6");
-        UI::Ouput(node, 7, "Data 7");
+        UI::ValueHex(node, 0, "Id");
+        static const char* canBuses[] = { "Can 0", "Can 1", "Can 2", "Can 3" };
+        UI::ValueCombo(node, 1, canBuses, IM_ARRAYSIZE(canBuses));
+        static const char* endians[] = { "Little Endian", "Big Endian" };
+        UI::ValueCombo(node, 2, endians, IM_ARRAYSIZE(endians));
+        static const char* types[] = { "Uint8", "Uint16", "Uint32", "Int8", "Int16", "Int32", "Float" };
+        UI::ValueCombo(node, 3, types, IM_ARRAYSIZE(types));
+        UI::ValueFloat(node, 4, "Start Byte", 0, 0.0f, 7.0f, 1.0f);
+        UI::Ouput(node, 0, "Output");
         break;
     }
 
@@ -456,14 +458,14 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::Racepak_Switch_Panel: {
-        UI::InputFloat(node, 0, "Switch 1");
-        UI::InputFloat(node, 1, "Switch 2");
-        UI::InputFloat(node, 2, "Switch 3");
-        UI::InputFloat(node, 3, "Switch 4");
-        UI::InputFloat(node, 4, "Switch 5");
-        UI::InputFloat(node, 5, "Switch 6");
-        UI::InputFloat(node, 6, "Switch 7");
-        UI::InputFloat(node, 7, "Switch 8");
+        UI::InputBool(node, 0, "Switch 1");
+        UI::InputBool(node, 1, "Switch 2");
+        UI::InputBool(node, 2, "Switch 3");
+        UI::InputBool(node, 3, "Switch 4");
+        UI::InputBool(node, 4, "Switch 5");
+        UI::InputBool(node, 5, "Switch 6");
+        UI::InputBool(node, 6, "Switch 7");
+        UI::InputBool(node, 7, "Switch 8");
         break;
     }
 
@@ -1014,6 +1016,25 @@ void UI::SameHeightText(std::string text)
     ImGui::PopStyleVar();
 }
 
+void UI::DragFloat(std::shared_ptr<Node>& node, float& value, std::string label, int decimals, float min, float max, float speed)
+{
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(decimals) << value;
+    float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
+    ImVec2 dragFloatStartPos = ImGui::GetCursorScreenPos();
+
+    ImGui::DragFloat("###DragFloat", &value, speed, min, max, "");
+
+    if (!ImGui::TempInputIsActive(ImGui::GetCurrentWindow()->GetID("###DragFloat"))) {
+
+        const ImGuiStyle& style = GImGui->Style;
+        ImGui::GetWindowDrawList()->AddText(dragFloatStartPos + ImVec2(style.ItemInnerSpacing.x * 2.5f, style.FramePadding.y), ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
+
+        ImVec2 valuePos = dragFloatStartPos + ImVec2(ImGui::CalcItemWidth() - style.ItemInnerSpacing.x * 2.5f - valueWidth, style.FramePadding.y);
+        ImGui::GetWindowDrawList()->AddText(valuePos, ImGui::GetColorU32(ImGuiCol_Text), stream.str().c_str());
+    }
+}
+
 void UI::InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label)
 {
     ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::Boolean);
@@ -1029,24 +1050,10 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
 {
     ImNodes::BeginInputAttribute(node->getIntputId(attribute));
 
-    if (node->getInput(attribute).ConnectedNode.expired()) {
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(decimals) << node->getInput(attribute).DefaultValue;
-        float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
-
-        float labelWidth = ImGui::CalcTextSize(label.c_str()).x;
-        float spaceWidth = ImGui::CalcTextSize(" ").x;
-        float numSpaces = ((s_nodeWidth - AppManager::getZoom() - (labelWidth + valueWidth)) / spaceWidth);
-
-        for (int i = 0; i < numSpaces; i++)
-            label += " ";
-
-        label += stream.str();
-
-        ImGui::DragFloat("###DragFloat", &node->getInput(attribute).DefaultValue, speed, min, max, label.c_str());
-    } else {
+    if (node->getInput(attribute).ConnectedNode.expired())
+        UI::DragFloat(node, node->getInput(attribute).DefaultValue, label, decimals, min, max, speed);
+    else
         SameHeightText(label);
-    }
 
     ImNodes::EndInputAttribute();
 }
@@ -1070,24 +1077,38 @@ void UI::InputBool(std::shared_ptr<Node>& node, int attribute, std::string label
     ImNodes::PopColorStyle();
 }
 
-void UI::ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, float min, float max, float speed)
+void UI::ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals, float min, float max, float speed)
 {
     ImNodes::BeginStaticAttribute(node->getValueId(attribute));
 
+    UI::DragFloat(node, node->getValue(attribute), label, decimals, min, max, speed);
+
+    ImNodes::EndStaticAttribute();
+}
+
+void UI::ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min, int max, float speed)
+{
+    ImNodes::BeginStaticAttribute(node->getValueId(attribute));
+
+    int v = FloatToInt(node->getValue(attribute));
+
     std::stringstream stream;
-    stream << std::fixed << std::setprecision(2) << node->getValue(attribute);
-    float floatX = ImGui::CalcTextSize(stream.str().c_str()).x;
+    stream << "0x" << std::hex << std::uppercase << v;
+    float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
+    ImVec2 dragStartPos = ImGui::GetCursorScreenPos();
 
-    float labelX = ImGui::CalcTextSize(label.c_str()).x;
-    float spaceX = ImGui::CalcTextSize(" ").x;
-    float numSpaces = ((124.0f - (labelX + floatX)) / spaceX);
+    if (ImGui::DragInt("###DragInt", &v, speed, min, max, "##0x%04X"))
+        node->setValue(attribute, v);
 
-    for (int i = 0; i < numSpaces; i++)
-        label += " ";
+    if (!ImGui::TempInputIsActive(ImGui::GetCurrentWindow()->GetID("###DragInt"))) {
 
-    label += stream.str();
+        const ImGuiStyle& style = GImGui->Style;
+        ImGui::GetWindowDrawList()->AddText(dragStartPos + ImVec2(style.ItemInnerSpacing.x * 2.5f, style.FramePadding.y), ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
 
-    ImGui::DragFloat("###DragFloat", &node->getValue(attribute), speed, min, max, label.c_str());
+        ImVec2 valuePos = dragStartPos + ImVec2(ImGui::CalcItemWidth() - style.ItemInnerSpacing.x * 2.5f - valueWidth, style.FramePadding.y);
+        ImGui::GetWindowDrawList()->AddText(valuePos, ImGui::GetColorU32(ImGuiCol_Text), stream.str().c_str());
+    }
+
     ImNodes::EndStaticAttribute();
 }
 

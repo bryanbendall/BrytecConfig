@@ -17,13 +17,13 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Invert",
     "Toggle",
     "Delay",
-    "Push Button Start (Experamental)",
+    "Push Button Start (Obsolete)",
     "Map Value",
     "Math",
     "Value",
     "Switch",
     "Can Bus (Experamental)",
-    "Convert (Experamental)",
+    "Convert (Obsolete)",
     "Pin Current",
     "PID (Experamental)",
     "Counter",
@@ -164,14 +164,11 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         break;
 
     case NodeTypes::CanBus:
-        m_inputs.push_back(NodeConnection());
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
-        m_outputs.push_back(0.0f);
+        m_values.push_back(0.0f); // Id
+        m_values.push_back(0.0f); // Can index
+        m_values.push_back(0.0f); // Endian
+        m_values.push_back(0.0f); // Data Type
+        m_values.push_back(0.0f); // Start Byte
         m_outputs.push_back(0.0f);
         break;
 

@@ -14,6 +14,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Can/ECanCommandQueue.h
                 src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.cpp
                 src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.h
+                src/BrytecConfigEmbedded/Can/ECustomCanQueue.cpp
+                src/BrytecConfigEmbedded/Can/ECustomCanQueue.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.cpp
                 src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h
                 src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
