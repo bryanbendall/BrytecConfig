@@ -22,7 +22,7 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Math",
     "Value",
     "Switch",
-    "Can Bus (Experamental)",
+    "Can Bus Input (Experamental)",
     "Convert (Obsolete)",
     "Pin Current",
     "PID (Experamental)",
@@ -163,7 +163,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_outputs.push_back(0.0f);
         break;
 
-    case NodeTypes::CanBus:
+    case NodeTypes::CanBusInput:
         m_values.push_back(0.0f); // Id
         m_values.push_back(0.0f); // Can index
         m_values.push_back(0.0f); // Endian

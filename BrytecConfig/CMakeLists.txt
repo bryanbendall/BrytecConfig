@@ -25,8 +25,8 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h
                 src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EAndNode.h
-                src/BrytecConfigEmbedded/Nodes/ECanBusNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECanBusNode.h
+                src/BrytecConfigEmbedded/Nodes/ECanBusInputNode.cpp
+                src/BrytecConfigEmbedded/Nodes/ECanBusInputNode.h
                 src/BrytecConfigEmbedded/Nodes/EColorNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EColorNode.h
                 src/BrytecConfigEmbedded/Nodes/ECompareNode.cpp

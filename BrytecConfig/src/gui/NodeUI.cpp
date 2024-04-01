@@ -371,7 +371,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
-    case NodeTypes::CanBus: {
+    case NodeTypes::CanBusInput: {
         UI::ValueHex(node, 0, "Id");
         static const char* canBuses[] = { "Can 0", "Can 1", "Can 2", "Can 3" };
         UI::ValueCombo(node, 1, canBuses, IM_ARRAYSIZE(canBuses));
