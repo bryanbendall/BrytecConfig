@@ -30,7 +30,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Color",
     "Racepak Switch Panel (Experamental)",
     "Holley Broadcast (Experamental)",
-    "Interpolate"
+    "Interpolate",
+    "Can Bus Output (Experamental)"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -239,6 +240,18 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // Interpolate type
         m_values.push_back(0.0f); // Internal timer
         m_values.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::CanBusOutput:
+        m_inputs.push_back(0.0f); // Id
+        m_inputs.push_back(0.0f); // Data
+        m_inputs.push_back(0.0f); // Send?
+        m_values.push_back(0.0f); // Can index
+        m_values.push_back(0.0f); // Frame type
+        m_values.push_back(0.0f); // Endian
+        m_values.push_back(0.0f); // Data Type
+        m_values.push_back(0.0f); // Start Byte
+        m_values.push_back(0.0f); // Last Send
         break;
 
     case NodeTypes::Count:

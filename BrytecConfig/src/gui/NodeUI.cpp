@@ -21,8 +21,10 @@ namespace Brytec {
 namespace UI {
 static void SameHeightText(std::string text);
 static void DragFloat(std::shared_ptr<Node>& node, float& value, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+static bool DragHex(std::shared_ptr<Node>& node, int& value, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+static void InputHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
@@ -996,6 +998,22 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
+    case NodeTypes::CanBusOutput: {
+        UI::InputHex(node, 0, "Id");
+        static const char* canBuses[] = { "Can 0", "Can 1", "Can 2", "Can 3" };
+        UI::ValueCombo(node, 0, canBuses, IM_ARRAYSIZE(canBuses));
+        static const char* frameType[] = { "Standard Frame", "Extended Frame" };
+        UI::ValueCombo(node, 1, frameType, IM_ARRAYSIZE(frameType));
+        static const char* endians[] = { "Little Endian", "Big Endian" };
+        UI::ValueCombo(node, 2, endians, IM_ARRAYSIZE(endians));
+        static const char* types[] = { "Uint8", "Uint16", "Uint32", "Uint64", "Int8", "Int16", "Int32", "Int64", "Float" };
+        UI::ValueCombo(node, 3, types, IM_ARRAYSIZE(types));
+        UI::ValueFloat(node, 4, "Start Byte", 0, 0.0f, 7.0f, 1.0f);
+        UI::InputFloat(node, 1, "Data");
+        UI::InputBool(node, 2, "Send Trigger");
+        break;
+    }
+
     default:
         drawUnimplimentedNode(node);
         break;
@@ -1035,6 +1053,30 @@ void UI::DragFloat(std::shared_ptr<Node>& node, float& value, std::string label,
     }
 }
 
+bool UI::DragHex(std::shared_ptr<Node>& node, int& value, std::string label, int min, int max, float speed)
+{
+    bool returnValue = false;
+
+    std::stringstream stream;
+    stream << "0x" << std::hex << std::uppercase << value;
+    float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
+    ImVec2 dragStartPos = ImGui::GetCursorScreenPos();
+
+    if (ImGui::DragInt("###DragInt", &value, speed, min, max, "##0x%04X"))
+        returnValue = true;
+
+    if (!ImGui::TempInputIsActive(ImGui::GetCurrentWindow()->GetID("###DragInt"))) {
+
+        const ImGuiStyle& style = GImGui->Style;
+        ImGui::GetWindowDrawList()->AddText(dragStartPos + ImVec2(style.ItemInnerSpacing.x * 2.5f, style.FramePadding.y), ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
+
+        ImVec2 valuePos = dragStartPos + ImVec2(ImGui::CalcItemWidth() - style.ItemInnerSpacing.x * 2.5f - valueWidth, style.FramePadding.y);
+        ImGui::GetWindowDrawList()->AddText(valuePos, ImGui::GetColorU32(ImGuiCol_Text), stream.str().c_str());
+    }
+
+    return returnValue;
+}
+
 void UI::InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label)
 {
     ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::Boolean);
@@ -1053,6 +1095,20 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
     if (node->getInput(attribute).ConnectedNode.expired())
         UI::DragFloat(node, node->getInput(attribute).DefaultValue, label, decimals, min, max, speed);
     else
+        SameHeightText(label);
+
+    ImNodes::EndInputAttribute();
+}
+
+void UI::InputHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min, int max, float speed)
+{
+    ImNodes::BeginInputAttribute(node->getIntputId(attribute));
+
+    if (node->getInput(attribute).ConnectedNode.expired()) {
+        int v = FloatToInt(node->getInput(attribute).DefaultValue);
+        if (DragHex(node, v, label, min, max, speed))
+            node->getInput(attribute).DefaultValue = v;
+    } else
         SameHeightText(label);
 
     ImNodes::EndInputAttribute();
@@ -1091,23 +1147,8 @@ void UI::ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label,
     ImNodes::BeginStaticAttribute(node->getValueId(attribute));
 
     int v = FloatToInt(node->getValue(attribute));
-
-    std::stringstream stream;
-    stream << "0x" << std::hex << std::uppercase << v;
-    float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
-    ImVec2 dragStartPos = ImGui::GetCursorScreenPos();
-
-    if (ImGui::DragInt("###DragInt", &v, speed, min, max, "##0x%04X"))
+    if (DragHex(node, v, label, min, max, speed))
         node->setValue(attribute, v);
-
-    if (!ImGui::TempInputIsActive(ImGui::GetCurrentWindow()->GetID("###DragInt"))) {
-
-        const ImGuiStyle& style = GImGui->Style;
-        ImGui::GetWindowDrawList()->AddText(dragStartPos + ImVec2(style.ItemInnerSpacing.x * 2.5f, style.FramePadding.y), ImGui::GetColorU32(ImGuiCol_Text), label.c_str());
-
-        ImVec2 valuePos = dragStartPos + ImVec2(ImGui::CalcItemWidth() - style.ItemInnerSpacing.x * 2.5f - valueWidth, style.FramePadding.y);
-        ImGui::GetWindowDrawList()->AddText(valuePos, ImGui::GetColorU32(ImGuiCol_Text), stream.str().c_str());
-    }
 
     ImNodes::EndStaticAttribute();
 }
