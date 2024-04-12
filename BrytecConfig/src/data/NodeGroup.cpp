@@ -168,7 +168,7 @@ void NodeGroup::evaluateAllNodes()
     BrytecBoard::updateConfig(ser.getData().data(), ser.getData().size(), 0);
 
     EBrytecApp::deserializeModule();
-    EBrytecApp::evaulateJustNodes(ImGui::GetIO().DeltaTime);
+    EBrytecApp::evaulateJustNodes(FloatTimeToMs(ImGui::GetIO().DeltaTime));
 
     // Extract output values
     for (int index = 0; index < m_nodes.size(); index++) {

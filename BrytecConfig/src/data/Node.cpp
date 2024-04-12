@@ -22,7 +22,7 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Math",
     "Value",
     "Switch",
-    "Can Bus Input (Experamental)",
+    "Can Bus Input",
     "Convert (Obsolete)",
     "Pin Current",
     "PID (Experamental)",
@@ -31,7 +31,7 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Racepak Switch Panel (Experamental)",
     "Holley Broadcast (Experamental)",
     "Interpolate",
-    "Can Bus Output (Experamental)"
+    "Can Bus Output"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -165,7 +165,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         break;
 
     case NodeTypes::CanBusInput:
-        m_values.push_back(0.0f); // Id
+        m_values.push_back(1.0f); // Id
         m_values.push_back(0.0f); // Can index
         m_values.push_back(0.0f); // Endian
         m_values.push_back(0.0f); // Data Type
@@ -243,7 +243,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         break;
 
     case NodeTypes::CanBusOutput:
-        m_inputs.push_back(0.0f); // Id
+        m_inputs.push_back(1.0f); // Id
         m_inputs.push_back(0.0f); // Data
         m_inputs.push_back(0.0f); // Send?
         m_values.push_back(0.0f); // Can index

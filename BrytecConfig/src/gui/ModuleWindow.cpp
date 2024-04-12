@@ -156,8 +156,7 @@ void ModuleWindow::drawMenubar()
 
         // Do simulation, should be moved
         if (m_simulateModule) {
-            float deltaTime = ImGui::GetIO().DeltaTime;
-            EBrytecApp::update(deltaTime);
+            EBrytecApp::update(FloatTimeToMs(ImGui::GetIO().DeltaTime));
             // checkCan();
         }
 
