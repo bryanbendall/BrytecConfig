@@ -2,6 +2,7 @@ add_executable(BrytecConfig
                 src/main.cpp              
                 src/AppManager.cpp
                 src/AppManager.h
+                src/EBrytecConfigCustom.h
                 src/BrytecConfigEmbedded/Boards/BrytecBoard.h
                 src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
                 src/BrytecConfigEmbedded/Can/EBrytecCan.h
