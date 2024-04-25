@@ -113,6 +113,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 
     case NodeTypes::Toggle:
         m_inputs.push_back(NodeConnection()); // Input
+        m_inputs.push_back(NodeConnection()); // Reset
         m_outputs.push_back(0.0f); // Output
         m_values.push_back(0.0f); // Internal last input value
         m_values.push_back(0.0f); // Internal last output value

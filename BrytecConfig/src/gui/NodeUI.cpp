@@ -313,6 +313,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
     case NodeTypes::Toggle: {
         UI::InputBool(node, 0, "Input");
+        UI::InputBool(node, 1, "Reset");
         UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
     }
