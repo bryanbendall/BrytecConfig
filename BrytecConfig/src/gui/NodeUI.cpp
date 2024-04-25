@@ -426,6 +426,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::InputFloat(node, 1, "Down");
         UI::InputFloat(node, 2, "Min", 0);
         UI::InputFloat(node, 3, "Max", 0);
+        UI::InputBool(node, 4, "Loop");
         UI::Ouput(node, 0, "Value");
         break;
     }

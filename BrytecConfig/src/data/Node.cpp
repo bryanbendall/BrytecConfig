@@ -205,6 +205,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // Down
         m_inputs.push_back(NodeConnection()); // Min
         m_inputs.push_back(NodeConnection(1.0f)); // Max
+        m_inputs.push_back(NodeConnection()); // Loop
         m_outputs.push_back(0.0f);
         m_values.push_back(0.0f); // Last up
         m_values.push_back(0.0f); // Last down
