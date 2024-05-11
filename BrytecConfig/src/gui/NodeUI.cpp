@@ -24,6 +24,7 @@ static void DragFloat(std::shared_ptr<Node>& node, float& value, std::string lab
 static bool DragHex(std::shared_ptr<Node>& node, int& value, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+static void InputZeroToOne(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void InputHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
 static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
@@ -432,9 +433,9 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::Color: {
-        UI::InputFloat(node, 0, "Red", 2, 0.0f, 1.0f, 0.01f);
-        UI::InputFloat(node, 1, "Green", 2, 0.0f, 1.0f, 0.01f);
-        UI::InputFloat(node, 2, "Blue", 2, 0.0f, 1.0f, 0.01f);
+        UI::InputZeroToOne(node, 0, "Red");
+        UI::InputZeroToOne(node, 1, "Green");
+        UI::InputZeroToOne(node, 2, "Blue");
 
         ImVec4 vecCol(
             node->getInput(0).DefaultValue,
@@ -1100,6 +1101,13 @@ void UI::InputFloat(std::shared_ptr<Node>& node, int attribute, std::string labe
         SameHeightText(label);
 
     ImNodes::EndInputAttribute();
+}
+
+void UI::InputZeroToOne(std::shared_ptr<Node>& node, int attribute, std::string label)
+{
+    ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::ZeroToOne);
+    InputFloat(node, attribute, label, 2, 0.0f, 1.0f, 0.01f);
+    ImNodes::PopColorStyle();
 }
 
 void UI::InputHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min, int max, float speed)
