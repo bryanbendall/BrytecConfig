@@ -14,6 +14,10 @@
 #include <serial/serial.h>
 #include <yaml-cpp/yaml.h>
 
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
+
 namespace YAML {
 template <>
 struct convert<serial::PortInfo> {
@@ -398,6 +402,24 @@ serial::PortInfo& AppManager::getLastSerialPort()
 void AppManager::setLastSerialPort(serial::PortInfo& port)
 {
     s_data.lastSerialPort = port;
+}
+
+void AppManager::openBrowser(const std::string& url)
+{
+#ifdef _WIN32
+    std::system(("start " + url).c_str());
+
+#elif defined(__APPLE__) && TARGET_OS_MAC
+    std::system(("open " + URL + " &").c_str());
+
+#else
+    std::system(("xdg-open " + URL + " &").c_str());
+#endif
+}
+
+void AppManager::openDocumentation(const std::string& page)
+{
+    openBrowser("file:///" + std::filesystem::absolute("../../BrytecConfig/docs/site/").string() + page);
 }
 
 void AppManager::updateWindowTitle()

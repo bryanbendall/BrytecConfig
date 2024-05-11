@@ -210,6 +210,12 @@ void MainWindow::drawMenu()
             ImGui::EndMenu();
         }
 
+        if (ImGui::BeginMenu("Help")) {
+            if (ImGui::MenuItem("Documentation"))
+                AppManager::openDocumentation("index.html");
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMenuBar();
     }
 }

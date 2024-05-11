@@ -57,4 +57,4 @@ BrytecConfig.exe
 build/*
 .vscode/*
 
-
+BrytecConfig/docs/site/*
