@@ -9,7 +9,7 @@
 
 ## Properties
 
-###### Operation
+###### Operations
 
 >###### Add
 >>The sum of the two values.
