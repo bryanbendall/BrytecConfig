@@ -12,7 +12,7 @@ UsbManager::UsbManager()
 {
     m_usb.setReceiveCallback(std::bind(&UsbManager::onReceive, this, std::placeholders::_1));
     m_canBusCallback = std::bind(&CanBusStream::canBusReceived, &AppManager::getCanBusStream(), std::placeholders::_1);
-    AppManager::getCanBusStream().setSendFunction(std::bind(&UsbManager::send, this, std::placeholders::_1));
+    AppManager::getCanBusStream().setSendFunction(std::bind(&UsbManager::sendCan, this, std::placeholders::_1));
 }
 
 UsbManager::~UsbManager()
@@ -30,6 +30,9 @@ void UsbManager::update()
 
     if (!m_usb.isOpen())
         return;
+
+    if (m_usb.isOpen() && !isDeviceValid())
+        m_usb.close();
 
     AppManager::getCanBusStream().update();
 }
@@ -50,10 +53,17 @@ void UsbManager::open()
     AppManager::setLastSerialPort(m_device);
 }
 
-void UsbManager::send(CanFrame& frame)
+void UsbManager::sendCan(CanFrame& frame)
 {
     UsbPacket packet;
     packet.set<CanFrame>(frame);
+    m_usb.send(packet);
+}
+
+void UsbManager::sendCommand(ModuleCommand moduleCommand)
+{
+    UsbPacket packet;
+    packet.set<ModuleCommand>(moduleCommand);
     m_usb.send(packet);
 }
 

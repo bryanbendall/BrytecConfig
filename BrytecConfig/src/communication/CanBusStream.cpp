@@ -23,7 +23,7 @@ void CanBusStream::update()
             m_callback(m_callbackData);
         } else {
             m_retires++;
-            m_sendFunction(m_commandsToSend.front());
+            sendNextFrame();
         }
     }
 }
@@ -185,7 +185,7 @@ void CanBusStream::send(std::function<void(CanBusStreamCallbackData)> callback)
     m_timer = 0.0f;
     m_retires = 0;
 
-    m_sendFunction(m_commandsToSend.front());
+    sendNextFrame();
 }
 
 void CanBusStream::canBusReceived(CanFrame frame)
@@ -239,7 +239,7 @@ void CanBusStream::canBusReceived(CanFrame frame)
         if (m_commandsToSend.size() > 0)
             m_commandsToSend.pop_front();
         if (m_commandsToSend.size() > 0)
-            m_sendFunction(m_commandsToSend.front());
+            sendNextFrame();
         break;
 
     case CanCommands::Command::RequestDataSize: {
@@ -274,7 +274,7 @@ void CanBusStream::canBusReceived(CanFrame frame)
         }
 
         if (m_commandsToSend.size() > 0)
-            m_sendFunction(m_commandsToSend.front());
+            sendNextFrame();
 
         break;
     }
@@ -288,7 +288,7 @@ void CanBusStream::canBusReceived(CanFrame frame)
         m_moduleDataBuffer.insert(m_moduleDataBuffer.end(), std::begin(command.data), std::end(command.data));
 
         if (m_commandsToSend.size() > 0)
-            m_sendFunction(m_commandsToSend.front());
+            sendNextFrame();
         else
             m_moduleDataCallback(m_moduleDataBuffer);
 
@@ -309,4 +309,11 @@ void CanBusStream::canBusReceived(CanFrame frame)
     m_callback(m_callbackData);
 }
 
+void CanBusStream::sendNextFrame()
+{
+    if (m_commandsToSend.size() > 0)
+        m_sendFunction(m_commandsToSend.front());
+    else
+        std::cout << "Trying to send a can message from an empty queue." << std::endl;
+}
 }

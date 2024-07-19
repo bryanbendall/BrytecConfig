@@ -300,6 +300,7 @@ void MainWindow::drawMenuBar()
     ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
     ToolbarButton(ICON_FA_CHART_BAR, "Monitor", [this]() { m_monitorWindow.setOpenedState(true); });
     ToolbarButton(ICON_FA_SYNC, "Module Commands", std::bind(&CommunicationModals::open, &m_communicationModals));
+    ToolbarButton(ICON_FA_MICROCHIP, "Go To Bootloader", []() { AppManager::getUsbManager().sendCommand({ ModuleCommand::Command::GoToBootloader }); });
     ImGui::EndDisabled();
 
     if (anyItemHovered) {

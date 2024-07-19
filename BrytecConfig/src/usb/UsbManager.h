@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Usb.h"
+#include "Usb/ModuleCommand.h"
 #include "communication/CanBusStream.h"
 #include <deque>
 
@@ -22,13 +23,13 @@ public:
     void close() { m_usb.close(); }
     bool isOpen() { return m_usb.isOpen(); }
 
-    void send(CanFrame& frame);
+    void sendCan(CanFrame& frame);
+    void sendCommand(ModuleCommand moduleCommand);
     void onReceive(UsbPacket packet);
 
 private:
     Usb m_usb;
     serial::PortInfo m_device;
-    CanBusStream m_stream;
 
     std::function<void(CanFrame)> m_canBusCallback;
 };

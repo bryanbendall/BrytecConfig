@@ -79,7 +79,9 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/Nodes/EValueNode.cpp
                 src/BrytecConfigEmbedded/Nodes/EValueNode.h
                 src/BrytecConfigEmbedded/Usb/UsbDefs.cpp
-                src/BrytecConfigEmbedded/Usb/UsbDefs.h
+                src/BrytecConfigEmbedded/Usb/UsbDefs.h                
+                src/BrytecConfigEmbedded/Usb/ModuleCommand.cpp
+                src/BrytecConfigEmbedded/Usb/ModuleCommand.h
                 src/BrytecConfigEmbedded/Utils/ENodeConnection.h
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
                 src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h

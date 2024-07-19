@@ -2,11 +2,9 @@
 
 #include "BrytecConfigEmbedded/Can/EBrytecCan.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
-#include "usb/Usb.h"
 #include <atomic>
 #include <deque>
 #include <functional>
-#include <map>
 
 namespace Brytec {
 
@@ -40,6 +38,9 @@ public:
     std::vector<PinStatusBroadcast>& getNodeGroupStatuses() { return m_nodeGroupStatuses; }
 
     void canBusReceived(CanFrame frame);
+
+private:
+    void sendNextFrame();
 
 private:
     float m_timer = 0.0f;
