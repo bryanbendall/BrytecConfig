@@ -532,6 +532,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             "Base Timing",
             "Base Target AFR",
             "Base Ignition Dwell",
+            "Voltage Comp Ignition Dwell",
             "Injector End Angle",
             "ECU Log Trigger",
             "Timing vs Air",
