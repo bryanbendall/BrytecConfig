@@ -1,11 +1,12 @@
 #pragma once
 
 #include "communication/CanBusStream.h"
+#include "communication/net/NetManager.h"
+#include "communication/usb/UsbManager.h"
 #include "data/Config.h"
 #include "data/Selectable.h"
 #include "gui/MainWindow.h"
 #include "imgui.h"
-#include "usb/UsbManager.h"
 #include <GLFW/glfw3.h>
 #include <memory>
 
@@ -34,6 +35,7 @@ namespace Brytec {
         static std::shared_ptr<Config>& getConfig();
 
         static UsbManager& getUsbManager();
+        static NetManager& getNetManager();
         static CanBusStream& getCanBusStream();
 
         // Selection ////////////////////////////////

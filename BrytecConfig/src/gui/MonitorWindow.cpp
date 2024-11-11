@@ -30,10 +30,10 @@ void MonitorWindow::drawWindow()
     float tableWidth = bigColumn + (smallColumn * 4) + (cellPadding * 8);
     float columnWidth = tableWidth + ImGui::GetStyle().WindowPadding.x + ImGui::GetStyle().ItemSpacing.x;
 
-    bool isUsbOpen = AppManager::getUsbManager().isOpen();
+    bool isCommunicationOpen = AppManager::getUsbManager().isOpen() || AppManager::getNetManager().isOpen();
 
     // Module Buttons
-    ImGui::BeginDisabled(!isUsbOpen);
+    ImGui::BeginDisabled(!isCommunicationOpen);
     if (ImGui::Button("Update##Modules")) {
         AppManager::getCanBusStream().getModuleStatuses().clear();
         AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
@@ -54,7 +54,7 @@ void MonitorWindow::drawWindow()
     if (pin)
         nodeGroup = pin->getNodeGroup();
 
-    ImGui::BeginDisabled(!isUsbOpen || !nodeGroup);
+    ImGui::BeginDisabled(!isCommunicationOpen || !nodeGroup);
     if (ImGui::Button("Monitor Status")) {
         if (nodeGroup) {
             auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
@@ -68,7 +68,7 @@ void MonitorWindow::drawWindow()
     ImGui::SameLine();
 
     bool onBus = nodeGroup ? AppManager::getConfig()->getUsedOnBus(nodeGroup) : false;
-    ImGui::BeginDisabled(!isUsbOpen || !nodeGroup || onBus);
+    ImGui::BeginDisabled(!isCommunicationOpen || !nodeGroup || onBus);
     if (ImGui::Button("Un-monitor Status")) {
         if (nodeGroup) {
             auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);

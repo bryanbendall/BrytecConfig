@@ -279,7 +279,9 @@ void MainWindow::drawMenuBar()
     ToolbarSeperator();
 
     {
-        // Connect Button
+        ImGui::BeginDisabled(AppManager::getNetManager().isOpen());
+
+        // Usb Connect Button
         ImGui::SameLine();
         ImVec2 connectButtonPos = ImGui::GetCursorScreenPos();
         ImGui::BeginDisabled(!AppManager::getUsbManager().isDeviceValid());
@@ -295,11 +297,37 @@ void MainWindow::drawMenuBar()
             ImGui::GetWindowDrawList()->AddText(connectButtonPos, Colors::Notifications::Success, ICON_FA_CHECK_CIRCLE);
             ImGui::PopFont();
         }
+
+        ImGui::EndDisabled();
     }
 
-    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
+    {
+        ImGui::BeginDisabled(AppManager::getUsbManager().isOpen());
+
+        // Net Connect Button
+        ImGui::SameLine();
+        ImVec2 connectButtonPos = ImGui::GetCursorScreenPos();
+        if (AppManager::getNetManager().isOpen())
+            ToolbarButton(ICON_FA_WIFI, "Disonnect", std::bind(&NetManager::close, &AppManager::getNetManager()));
+        else
+            ToolbarButton(ICON_FA_WIFI, "Connect", std::bind(&NetManager::open, &AppManager::getNetManager()));
+
+        if (AppManager::getNetManager().isOpen()) {
+            ImGui::PushFont(NULL);
+            connectButtonPos = connectButtonPos + ImVec2(s_iconSize / 2, s_iconSize / 2);
+            ImGui::GetWindowDrawList()->AddText(connectButtonPos, Colors::Notifications::Success, ICON_FA_CHECK_CIRCLE);
+            ImGui::PopFont();
+        }
+
+        ImGui::EndDisabled();
+    }
+
+    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen() && !AppManager::getNetManager().isOpen());
     ToolbarButton(ICON_FA_CHART_BAR, "Monitor", [this]() { m_monitorWindow.setOpenedState(true); });
     ToolbarButton(ICON_FA_SYNC, "Module Commands", std::bind(&CommunicationModals::open, &m_communicationModals));
+    ImGui::EndDisabled();
+
+    ImGui::BeginDisabled(!AppManager::getUsbManager().isOpen());
     ToolbarButton(ICON_FA_MICROCHIP, "Go To Bootloader", []() { AppManager::getUsbManager().sendCommand({ ModuleCommand::Command::GoToBootloader }); });
     ImGui::EndDisabled();
 

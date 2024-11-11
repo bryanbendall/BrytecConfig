@@ -66,6 +66,7 @@ struct AppManagerData {
     std::filesystem::path nodeGroupsPath = std::filesystem::current_path();
     CanBusStream canBusStream;
     UsbManager usbManager;
+    NetManager netManager;
     bool openLastFile = true;
     std::filesystem::path lastFile = "";
     serial::PortInfo lastSerialPort;
@@ -210,6 +211,11 @@ std::shared_ptr<Config>& AppManager::getConfig()
 UsbManager& AppManager::getUsbManager()
 {
     return s_data.usbManager;
+}
+
+NetManager& AppManager::getNetManager()
+{
+    return s_data.netManager;
 }
 
 CanBusStream& AppManager::getCanBusStream()

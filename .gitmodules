@@ -19,3 +19,6 @@
 [submodule "BrytecConfig/vendor/serial"]
 	path = BrytecConfig/vendor/serial
 	url = https://github.com/bryanbendall/serial.git
+[submodule "BrytecConfig/vendor/asio"]
+	path = BrytecConfig/vendor/asio
+	url = https://github.com/bryanbendall/asio.git

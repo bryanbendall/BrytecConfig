@@ -94,6 +94,16 @@ add_executable(BrytecConfig
                 src/BrytecConfigEmbedded/ENode.h
                 src/BrytecConfigEmbedded/IOTypes.cpp
                 src/BrytecConfigEmbedded/IOTypes.h
+                src/communication/net/Client.cpp
+                src/communication/net/Client.h
+                src/communication/net/ConnectionHandler.cpp
+                src/communication/net/ConnectionHandler.h
+                src/communication/net/NetManager.cpp
+                src/communication/net/NetManager.h
+                src/communication/usb/Usb.cpp
+                src/communication/usb/Usb.h
+                src/communication/usb/UsbManager.cpp
+                src/communication/usb/UsbManager.h
                 src/communication/CanBusStream.cpp
                 src/communication/CanBusStream.h
                 src/communication/ModuleDebug.cpp
@@ -139,10 +149,6 @@ add_executable(BrytecConfig
                 src/gui/PropertiesWindow.h
                 src/gui/SettingsWindow.cpp
                 src/gui/SettingsWindow.h
-                src/usb/Usb.cpp
-                src/usb/Usb.h
-                src/usb/UsbManager.cpp
-                src/usb/UsbManager.h
                 src/utils/BinarySerializer.cpp
                 src/utils/BinarySerializer.h
                 src/utils/Colors.h
@@ -174,6 +180,7 @@ add_subdirectory(vendor/imgui)
 add_subdirectory(vendor/nativefiledialog)
 add_subdirectory(vendor/imnodes)
 add_subdirectory(vendor/serial)
+add_subdirectory(vendor/asio)
 
 target_link_libraries(BrytecConfig PUBLIC 
                         yaml-cpp
@@ -183,4 +190,5 @@ target_link_libraries(BrytecConfig PUBLIC
                         nativefiledialog
                         imnodes
                         serial
+                        asio
                     )
