@@ -90,6 +90,9 @@ namespace Brytec {
         static serial::PortInfo& getLastSerialPort();
         static void setLastSerialPort(serial::PortInfo& port);
 
+        static std::string& getIpAdderess();
+        static void setIpAddress(std::string& ipAddress);
+
         static void openBrowser(const std::string& url);
         static void openDocumentation(const std::string& page);
 

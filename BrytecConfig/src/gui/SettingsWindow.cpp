@@ -124,6 +124,19 @@ void SettingsWindow::drawWindow()
             ImGui::EndCombo();
         }
 
+        // Ip address
+        ImGui::PushID("Ip Address");
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+        ImGui::AlignTextToFramePadding();
+        ImGui::TextUnformatted("Ip Address");
+        ImGui::TableNextColumn();
+        ImGui::SetNextItemWidth(-FLT_MIN);
+        std::string ipAddress = AppManager::getIpAdderess();
+        if (ImGui::InputText("##Ip Address", &ipAddress))
+            AppManager::setIpAddress(ipAddress);
+        ImGui::PopID();
+
         ImGui::EndTable();
     }
 

@@ -70,6 +70,7 @@ struct AppManagerData {
     bool openLastFile = true;
     std::filesystem::path lastFile = "";
     serial::PortInfo lastSerialPort;
+    std::string ipAddress = "127.0.0.1";
 };
 
 static AppManagerData s_data;
@@ -116,6 +117,9 @@ void AppManager::loadSettings()
         if (node["Last Serial Port"])
             s_data.lastSerialPort = node["Last Serial Port"].as<serial::PortInfo>();
 
+        if (node["Ip Address"])
+            s_data.ipAddress = node["Ip Address"].as<std::string>();
+
         if (node["Module Window State"])
             s_data.mainWindow->m_moduleWindow.setOpenedState(node["Module Window State"].as<bool>());
 
@@ -161,6 +165,9 @@ void AppManager::saveSettings()
 
     out << YAML::Key << "Last Serial Port";
     out << YAML::Value << s_data.lastSerialPort;
+
+    out << YAML::Key << "Ip Address";
+    out << YAML::Value << s_data.ipAddress;
 
     out << YAML::Key << "Module Window State";
     out << YAML::Value << s_data.mainWindow->m_moduleWindow.getOpenedState();
@@ -408,6 +415,16 @@ serial::PortInfo& AppManager::getLastSerialPort()
 void AppManager::setLastSerialPort(serial::PortInfo& port)
 {
     s_data.lastSerialPort = port;
+}
+
+std::string& AppManager::getIpAdderess()
+{
+    return s_data.ipAddress;
+}
+
+void AppManager::setIpAddress(std::string& ipAddress)
+{
+    s_data.ipAddress = ipAddress;
 }
 
 void AppManager::openBrowser(const std::string& url)

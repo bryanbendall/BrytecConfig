@@ -2,6 +2,7 @@
 
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/EBrytecApp.h"
+#include "BrytecConfigEmbedded/EBrytecConfig.h"
 #include "communication/ModuleDebug.h"
 #include <chrono>
 #include <iostream>
@@ -24,17 +25,13 @@ void NetManager::update()
     if (!m_client.isConnected())
         return;
 
-    // if (m_usb.isOpen() && !isDeviceValid())
-    // m_usb.close();
-
     AppManager::getCanBusStream().update();
 }
 
 void NetManager::open()
 {
     AppManager::getCanBusStream().setSendFunction(std::bind(&NetManager::sendCan, this, std::placeholders::_1));
-    // TODO be able to set ip and port
-    m_client.startConnect("127.0.0.1", 6969);
+    m_client.startConnect(AppManager::getIpAdderess(), BRYTEC_NETWORK_PORT);
 }
 
 void NetManager::sendCan(CanFrame& frame)

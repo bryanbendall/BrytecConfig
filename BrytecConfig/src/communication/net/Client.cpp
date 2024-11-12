@@ -22,6 +22,7 @@ void Client::startConnect(std::string ipAddress, uint32_t port)
         connection->setReceiveCallback(m_receiveCallback);
 
         try {
+            std::cout << "Trying to connect to: " << ipAddress << " Port: " << port << std::endl;
             connection->socket().connect(tcp::endpoint(asio::ip::address::from_string(ipAddress), port));
         } catch (asio::system_error& e) {
             std::cout << "Client error: " << e.what() << std::endl;
