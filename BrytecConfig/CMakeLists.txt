@@ -2,98 +2,7 @@ add_executable(BrytecConfig
                 src/main.cpp              
                 src/AppManager.cpp
                 src/AppManager.h
-                src/EBrytecConfigCustom.h
-                src/BrytecConfigEmbedded/Boards/BrytecBoard.h
-                src/BrytecConfigEmbedded/Boards/DesktopSimulation.cpp
-                src/BrytecConfigEmbedded/Can/EBrytecCan.h
-                src/BrytecConfigEmbedded/Can/EBrytecCan.cpp
-                src/BrytecConfigEmbedded/Can/ECanBus.h
-                src/BrytecConfigEmbedded/Can/ECanBus.cpp
-                src/BrytecConfigEmbedded/Can/EPinStatusQueue.cpp
-                src/BrytecConfigEmbedded/Can/EPinStatusQueue.h
-                src/BrytecConfigEmbedded/Can/ECanCommandQueue.cpp
-                src/BrytecConfigEmbedded/Can/ECanCommandQueue.h
-                src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.cpp
-                src/BrytecConfigEmbedded/Can/ECanHolleyBroadcastQueue.h
-                src/BrytecConfigEmbedded/Can/ECustomCanQueue.cpp
-                src/BrytecConfigEmbedded/Can/ECustomCanQueue.h
-                src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.cpp
-                src/BrytecConfigEmbedded/Deserializer/BinaryArrayDeserializer.h
-                src/BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h
-                src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.cpp
-                src/BrytecConfigEmbedded/Deserializer/BinaryBufferSerializer.h
-                src/BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.cpp
-                src/BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h
-                src/BrytecConfigEmbedded/Nodes/EAndNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EAndNode.h
-                src/BrytecConfigEmbedded/Nodes/ECanBusInputNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECanBusInputNode.h
-                src/BrytecConfigEmbedded/Nodes/ECanBusOutputNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECanBusOutputNode.h
-                src/BrytecConfigEmbedded/Nodes/EColorNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EColorNode.h
-                src/BrytecConfigEmbedded/Nodes/ECompareNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECompareNode.h                
-                src/BrytecConfigEmbedded/Nodes/EConvertNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EConvertNode.h
-                src/BrytecConfigEmbedded/Nodes/ECounterNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECounterNode.h
-                src/BrytecConfigEmbedded/Nodes/ECurveNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ECurveNode.h
-                src/BrytecConfigEmbedded/Nodes/EInterpolateNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EInterpolateNode.h
-                src/BrytecConfigEmbedded/Nodes/EDelayNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EDelayNode.h
-                src/BrytecConfigEmbedded/Nodes/EFinalValueNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EFinalValueNode.h
-                src/BrytecConfigEmbedded/Nodes/EHolleyBroadcastNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EHolleyBroadcastNode.h
-                src/BrytecConfigEmbedded/Nodes/EInitialValueNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EInitialValueNode.h
-                src/BrytecConfigEmbedded/Nodes/EInvertNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EInvertNode.h
-                src/BrytecConfigEmbedded/Nodes/EMapValueNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EMapValueNode.h
-                src/BrytecConfigEmbedded/Nodes/EMathNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EMathNode.h
-                src/BrytecConfigEmbedded/Nodes/ENodeGroupNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ENodeGroupNode.h
-                src/BrytecConfigEmbedded/Nodes/EOnOffNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EOnOffNode.h
-                src/BrytecConfigEmbedded/Nodes/EOrNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EOrNode.h
-                src/BrytecConfigEmbedded/Nodes/EPIDNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EPIDNode.h
-                src/BrytecConfigEmbedded/Nodes/EPinCurrentNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EPinCurrentNode.h
-                src/BrytecConfigEmbedded/Nodes/EPushButtonNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EPushButtonNode.h
-                src/BrytecConfigEmbedded/Nodes/ERacepakSwitchPanelNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ERacepakSwitchPanelNode.h
-                src/BrytecConfigEmbedded/Nodes/ESwitchNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ESwitchNode.h
-                src/BrytecConfigEmbedded/Nodes/EToggleNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EToggleNode.h
-                src/BrytecConfigEmbedded/Nodes/ETwoStageNode.cpp
-                src/BrytecConfigEmbedded/Nodes/ETwoStageNode.h
-                src/BrytecConfigEmbedded/Nodes/EValueNode.cpp
-                src/BrytecConfigEmbedded/Nodes/EValueNode.h
-                src/BrytecConfigEmbedded/Usb/UsbDefs.cpp
-                src/BrytecConfigEmbedded/Usb/UsbDefs.h                
-                src/BrytecConfigEmbedded/Usb/ModuleCommand.cpp
-                src/BrytecConfigEmbedded/Usb/ModuleCommand.h
-                src/BrytecConfigEmbedded/Utils/ENodeConnection.h
-                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.cpp
-                src/BrytecConfigEmbedded/Utils/ENodeDeserializer.h
-                src/BrytecConfigEmbedded/Utils/ENodeGroup.cpp
-                src/BrytecConfigEmbedded/Utils/ENodeGroup.h
-                src/BrytecConfigEmbedded/Utils/ENodesVector.h
-                src/BrytecConfigEmbedded/EBrytecApp.cpp
-                src/BrytecConfigEmbedded/EBrytecApp.h
-                src/BrytecConfigEmbedded/ENode.cpp
-                src/BrytecConfigEmbedded/ENode.h
-                src/BrytecConfigEmbedded/IOTypes.cpp
-                src/BrytecConfigEmbedded/IOTypes.h
+                src/DesktopSimulationBoard.cpp
                 src/communication/net/Client.cpp
                 src/communication/net/Client.h
                 src/communication/net/ConnectionHandler.cpp
@@ -162,17 +71,17 @@ add_executable(BrytecConfig
                 src/utils/NodeGroupSerializer.h
                 src/utils/UUID.cpp
                 src/utils/UUID.h
-)
+                )
 
 target_include_directories(BrytecConfig PUBLIC
                            "${CMAKE_CURRENT_SOURCE_DIR}/src"
-                           "${CMAKE_CURRENT_SOURCE_DIR}/src/BrytecConfigEmbedded"
                            "vendor/yaml-cpp/include"
                            "vendor/glfw/include"
                            "vendor/fontawesome"
                            "vendor/serial/include"
                            )
 
+add_subdirectory(src/BrytecConfigEmbedded)
 add_subdirectory(vendor/yaml-cpp)
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/glad)
@@ -183,6 +92,7 @@ add_subdirectory(vendor/serial)
 add_subdirectory(vendor/asio)
 
 target_link_libraries(BrytecConfig PUBLIC 
+                        BrytecConfigEmbedded
                         yaml-cpp
                         glfw
                         glad
@@ -191,4 +101,4 @@ target_link_libraries(BrytecConfig PUBLIC
                         imnodes
                         serial
                         asio
-                    )
+                        )
