@@ -31,7 +31,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Racepak Switch Panel (Experamental)",
     "Holley Broadcast (Experamental)",
     "Interpolate",
-    "Can Bus Output"
+    "Can Bus Output",
+    "Thermistor"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -254,6 +255,17 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // Data Type
         m_values.push_back(0.0f); // Start Byte
         m_values.push_back(0.0f); // Last Send
+        break;
+
+    case NodeTypes::Thermistor:
+        m_inputs.push_back(0.0f); // Input
+        m_values.push_back(0.0f); // Res 1
+        m_values.push_back(0.0f); // Temp 1
+        m_values.push_back(0.0f); // Res 2
+        m_values.push_back(0.0f); // Temp 2
+        m_values.push_back(0.0f); // Temp Format
+        m_values.push_back(0.0f); // Beta
+        m_outputs.push_back(0.0f); // Output
         break;
 
     case NodeTypes::Count:

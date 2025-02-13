@@ -30,6 +30,7 @@ static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string la
 static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
 static void ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
 static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);
+static void ValueDisplay(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2);
 static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = Colors::NodeConnections::AnyValue);
 static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
 }
@@ -483,7 +484,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             "Close Loop Comp",
             "Target AFR",
             "AFR Left",
-            "AFR Left",
+            "AFR Right",
             "AFR Average",
             "Air Temp Enrichment",
             "Coolant Enrichment",
@@ -1018,6 +1019,22 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
+    case NodeTypes::Thermistor: {
+        UI::InputOnly(node, 0, "Input");
+        UI::ValueFloat(node, 0, "Res 1");
+        UI::ValueFloat(node, 1, "Temp 1");
+        UI::ValueFloat(node, 2, "Res 2");
+        UI::ValueFloat(node, 3, "Temp 2");
+        static const char* tempFormat[] = { "Celsius", "Fahrenheit", "Kelvin" };
+        UI::ValueCombo(node, 4, tempFormat, IM_ARRAYSIZE(tempFormat));
+
+        if (mode == NodeWindow::Mode::Simulation)
+            UI::ValueDisplay(node, 5, "Beta", 2);
+
+        UI::Ouput(node, 0, "Value");
+        break;
+    }
+
     default:
         drawUnimplimentedNode(node);
         break;
@@ -1171,6 +1188,29 @@ void UI::ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* cons
     int type = (int)node->getValue(attribute);
     if (ImGui::Combo("###Combo", &type, items, items_count))
         node->setValue(attribute, (float)type);
+
+    ImNodes::EndStaticAttribute();
+}
+
+void UI::ValueDisplay(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals)
+{
+    ImNodes::BeginStaticAttribute(node->getValueId(attribute));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+    ImGui::Dummy(ImVec2(1.0f, 3.0f));
+
+    ImGui::Text(label.c_str(), "");
+    ImGui::SameLine();
+
+    std::stringstream stream;
+    stream << std::fixed << std::setprecision(decimals) << node->getValue(attribute);
+    float valueWidth = ImGui::CalcTextSize(stream.str().c_str()).x;
+
+    ImGui::Indent(s_nodeWidth - valueWidth);
+    ImGui::Text(stream.str().c_str(), "");
+
+    ImGui::Dummy(ImVec2(1.0f, 3.0f));
+    ImGui::PopStyleVar();
 
     ImNodes::EndStaticAttribute();
 }
