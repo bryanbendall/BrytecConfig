@@ -29,7 +29,7 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Counter",
     "Color",
     "Racepak Switch Panel (Experamental)",
-    "Holley Broadcast (Experamental)",
+    "Holley Broadcast",
     "Interpolate",
     "Can Bus Output",
     "Thermistor"
