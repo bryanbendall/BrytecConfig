@@ -1120,6 +1120,15 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
+    case NodeTypes::Holley_Io_Module: {
+        UI::InputFloat(node, 0, "Data");
+        UI::ValueFloat(node, 0, "Can Id", 0);
+        static const char* ioIndex[] = { "Input 1", "Input 2", "Input 3", "Input 4", "Input 5", "Input 6", "Input 7", "Input 8" };
+        UI::ValueCombo(node, 1, ioIndex, IM_ARRAYSIZE(ioIndex));
+        UI::ValueFloat(node, 2, "Send Time", 2, 0.0f, 10.0f, 0.01f);
+        break;
+    }
+
     default:
         drawUnimplimentedNode(node);
         break;

@@ -32,7 +32,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Holley Broadcast",
     "Interpolate",
     "Can Bus Output",
-    "Thermistor"
+    "Thermistor",
+    "Holley Io Module"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -266,6 +267,14 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // Temp Format
         m_values.push_back(0.0f); // Beta
         m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Holley_Io_Module:
+        m_inputs.push_back(0.0f); // Data
+        m_values.push_back(1234.0f); // Can Id
+        m_values.push_back(0.0f); // Input Index
+        m_values.push_back(0.1f); // Send Interval
+        m_values.push_back(0.0f); // Send Timer
         break;
 
     case NodeTypes::Count:
