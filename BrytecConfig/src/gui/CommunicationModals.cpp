@@ -114,9 +114,6 @@ void CommunicationModals::drawTable()
             case EBrytecApp::Mode::Normal:
                 modeString = "Normal";
                 break;
-            case EBrytecApp::Mode::Programming:
-                modeString = "Programming";
-                break;
             case EBrytecApp::Mode::Stopped:
                 modeString = "Stopped";
                 break;

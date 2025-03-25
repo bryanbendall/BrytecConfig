@@ -51,6 +51,7 @@ private:
     std::atomic_bool m_sending = false;
     uint8_t m_toModuleAddress;
     std::function<void(CanFrame&)> m_sendFunction;
+    std::atomic_bool m_waitForReply = true;
 
     std::vector<uint8_t> m_moduleDataBuffer;
     std::function<void(const std::vector<uint8_t>&)> m_moduleDataCallback;

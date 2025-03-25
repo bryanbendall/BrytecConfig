@@ -9,6 +9,9 @@ namespace Brytec {
 
 void CanBusStream::update()
 {
+    if (m_commandsToSend.size() == 0)
+        m_sending = false;
+
     if (!m_sending)
         return;
 
@@ -33,6 +36,8 @@ void CanBusStream::requestModuleStatus(uint8_t moduleAddress)
     if (m_sending)
         return;
 
+    m_waitForReply = false;
+
     m_toModuleAddress = moduleAddress;
 
     CanCommands command;
@@ -45,6 +50,8 @@ void CanBusStream::requestNodeGroupStatus(uint8_t moduleAddress, uint16_t nodeGr
 {
     if (m_sending)
         return;
+
+    m_waitForReply = false;
 
     m_toModuleAddress = moduleAddress;
 
@@ -61,6 +68,8 @@ void CanBusStream::changeMode(uint8_t moduleAddress, EBrytecApp::Mode mode)
     if (m_sending)
         return;
 
+    m_waitForReply = false;
+
     m_toModuleAddress = moduleAddress;
 
     CanCommands command;
@@ -74,6 +83,8 @@ void CanBusStream::changeAddress(uint8_t moduleAddress, uint8_t newAddress)
 {
     if (m_sending)
         return;
+
+    m_waitForReply = true;
 
     m_toModuleAddress = moduleAddress;
 
@@ -89,6 +100,8 @@ void CanBusStream::reloadConfig(uint8_t moduleAddress)
     if (m_sending)
         return;
 
+    m_waitForReply = false;
+
     m_toModuleAddress = moduleAddress;
 
     changeMode(moduleAddress, EBrytecApp::Mode::Stopped);
@@ -97,14 +110,14 @@ void CanBusStream::reloadConfig(uint8_t moduleAddress)
     command.moduleAddress = moduleAddress;
     command.command = CanCommands::Command::ReloadConfig;
     m_commandsToSend.push_back(command.getFrame());
-
-    changeMode(moduleAddress, EBrytecApp::Mode::Normal);
 }
 
 void CanBusStream::reserveConfigSize(uint8_t moduleAddress, uint16_t size)
 {
     if (m_sending)
         return;
+
+    m_waitForReply = true;
 
     m_toModuleAddress = moduleAddress;
 
@@ -120,10 +133,10 @@ void CanBusStream::sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& da
     if (m_sending)
         return;
 
+    m_waitForReply = true;
+
     m_toModuleAddress = moduleAddress;
 
-    changeMode(moduleAddress, EBrytecApp::Mode::Stopped);
-    changeMode(moduleAddress, EBrytecApp::Mode::Programming);
     reserveConfigSize(moduleAddress, data.size());
 
     // write data
@@ -143,8 +156,6 @@ void CanBusStream::sendNewConfig(uint8_t moduleAddress, std::vector<uint8_t>& da
     }
     if (index != 7)
         m_commandsToSend.push_back(command.getFrame());
-
-    reloadConfig(moduleAddress);
 }
 
 void CanBusStream::getModuleData(uint8_t moduleAddress, std::function<void(const std::vector<uint8_t>&)> completeCallback,
@@ -152,6 +163,8 @@ void CanBusStream::getModuleData(uint8_t moduleAddress, std::function<void(const
 {
     if (m_sending)
         return;
+
+    m_waitForReply = true;
 
     m_toModuleAddress = moduleAddress;
 
@@ -311,9 +324,11 @@ void CanBusStream::canBusReceived(CanFrame frame)
 
 void CanBusStream::sendNextFrame()
 {
-    if (m_commandsToSend.size() > 0)
+    if (m_commandsToSend.size() > 0) {
         m_sendFunction(m_commandsToSend.front());
-    else
+        if (!m_waitForReply)
+            m_commandsToSend.pop_front();
+    } else
         std::cout << "Trying to send a can message from an empty queue." << std::endl;
 }
 }
