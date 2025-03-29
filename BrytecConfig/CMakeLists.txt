@@ -91,6 +91,7 @@ add_subdirectory(vendor/nativefiledialog)
 add_subdirectory(vendor/imnodes)
 add_subdirectory(vendor/serial)
 add_subdirectory(vendor/asio)
+add_subdirectory(vendor/implot)
 
 target_link_libraries(BrytecConfig PUBLIC 
                         BrytecConfigEmbedded
@@ -102,4 +103,5 @@ target_link_libraries(BrytecConfig PUBLIC
                         imnodes
                         serial
                         asio
+                        implot
                         )

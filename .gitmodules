@@ -22,3 +22,6 @@
 [submodule "BrytecConfig/vendor/asio"]
 	path = BrytecConfig/vendor/asio
 	url = https://github.com/bryanbendall/asio.git
+[submodule "BrytecConfig/vendor/implot"]
+	path = BrytecConfig/vendor/implot
+	url = https://github.com/bryanbendall/implot.git
