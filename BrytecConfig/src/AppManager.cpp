@@ -203,6 +203,7 @@ void AppManager::update()
     s_data.mainWindow->drawWindow();
     handleKeyEvents();
     s_data.usbManager.update();
+    s_data.netManager.update();
 }
 
 Version AppManager::getVersion()
