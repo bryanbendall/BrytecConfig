@@ -3,6 +3,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "CommunicationModals.h"
+#include "GraphWindow.h"
 #include "ModuleBuilderWindow.h"
 #include "ModuleDebugWindow.h"
 #include "ModuleWindow.h"
@@ -41,6 +42,7 @@ private:
     SettingsWindow m_settingsWindow;
     MonitorWindow m_monitorWindow;
     ModuleDebugWindow m_moduleDebugWindow;
+    GraphWindow m_graphWindow;
     CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;
 

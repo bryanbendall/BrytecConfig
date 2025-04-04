@@ -12,6 +12,7 @@
 #include <functional>
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <implot.h>
 
 namespace Brytec {
 
@@ -124,6 +125,8 @@ void MainWindow::drawWindow()
     ImGui::ShowDemoWindow();
     ImGui::ShowMetricsWindow();
 
+    ImPlot::ShowDemoWindow();
+
     m_nodeWindow.drawWindow();
     m_moduleWindow.drawWindow();
     m_propertiesWindow.drawWindow();
@@ -132,6 +135,7 @@ void MainWindow::drawWindow()
     m_settingsWindow.drawWindow();
     m_monitorWindow.drawWindow();
     m_moduleDebugWindow.drawWindow();
+    m_graphWindow.drawWindow();
     m_communicationModals.draw();
 
     NotificationWindow::drawWindow();
@@ -189,6 +193,8 @@ void MainWindow::drawMenu()
                 m_propertiesWindow.setOpenedState(true);
             if (ImGui::MenuItem("Monitor Window", "", m_monitorWindow.getOpenedState()))
                 m_monitorWindow.setOpenedState(true);
+            if (ImGui::MenuItem("Graph Window", "", m_graphWindow.getOpenedState()))
+                m_graphWindow.setOpenedState(true);
             if (ImGui::MenuItem("Debug Module Window", "", m_moduleDebugWindow.getOpenedState()))
                 m_moduleDebugWindow.setOpenedState(true);
             ImGui::EndMenu();
