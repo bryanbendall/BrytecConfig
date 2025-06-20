@@ -161,23 +161,80 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
     // Draw context menu
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     if (ImGui::BeginPopup("NodeWindowPopup")) {
-        ImVec2 scene_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-        for (int i = (int)NodeTypes::Initial_Value; i < (int)NodeTypes::Count; i++) {
+        m_popupPosition = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-            // Can only have one of these nodes
-            bool enabled = !(i == (int)NodeTypes::PinCurrent && nodeGroup->hasNodeType(NodeTypes::PinCurrent));
-            enabled &= !(i == (int)NodeTypes::Initial_Value && nodeGroup->hasNodeType(NodeTypes::Initial_Value));
+        if (ImGui::BeginMenu("Node Group")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Initial_Value);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Node_Group);
+            drawPopupMenuItem(nodeGroup, NodeTypes::PinCurrent);
+            ImGui::EndMenu();
+        }
 
-            if (ImGui::MenuItem(Node::s_nodeName[i], NULL, false, enabled)) {
-                nodeGroup->addNode((NodeTypes)i);
-                ImNodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), scene_pos);
-            }
+        if (ImGui::BeginMenu("Control")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Switch);
+            drawPopupMenuItem(nodeGroup, NodeTypes::On_Off);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Toggle);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Delay);
+            drawPopupMenuItem(nodeGroup, NodeTypes::PID);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Counter);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Two_Stage);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Boolean")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::And);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Or);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Compare);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Invert);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Math")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Value);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Math);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Map_Value);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Curve);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Interpolate);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Clamp);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Can Bus")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::CanBusInput);
+            drawPopupMenuItem(nodeGroup, NodeTypes::CanBusOutput);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Holley_Broadcast);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Holley_Io_Module);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Racepak_Switch_Panel);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Color")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Color);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Mix_Color);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Special")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Thermistor);
+            ImGui::EndMenu();
         }
 
         ImGui::EndPopup();
     }
     ImGui::PopStyleVar();
+}
+
+void NodeWindow::drawPopupMenuItem(std::shared_ptr<NodeGroup>& nodeGroup, NodeTypes type)
+{
+    // Can only have one of these nodes
+    bool enabled = !(type == NodeTypes::PinCurrent && nodeGroup->hasNodeType(NodeTypes::PinCurrent));
+    enabled &= !(type == NodeTypes::Initial_Value && nodeGroup->hasNodeType(NodeTypes::Initial_Value));
+
+    if (ImGui::MenuItem(Node::s_nodeName[(int)type], NULL, false, enabled)) {
+        nodeGroup->addNode(type);
+        ImNodes::SetNodeScreenSpacePos(nodeGroup->getNodes().back()->getId(), m_popupPosition);
+    }
 }
 
 void NodeWindow::drawNode(std::shared_ptr<Node>& node)
@@ -305,28 +362,28 @@ void NodeWindow::isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup)
         unsigned char endNodeIndex = end >> 8;
         unsigned char endAttributeIndex = end & 0xFF;
 
-        //Cant link to itself
+        // Cant link to itself
         if (beginNodeIndex == endNodeIndex)
             return;
 
         if (!nodeGroup)
             return;
 
-        //Check if start node is an output
+        // Check if start node is an output
         if (beginAttributeIndex < nodeGroup->getNode(beginNodeIndex)->getOutputs().size()) {
-            //If also an output return
+            // If also an output return
             if (endAttributeIndex < nodeGroup->getNode(endNodeIndex)->getOutputs().size())
                 return;
             auto& nodeConnection = nodeGroup->getNode(endNodeIndex)->getInput(endAttributeIndex - nodeGroup->getNode(endNodeIndex)->getOutputs().size());
             nodeConnection.ConnectedNode = nodeGroup->getNode(beginNodeIndex);
             nodeConnection.OutputIndex = beginAttributeIndex;
             nodeGroup->sortNodes();
-            //std::cout << "saving output to input\n";
+            // std::cout << "saving output to input\n";
             return;
         }
 
-        //Then start node is an input
-        //Make sure the end node is an output
+        // Then start node is an input
+        // Make sure the end node is an output
         if (endAttributeIndex >= nodeGroup->getNode(endNodeIndex)->getOutputs().size())
             return;
         auto& nodeConnection = nodeGroup->getNode(beginNodeIndex)->getInput(beginAttributeIndex);

@@ -16,6 +16,14 @@ BinaryDeserializer* BrytecBoard::getDeserializer()
     return &deserializer;
 }
 
+void BrytecBoard::preUpdate()
+{
+}
+
+void BrytecBoard::postUpdate()
+{
+}
+
 void BrytecBoard::error(EBrytecErrors error)
 {
     switch (error) {

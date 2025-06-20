@@ -33,7 +33,9 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Interpolate",
     "Can Bus Output",
     "Thermistor",
-    "Holley Io Module"
+    "Holley Io Module",
+    "Mix Color",
+    "Clamp"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -275,6 +277,20 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(0.0f); // Input Index
         m_values.push_back(0.1f); // Send Interval
         m_values.push_back(0.0f); // Send Timer
+        break;
+
+    case NodeTypes::Mix_Color:
+        m_inputs.push_back(0.0f); // Color 1
+        m_inputs.push_back(0.0f); // Color 2
+        m_inputs.push_back(0.0f); // Factor
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Clamp:
+        m_inputs.push_back(0.0f); // Input
+        m_inputs.push_back(0.0f); // Min
+        m_inputs.push_back(1.0f); // Max
+        m_outputs.push_back(0.0f); // Output
         break;
 
     case NodeTypes::Count:

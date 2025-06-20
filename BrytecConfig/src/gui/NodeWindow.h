@@ -27,6 +27,7 @@ public:
 private:
     void drawMenubar();
     void drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup);
+    void drawPopupMenuItem(std::shared_ptr<NodeGroup>& nodeGroup, NodeTypes type);
     void drawNode(std::shared_ptr<Node>& node);
     void addLinkData(std::shared_ptr<NodeGroup>& nodeGroup);
     void isLinkCreated(std::shared_ptr<NodeGroup>& nodeGroup);
@@ -51,6 +52,7 @@ private:
     std::weak_ptr<NodeGroup> m_nodeGroup;
     ImNodesEditorContext* defaultContext;
     std::map<std::shared_ptr<NodeGroup>, ImNodesEditorContext*> m_contexts;
+    ImVec2 m_popupPosition;
 };
 
 }

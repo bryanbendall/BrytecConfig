@@ -280,6 +280,7 @@ void ModuleBuilderWindow::writeDefineFile(const std::filesystem::path& path)
             auto& pin = m_module->getPhysicalPins()[i];
             std::string pinout = pin->getPinoutName();
             std::replace(pinout.begin(), pinout.end(), ' ', '_');
+            std::replace(pinout.begin(), pinout.end(), ',', '_');
             fout << "#define BT_PIN_" << pinout << " " << i << "\n";
         }
     }

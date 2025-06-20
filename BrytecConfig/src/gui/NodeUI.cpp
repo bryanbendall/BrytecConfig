@@ -19,19 +19,20 @@
 namespace Brytec {
 
 namespace UI {
-static void SameHeightText(std::string text);
-static void DragFloat(std::shared_ptr<Node>& node, float& value, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
-static bool DragHex(std::shared_ptr<Node>& node, uint32_t& value, std::string label, uint32_t min = 0, uint32_t max = 0, float speed = 1.0f);
-static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label);
-static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
-static void InputZeroToOne(std::shared_ptr<Node>& node, int attribute, std::string label);
-static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
-static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
-static void ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
-static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);
-static void ValueDisplay(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2);
-static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = Colors::NodeConnections::AnyValue);
-static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
+    static void SameHeightText(std::string text);
+    static void DragFloat(std::shared_ptr<Node>& node, float& value, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+    static bool DragHex(std::shared_ptr<Node>& node, uint32_t& value, std::string label, uint32_t min = 0, uint32_t max = 0, float speed = 1.0f);
+    static void InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label, ImU32 color = Colors::NodeConnections::Boolean);
+    static void InputFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+    static void InputZeroToOne(std::shared_ptr<Node>& node, int attribute, std::string label);
+    static void InputBool(std::shared_ptr<Node>& node, int attribute, std::string label);
+    static void InputColor(std::shared_ptr<Node>& node, int attribute, std::string label);
+    static void ValueFloat(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2, float min = 0.0f, float max = 0.0f, float speed = 1.0f);
+    static void ValueHex(std::shared_ptr<Node>& node, int attribute, std::string label, int min = 0, int max = 0, float speed = 1.0f);
+    static void ValueCombo(std::shared_ptr<Node>& node, int attribute, const char* const items[], int items_count);
+    static void ValueDisplay(std::shared_ptr<Node>& node, int attribute, std::string label, int decimals = 2);
+    static void Ouput(std::shared_ptr<Node>& node, int attribute, std::string label, unsigned int color = Colors::NodeConnections::AnyValue);
+    static void OnOffButton(std::shared_ptr<Node>& node, float& value, bool interact);
 }
 
 static float s_nodeWidth = 0.0f;
@@ -58,6 +59,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
                 case IOTypes::Types::Output_5V:
                 case IOTypes::Types::Output_Batt:
                 case IOTypes::Types::Output_Ground:
+                case IOTypes::Types::Output_Halfbridge:
                     percentValue = true;
                     break;
 
@@ -1105,7 +1107,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::Thermistor: {
-        UI::InputOnly(node, 0, "Input");
+        UI::InputOnly(node, 0, "Input", Colors::NodeConnections::AnyValue);
         UI::ValueFloat(node, 0, "Res 1");
         UI::ValueFloat(node, 1, "Temp 1");
         UI::ValueFloat(node, 2, "Res 2");
@@ -1126,6 +1128,24 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         static const char* ioIndex[] = { "Input 1", "Input 2", "Input 3", "Input 4", "Input 5", "Input 6", "Input 7", "Input 8" };
         UI::ValueCombo(node, 1, ioIndex, IM_ARRAYSIZE(ioIndex));
         UI::ValueFloat(node, 2, "Send Time", 2, 0.0f, 10.0f, 0.01f);
+        break;
+    }
+
+    case NodeTypes::Mix_Color: {
+        UI::InputColor(node, 0, "Color 1");
+        UI::InputColor(node, 1, "Color 2");
+        UI::InputZeroToOne(node, 2, "Factor");
+
+        UI::Ouput(node, 0, "Value");
+        break;
+    }
+
+    case NodeTypes::Clamp: {
+        UI::InputFloat(node, 0, "Input");
+        UI::InputFloat(node, 1, "Min");
+        UI::InputFloat(node, 2, "Max");
+
+        UI::Ouput(node, 0, "Value");
         break;
     }
 
@@ -1192,9 +1212,9 @@ bool UI::DragHex(std::shared_ptr<Node>& node, uint32_t& value, std::string label
     return returnValue;
 }
 
-void UI::InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label)
+void UI::InputOnly(std::shared_ptr<Node>& node, int attribute, std::string label, ImU32 color)
 {
-    ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::Boolean);
+    ImNodes::PushColorStyle(ImNodesCol_Pin, color);
     ImNodes::BeginInputAttribute(node->getIntputId(attribute));
 
     SameHeightText(label);
@@ -1233,6 +1253,48 @@ void UI::InputBool(std::shared_ptr<Node>& node, int attribute, std::string label
             node->getInput(attribute).DefaultValue = value;
         ImGui::SameLine();
         ImGui::Text(label.c_str(), "");
+    } else {
+        SameHeightText(label);
+    }
+
+    ImNodes::EndInputAttribute();
+    ImNodes::PopColorStyle();
+}
+
+void UI::InputColor(std::shared_ptr<Node>& node, int attribute, std::string label)
+{
+    ImNodes::PushColorStyle(ImNodesCol_Pin, Colors::NodeConnections::AnyValue);
+    ImNodes::BeginInputAttribute(node->getIntputId(attribute));
+
+    if (node->getInput(attribute).ConnectedNode.expired()) {
+
+        uint32_t color = (uint32_t)node->getInput(attribute).DefaultValue;
+
+        ImVec4 vecCol(
+            (color & 0xFF) / 255.0f,
+            ((color >> 8) & 0xFF) / 255.0f,
+            ((color >> 16) & 0xFF) / 255.0f,
+            1.0f);
+
+        if (ImGui::ColorButton("##b", vecCol, 0, ImVec2(s_nodeWidth, 0.0f))) {
+            // Store current color and open a picker
+            ImGui::GetCurrentContext()->ColorPickerRef = vecCol;
+            ImGui::OpenPopup("picker");
+        }
+
+        if (ImGui::BeginPopup("picker")) {
+            if (ImGui::ColorPicker4("##picker", &vecCol.x, ImGuiColorEditFlags_NoAlpha, &ImGui::GetCurrentContext()->ColorPickerRef.x)) {
+
+                uint32_t outputColor = 0;
+                outputColor |= (uint32_t)(vecCol.x * 255.0f + 0.5f) << 0;
+                outputColor |= (uint32_t)(vecCol.y * 255.0f + 0.5f) << 8;
+                outputColor |= (uint32_t)(vecCol.z * 255.0f + 0.5f) << 16;
+
+                node->getInput(attribute).DefaultValue = outputColor;
+            }
+            ImGui::EndPopup();
+        }
+
     } else {
         SameHeightText(label);
     }

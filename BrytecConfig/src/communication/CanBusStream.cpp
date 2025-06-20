@@ -307,6 +307,9 @@ void CanBusStream::canBusReceived(CanFrame frame)
 
         break;
 
+    case CanCommands::Command::RequestAddress:
+        return;
+
     default:
         std::cout << "Unknow can command" << std::endl;
         return;
