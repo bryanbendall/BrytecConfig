@@ -168,6 +168,7 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
             drawPopupMenuItem(nodeGroup, NodeTypes::Initial_Value);
             drawPopupMenuItem(nodeGroup, NodeTypes::Node_Group);
             drawPopupMenuItem(nodeGroup, NodeTypes::PinCurrent);
+            drawPopupMenuItem(nodeGroup, NodeTypes::DeltaTime);
             ImGui::EndMenu();
         }
 

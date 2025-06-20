@@ -1149,6 +1149,11 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         break;
     }
 
+    case NodeTypes::DeltaTime: {
+        UI::Ouput(node, 0, "Value");
+        break;
+    }
+
     default:
         drawUnimplimentedNode(node);
         break;
