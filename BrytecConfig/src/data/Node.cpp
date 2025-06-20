@@ -36,7 +36,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Holley Io Module",
     "Mix Color",
     "Clamp",
-    "Delta Time"
+    "Delta Time",
+    "Previous Value"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -295,6 +296,10 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         break;
 
     case NodeTypes::DeltaTime:
+        m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::PreviousValue:
         m_outputs.push_back(0.0f); // Output
         break;
 

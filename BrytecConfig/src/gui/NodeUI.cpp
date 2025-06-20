@@ -125,7 +125,7 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         static std::shared_ptr<NodeGroup> selectedNodeGroup;
         selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
 
-        if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
+        if (ImGui::BeginCombo("###pinsCombo", !selectedNodeGroup ? "ERROR: Unknown" : selectedNodeGroup->getName().c_str(), ImGuiComboFlags_HeightLarge)) {
 
             // Auto select search box
             if (ImGui::IsWindowAppearing() && !nodeGroupSearchFocus) {
@@ -1151,6 +1151,15 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
 
     case NodeTypes::DeltaTime: {
         UI::Ouput(node, 0, "Value");
+        break;
+    }
+
+    case NodeTypes::PreviousValue: {
+        if (mode == NodeWindow::Mode::Simulation)
+            UI::SameHeightText("Not in simulation!");
+
+        UI::Ouput(node, 0, "Value");
+
         break;
     }
 

@@ -165,8 +165,9 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
         m_popupPosition = ImGui::GetMousePosOnOpeningCurrentPopup();
 
         if (ImGui::BeginMenu("Node Group")) {
-            drawPopupMenuItem(nodeGroup, NodeTypes::Initial_Value);
             drawPopupMenuItem(nodeGroup, NodeTypes::Node_Group);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Initial_Value);
+            drawPopupMenuItem(nodeGroup, NodeTypes::PreviousValue);
             drawPopupMenuItem(nodeGroup, NodeTypes::PinCurrent);
             drawPopupMenuItem(nodeGroup, NodeTypes::DeltaTime);
             ImGui::EndMenu();
@@ -177,9 +178,9 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
             drawPopupMenuItem(nodeGroup, NodeTypes::On_Off);
             drawPopupMenuItem(nodeGroup, NodeTypes::Toggle);
             drawPopupMenuItem(nodeGroup, NodeTypes::Delay);
-            drawPopupMenuItem(nodeGroup, NodeTypes::PID);
-            drawPopupMenuItem(nodeGroup, NodeTypes::Counter);
             drawPopupMenuItem(nodeGroup, NodeTypes::Two_Stage);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Counter);
+            drawPopupMenuItem(nodeGroup, NodeTypes::PID);
             ImGui::EndMenu();
         }
 
@@ -192,12 +193,12 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
         }
 
         if (ImGui::BeginMenu("Math")) {
-            drawPopupMenuItem(nodeGroup, NodeTypes::Value);
             drawPopupMenuItem(nodeGroup, NodeTypes::Math);
             drawPopupMenuItem(nodeGroup, NodeTypes::Map_Value);
             drawPopupMenuItem(nodeGroup, NodeTypes::Curve);
             drawPopupMenuItem(nodeGroup, NodeTypes::Interpolate);
             drawPopupMenuItem(nodeGroup, NodeTypes::Clamp);
+            drawPopupMenuItem(nodeGroup, NodeTypes::Value);
             ImGui::EndMenu();
         }
 
@@ -231,6 +232,7 @@ void NodeWindow::drawPopupMenuItem(std::shared_ptr<NodeGroup>& nodeGroup, NodeTy
     // Can only have one of these nodes
     bool enabled = !(type == NodeTypes::PinCurrent && nodeGroup->hasNodeType(NodeTypes::PinCurrent));
     enabled &= !(type == NodeTypes::Initial_Value && nodeGroup->hasNodeType(NodeTypes::Initial_Value));
+    enabled &= !(type == NodeTypes::PreviousValue && nodeGroup->hasNodeType(NodeTypes::PreviousValue));
 
     if (ImGui::MenuItem(Node::s_nodeName[(int)type], NULL, false, enabled)) {
         nodeGroup->addNode(type);
