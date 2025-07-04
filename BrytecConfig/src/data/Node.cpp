@@ -201,8 +201,8 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // P
         m_inputs.push_back(NodeConnection()); // I
         m_inputs.push_back(NodeConnection()); // D
-        m_values.push_back(0.0f); // previous error
-        m_values.push_back(0.0f); // integral
+        m_values.push_back(0.0f); // Last Input
+        m_values.push_back(0.0f); // iTerm
         m_outputs.push_back(0.0f);
         break;
 

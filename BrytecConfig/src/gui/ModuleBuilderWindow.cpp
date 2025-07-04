@@ -67,10 +67,6 @@ void ModuleBuilderWindow::drawMenubar()
             }
         }
 
-        // Add Pin
-        if (ImGui::MenuItem(ICON_FA_PLUS_CIRCLE))
-            m_editPin = m_module->addPhysicalPin();
-
         // Pin assignment defines
         if (ImGui::MenuItem("Save Defines")) {
             auto path = FileDialogs::SaveFile("h");
@@ -258,6 +254,12 @@ void ModuleBuilderWindow::drawModuleTable()
 
                 ImGui::PopID();
             }
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            if (ImGui::Button("Add Pin"))
+                m_editPin = m_module->addPhysicalPin();
+
             ImGui::EndTable();
         }
     }
