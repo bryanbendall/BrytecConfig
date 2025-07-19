@@ -16,11 +16,11 @@ BinaryDeserializer* BrytecBoard::getDeserializer()
     return &deserializer;
 }
 
-void BrytecBoard::preUpdate()
+void BrytecBoard::preUpdate(uint32_t timestepMs)
 {
 }
 
-void BrytecBoard::postUpdate()
+void BrytecBoard::postUpdate(uint32_t timestepMs)
 {
 }
 

@@ -1,5 +1,7 @@
 #include "NodeGroupWindow.h"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
+
 #include "AppManager.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryPathDeserializer.h"
 #include "data/Pin.h"
@@ -211,8 +213,8 @@ void NodeGroupWindow::drawNodeGroups()
 
 void NodeGroupWindow::handleDragDrop()
 {
-    ImGui::SetCursorPos(ImGui::GetCursorStartPos());
-    ImGui::Dummy(ImGui::GetContentRegionAvail());
+    ImGui::SetCursorPos(ImVec2(0.0f, ImGui::GetScrollY()));
+    ImGui::Dummy(ImGui::GetWindowContentRegionMax() + ImVec2(0.0f, ImGui::GetScrollY()));
 
     // Drop Node Group
     if (ImGui::BeginDragDropTarget()) {

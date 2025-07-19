@@ -332,8 +332,10 @@ void PropertiesWindow::drawPinProps(std::shared_ptr<Pin> pin)
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 ImGui::TableNextColumn();
-                if (ImGui::Button("Remove Node Group"))
+                if (ImGui::Button("Remove Node Group")) {
                     pin->setNodeGroup(nullptr);
+                    AppManager::getConfig()->updateAllInternalPins();
+                }
             }
 
             ImGui::EndTable();
