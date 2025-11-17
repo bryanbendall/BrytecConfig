@@ -27,6 +27,7 @@ public:
     void setWindow(GLFWwindow* window) { m_window = window; }
     bool isNodeWindowFocused() { return m_nodeWindow.getIsWindowFocused(); }
     void removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup);
+    void showClosePopup() { m_showClosePopup = true; }
 
 private:
     void drawMenu();
@@ -45,6 +46,7 @@ private:
     GraphWindow m_graphWindow;
     CommunicationModals m_communicationModals;
     const char* m_ini_to_load = NULL;
+    bool m_showClosePopup = false;
 
     friend class AppManager;
 };

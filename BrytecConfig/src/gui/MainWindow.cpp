@@ -140,6 +140,38 @@ void MainWindow::drawWindow()
 
     NotificationWindow::drawWindow();
 
+    if (m_showClosePopup)
+        ImGui::OpenPopup("Save Document?");
+
+    ImGui::SetNextWindowPos(ImGui::GetWindowViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("Save Document?", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings)) {
+
+        ImGui::TextWrapped("Would you like to save '%s'",
+            AppManager::getConfig()->getName().empty() ? "Untitled" : AppManager::getConfig()->getName().c_str());
+        ImGui::Spacing();
+        ImGui::Spacing();
+
+        ImVec2 buttonSize(100.0f, 0.0f);
+
+        if (ImGui::Button("Don't Save", buttonSize)) {
+            AppManager::closeWindow();
+        }
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", buttonSize)) {
+            m_showClosePopup = false;
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+
+        if (ImGui::Button("Save", buttonSize)) {
+            AppManager::saveConfig();
+            AppManager::closeWindow();
+        }
+
+        ImGui::EndPopup();
+    }
+
     // Clear drag type
     if (!ImGui::IsMouseDragging(0))
         AppManager::setDragType(IOTypes::Types::Undefined);

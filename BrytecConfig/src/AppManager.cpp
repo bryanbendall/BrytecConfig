@@ -330,13 +330,14 @@ void AppManager::saveAsConfig()
 
 void AppManager::exit()
 {
-    saveSettings();
+    glfwSetWindowShouldClose(s_data.GLFWWindow, GL_FALSE);
+    s_data.mainWindow->showClosePopup();
+}
 
-    // TODO
-    // Check should close
-    bool shouldClose = true;
-    if (shouldClose)
-        glfwSetWindowShouldClose(s_data.GLFWWindow, GL_TRUE);
+void AppManager::closeWindow()
+{
+    saveSettings();
+    glfwSetWindowShouldClose(s_data.GLFWWindow, GL_TRUE);
 }
 
 void AppManager::zoom(bool plus)

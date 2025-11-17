@@ -1,6 +1,7 @@
 #include "NodeUI.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Nodes/EChangeNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
 #include "BrytecConfigEmbedded/Nodes/EInterpolateNode.h"
@@ -303,8 +304,8 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
     }
 
     case NodeTypes::On_Off: {
-        UI::InputBool(node, 0, "On");
-        UI::InputBool(node, 1, "Off");
+        UI::InputOnly(node, 0, "On Trigger", Colors::NodeConnections::Trigger);
+        UI::InputOnly(node, 1, "Off Trigger", Colors::NodeConnections::Trigger);
         UI::Ouput(node, 0, "Output", Colors::NodeConnections::Boolean);
         break;
     }
@@ -1159,6 +1160,20 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
             UI::SameHeightText("Not in simulation!");
 
         UI::Ouput(node, 0, "Value");
+
+        break;
+    }
+
+    case NodeTypes::Change: {
+        static const char* s_changeNames[(int)ChangeType::Count] = {
+            "Rising",
+            "Falling",
+            "Both"
+        };
+        UI::InputOnly(node, 0, "Input");
+        UI::ValueCombo(node, 0, s_changeNames, (int)ChangeType::Count);
+        UI::ValueFloat(node, 1, "Threshold");
+        UI::Ouput(node, 0, "Trigger", Colors::NodeConnections::Trigger);
 
         break;
     }

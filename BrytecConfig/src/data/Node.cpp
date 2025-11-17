@@ -37,7 +37,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Mix Color",
     "Clamp",
     "Delta Time",
-    "Previous Value"
+    "Previous Value",
+    "Change"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -110,6 +111,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // On
         m_inputs.push_back(NodeConnection()); // Off
         m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Output value (simulation)
         break;
 
     case NodeTypes::Invert:
@@ -121,8 +123,8 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_inputs.push_back(NodeConnection()); // Input
         m_inputs.push_back(NodeConnection()); // Reset
         m_outputs.push_back(0.0f); // Output
-        m_values.push_back(0.0f); // Internal last input value
-        m_values.push_back(0.0f); // Internal last output value
+        m_values.push_back(0.0f); // Internal last input value (simulation)
+        m_values.push_back(0.0f); // Internal last output value (simulation)
         break;
 
     case NodeTypes::Delay:
@@ -215,7 +217,7 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_outputs.push_back(0.0f);
         m_values.push_back(0.0f); // Last up
         m_values.push_back(0.0f); // Last down
-        m_values.push_back(0.0f); // Output value
+        m_values.push_back(0.0f); // Output value (simulation)
         break;
 
     case NodeTypes::Color:
@@ -301,6 +303,14 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
 
     case NodeTypes::PreviousValue:
         m_outputs.push_back(0.0f); // Output
+        break;
+
+    case NodeTypes::Change:
+        m_inputs.push_back(0.0f); // Input
+        m_outputs.push_back(0.0f); // Output
+        m_values.push_back(0.0f); // Trigger type
+        m_values.push_back(0.5f); // Change threshold
+        m_values.push_back(std::numeric_limits<float>::max()); // Last input
         break;
 
     case NodeTypes::Count:

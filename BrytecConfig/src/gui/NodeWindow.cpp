@@ -175,12 +175,17 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
 
         if (ImGui::BeginMenu("Control")) {
             drawPopupMenuItem(nodeGroup, NodeTypes::Switch);
-            drawPopupMenuItem(nodeGroup, NodeTypes::On_Off);
             drawPopupMenuItem(nodeGroup, NodeTypes::Toggle);
             drawPopupMenuItem(nodeGroup, NodeTypes::Delay);
             drawPopupMenuItem(nodeGroup, NodeTypes::Two_Stage);
             drawPopupMenuItem(nodeGroup, NodeTypes::Counter);
             drawPopupMenuItem(nodeGroup, NodeTypes::PID);
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Trigger")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::Change);
+            drawPopupMenuItem(nodeGroup, NodeTypes::On_Off);
             ImGui::EndMenu();
         }
 
