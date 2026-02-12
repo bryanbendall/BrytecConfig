@@ -57,7 +57,14 @@ int main(int, char**)
     // Main loop
     while (!glfwWindowShouldClose(window)) {
 
-        glfwPollEvents();
+        switch (Brytec::AppManager::getUpdateMode()) {
+        case Brytec::UpdateMode::OnEvent:
+            glfwWaitEvents();
+            break;
+        case Brytec::UpdateMode::Constant:
+            glfwPollEvents();
+            break;
+        }
 
         Brytec::AppManager::preFrame();
 

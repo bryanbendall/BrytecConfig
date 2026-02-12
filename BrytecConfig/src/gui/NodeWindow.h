@@ -15,6 +15,12 @@ namespace Brytec {
 class NodeWindow {
 
 public:
+    enum class Mode {
+        Build,
+        Simulation
+    };
+
+public:
     NodeWindow();
     ~NodeWindow();
 
@@ -23,6 +29,7 @@ public:
     bool getOpenedState() { return m_opened; }
     bool getIsWindowFocused() { return m_isFocused; }
     void removeContext(std::shared_ptr<NodeGroup>& nodeGroup);
+    Mode getMode() { return m_mode; }
 
 private:
     void drawMenubar();
@@ -36,12 +43,6 @@ private:
     void saveNodePositions(std::shared_ptr<NodeGroup>& nodeGroup);
     void doValuePopup(std::shared_ptr<NodeGroup>& nodeGroup);
     ImNodesEditorContext* getContext(std::shared_ptr<NodeGroup>& nodeGroup);
-
-public:
-    enum class Mode {
-        Build,
-        Simulation
-    };
 
 private:
     bool m_opened = true;

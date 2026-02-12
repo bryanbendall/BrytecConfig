@@ -26,6 +26,7 @@ public:
     void drawWindow();
     void setWindow(GLFWwindow* window) { m_window = window; }
     bool isNodeWindowFocused() { return m_nodeWindow.getIsWindowFocused(); }
+    NodeWindow::Mode getNodeWindowMode() { return m_nodeWindow.getMode(); }
     void removeNodeGroupContext(std::shared_ptr<NodeGroup>& nodeGroup);
     void showClosePopup() { m_showClosePopup = true; }
 

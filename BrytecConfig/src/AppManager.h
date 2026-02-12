@@ -21,6 +21,11 @@ struct Version {
     const uint8_t Minor = 1;
 };
 
+enum class UpdateMode {
+    OnEvent,
+    Constant
+};
+
 class AppManager {
 
 public:
@@ -31,6 +36,8 @@ public:
     static void update();
 
     static Version getVersion();
+
+    static UpdateMode getUpdateMode();
 
     static std::shared_ptr<Config>& getConfig();
 
@@ -100,6 +107,7 @@ public:
 private:
     static void updateWindowTitle();
     static void handleKeyEvents();
+    static void setUpdateMode();
 
     static void save(std::shared_ptr<Config>& config);
 };

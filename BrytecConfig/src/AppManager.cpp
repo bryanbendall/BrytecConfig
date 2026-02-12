@@ -53,6 +53,7 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const serial::PortInfo& v)
 namespace Brytec {
 
 struct AppManagerData {
+    UpdateMode updateMode = UpdateMode::OnEvent;
     std::shared_ptr<Config> config;
     std::weak_ptr<Selectable> SelectedItem;
     GLFWwindow* GLFWWindow;
@@ -204,11 +205,18 @@ void AppManager::update()
     handleKeyEvents();
     s_data.usbManager.update();
     s_data.netManager.update();
+
+    setUpdateMode();
 }
 
 Version AppManager::getVersion()
 {
     return s_data.version;
+}
+
+UpdateMode AppManager::getUpdateMode()
+{
+    return s_data.updateMode;
 }
 
 std::shared_ptr<Config>& AppManager::getConfig()
@@ -505,6 +513,18 @@ void AppManager::handleKeyEvents()
         zoom(true);
     if (control && ImGui::IsKeyPressed(ImGuiKey_Minus, false))
         zoom(false);
+}
+
+void AppManager::setUpdateMode()
+{
+    NodeWindow::Mode mode = s_data.mainWindow->getNodeWindowMode();
+    bool netConnected = s_data.netManager.isOpen();
+    bool usbConnected = s_data.usbManager.isOpen();
+
+    if (mode == NodeWindow::Mode::Simulation || netConnected || usbConnected)
+        s_data.updateMode = UpdateMode::Constant;
+    else
+        s_data.updateMode = UpdateMode::OnEvent;
 }
 
 void AppManager::save(std::shared_ptr<Config>& config)
