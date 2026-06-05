@@ -443,10 +443,10 @@ void AppManager::openBrowser(const std::string& url)
     std::system(("start " + url).c_str());
 
 #elif defined(__APPLE__) && TARGET_OS_MAC
-    std::system(("open " + URL + " &").c_str());
+    std::system(("open " + url + " &").c_str());
 
 #else
-    std::system(("xdg-open " + URL + " &").c_str());
+    std::system(("xdg-open " + url + " &").c_str());
 #endif
 }
 

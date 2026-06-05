@@ -3,6 +3,7 @@
 #include "BrytecConfigEmbedded/Can/EBrytecCan.h"
 #include "BrytecConfigEmbedded/Deserializer/BinaryDeserializer.h"
 #include "BrytecConfigEmbedded/Usb/UsbDefs.h"
+#include <algorithm>
 #include <chrono>
 #include <exception>
 #include <iostream>
@@ -24,18 +25,18 @@ static UsbPacket getPacket(std::vector<uint8_t>& data)
     if (data.size() >= 2)
         packet.length = data[1];
     else
-        return UsbPacket {};
+        return UsbPacket { };
 
     if (packet.length > 64) {
         // Something wrong with packet, delete it and try again
         data.erase(data.begin());
-        return UsbPacket {};
+        return UsbPacket { };
     }
 
     if (data.size() >= packet.length + 2)
         memcpy(packet.data, &data[2], packet.length);
     else
-        return UsbPacket {};
+        return UsbPacket { };
 
     data.erase(data.begin(), data.begin() + packet.length + 2);
     return packet;

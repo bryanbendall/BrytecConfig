@@ -1,5 +1,7 @@
 #include "ModuleDebug.h"
 
+#include <cstdint>
+
 namespace Brytec {
 
 static ImGuiTextBuffer m_log;

@@ -83,6 +83,11 @@ target_include_directories(BrytecConfig PUBLIC
                            "vendor/serial/include"
                            )
 
+if(UNIX)
+    set(GLFW_BUILD_WAYLAND ON)
+    set(GLFW_BUILD_X11 OFF)
+endif()
+
 set(BrytecCustomConfigDir ${CMAKE_CURRENT_SOURCE_DIR}/src)
 add_subdirectory(src/BrytecConfigEmbedded)
 add_subdirectory(vendor/yaml-cpp)
