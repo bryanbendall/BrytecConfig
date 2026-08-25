@@ -117,6 +117,9 @@ void SettingsWindow::drawWindow()
 
         if (ImGui::BeginCombo("##Serial Port", displayText.c_str())) {
             for (auto& device : availablePorts) {
+                if (device.description.find("ttyS") != std::string::npos)
+                    continue;
+
                 if (ImGui::Selectable(device.description.c_str(), device.description == displayText)) {
                     AppManager::getUsbManager().setDevice(device);
                 }

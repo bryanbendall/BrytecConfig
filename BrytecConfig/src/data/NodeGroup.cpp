@@ -115,7 +115,7 @@ void NodeGroup::sortNodes()
 
     traverseConnections(lastNode, newDeque, loopCheck);
 
-    //add remaining nodes at begining
+    // add remaining nodes at begining
     for (auto n : m_nodes) {
         newDeque.push_front(n);
     }

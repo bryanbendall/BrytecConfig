@@ -37,7 +37,7 @@ void MonitorWindow::drawWindow()
     if (ImGui::Button("Update##Modules")) {
         AppManager::getCanBusStream().getModuleStatuses().clear();
         AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
-        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
     }
     ImGui::EndDisabled();
 
@@ -60,7 +60,7 @@ void MonitorWindow::drawWindow()
             auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
             auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
             AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr, true);
-            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
         }
     }
     ImGui::EndDisabled();
@@ -74,7 +74,7 @@ void MonitorWindow::drawWindow()
             auto moduleAddr = AppManager::getConfig()->getAssignedModuleAddress(nodeGroup);
             auto pinAddr = AppManager::getConfig()->getAssignedPinAddress(nodeGroup);
             AppManager::getCanBusStream().requestNodeGroupStatus(moduleAddr, pinAddr, false);
-            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+            AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
         }
     }
     ImGui::EndDisabled();
@@ -180,15 +180,15 @@ void MonitorWindow::drawWindow()
         ImGui::TableSetupScrollFreeze(0, 1); // Make row always visible
         ImGui::TableHeadersRow();
 
+        // Copy so we can sort without updates in between
+        std::vector<PinStatusBroadcast> pinStatuses = AppManager::getCanBusStream().getNodeGroupStatuses();
         {
             // Sort
-            std::vector<PinStatusBroadcast>& vec = AppManager::getCanBusStream().getNodeGroupStatuses();
-
             ImGuiTableSortSpecs* sortSpec = ImGui::TableGetSortSpecs();
             bool decending = sortSpec->Specs->SortDirection == ImGuiSortDirection_Descending;
             switch (sortSpec->Specs->ColumnIndex) {
             case 0: // name
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.nodeGroupIndex > b.nodeGroupIndex;
                     else
@@ -196,7 +196,7 @@ void MonitorWindow::drawWindow()
                 });
                 break;
             case 1: // value
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.value > b.value;
                     else
@@ -204,7 +204,7 @@ void MonitorWindow::drawWindow()
                 });
                 break;
             case 2: // statusFlags
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.statusFlags > b.statusFlags;
                     else
@@ -212,7 +212,7 @@ void MonitorWindow::drawWindow()
                 });
                 break;
             case 3: // current
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.current > b.current;
                     else
@@ -220,7 +220,7 @@ void MonitorWindow::drawWindow()
                 });
                 break;
             case 4: // voltage
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.voltage > b.voltage;
                     else
@@ -228,7 +228,7 @@ void MonitorWindow::drawWindow()
                 });
                 break;
             case 5: // module
-                std::sort(vec.begin(), vec.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
+                std::sort(pinStatuses.begin(), pinStatuses.end(), [decending](PinStatusBroadcast a, PinStatusBroadcast b) {
                     if (decending)
                         return a.moduleAddress > b.moduleAddress;
                     else
@@ -238,7 +238,7 @@ void MonitorWindow::drawWindow()
             }
         }
 
-        for (auto& pinStatus : AppManager::getCanBusStream().getNodeGroupStatuses()) {
+        for (auto& pinStatus : pinStatuses) {
 
             std::shared_ptr<Module> module = AppManager::getConfig()->findModule(pinStatus.moduleAddress);
             std::shared_ptr<NodeGroup> nodeGroup = nullptr;

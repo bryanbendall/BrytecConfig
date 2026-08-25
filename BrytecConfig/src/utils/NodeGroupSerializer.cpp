@@ -59,6 +59,7 @@ BinarySerializer NodeGroupSerializer::serializeBinary()
         // Node Group reference (special case for NodeGroup Node)
         if (node->getType() == NodeTypes::Node_Group) {
             ser.writeRaw<uint64_t>(node->getSelectedNodeGroup());
+            // TODO remove module address and pin index from serialization
             std::shared_ptr<NodeGroup> selectedNodeGroup = AppManager::getConfig()->findNodeGroup(node->getSelectedNodeGroup());
             if (selectedNodeGroup) {
                 ser.writeRaw<uint8_t>(AppManager::getConfig()->getAssignedModuleAddress(selectedNodeGroup)); // Module address
