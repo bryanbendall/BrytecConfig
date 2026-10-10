@@ -76,6 +76,8 @@ public:
 
     unsigned int getBytesSize();
 
+    bool& getGraphOpen() { return m_graphOpen; }
+
 private:
     bool hasConnection(int inputIndex);
 
@@ -93,6 +95,6 @@ protected:
     std::vector<float> m_values;
     bool m_loopFound = false;
     UUID m_selectedNodeGroup = 0;
+    bool m_graphOpen = false;
 };
-
 }

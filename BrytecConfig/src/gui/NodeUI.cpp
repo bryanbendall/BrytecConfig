@@ -1,6 +1,7 @@
 #include "NodeUI.h"
 
 #include "AppManager.h"
+#include "BrytecConfigEmbedded/Nodes/E1DMap.h"
 #include "BrytecConfigEmbedded/Nodes/EChangeNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECompareNode.h"
 #include "BrytecConfigEmbedded/Nodes/ECurveNode.h"
@@ -12,6 +13,7 @@
 #include <bitset>
 #include <imgui_internal.h>
 #include <imnodes.h>
+#include <implot.h>
 #include <iomanip>
 #include <iostream>
 #include <misc/cpp/imgui_stdlib.h>
@@ -1174,6 +1176,70 @@ void NodeUI::drawNode(std::shared_ptr<Node> node, NodeWindow::Mode& mode, std::w
         UI::ValueCombo(node, 0, s_changeNames, (int)ChangeType::Count);
         UI::ValueFloat(node, 1, "Threshold");
         UI::Ouput(node, 0, "Trigger", Colors::NodeConnections::Trigger);
+
+        break;
+    }
+
+    case NodeTypes::OneDMap: {
+        UI::InputFloat(node, 0, "Input");
+
+        bool& plotOpen = node->getGraphOpen();
+
+        if (ImGui::Button("Map", ImVec2(nodeWidth, 0)))
+            plotOpen = !plotOpen;
+
+        if (plotOpen) {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(6, 6));
+            ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_Appearing);
+
+            std::string windowName = "1DMap###" + std::to_string((u_int64_t)node.get());
+            if (ImGui::Begin(windowName.c_str(), &plotOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse)) {
+
+                for (int i = 0; i < EOneDMapSize; i++) {
+                    ImGui::PushID(i);
+                    ImGui::PushItemWidth(60.0f);
+                    ImGui::DragFloat("##input", &node->getValue(i));
+                    ImGui::PopItemWidth();
+                    ImGui::SameLine();
+                    ImGui::PopID();
+                }
+                ImGui::Text("Input");
+
+                for (int i = 0; i < EOneDMapSize; i++) {
+                    ImGui::PushID(i + EOneDMapSize);
+                    ImGui::PushItemWidth(60.0f);
+                    ImGui::DragFloat("##output", &node->getValue(i + EOneDMapSize));
+                    ImGui::PopItemWidth();
+                    ImGui::SameLine();
+                    ImGui::PopID();
+                }
+                ImGui::Text("Output");
+
+                ImPlot::GetStyle().Marker = ImPlotMarker_Circle;
+                ImPlot::GetStyle().MarkerSize = 3.0f;
+
+                if (ImPlot::BeginPlot("Plot", ImVec2(-1, 0), ImPlotFlags_NoLegend)) {
+
+                    ImPlot::SetupAxes("Input", "Output", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+
+                    // Plot line
+                    ImPlot::PlotLine("Line", &node->getValue(0), &node->getValue(EOneDMapSize), EOneDMapSize);
+
+                    if (mode == NodeWindow::Mode::Simulation) {
+
+                        // Plot current simulation
+                        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, 10.0f);
+                        ImPlot::PlotScatter("Scat", &node->getInputValue(0), &node->getOutput(0), 1);
+                    }
+
+                    ImPlot::EndPlot();
+                }
+            }
+            ImGui::End();
+            ImGui::PopStyleVar();
+        }
+
+        UI::Ouput(node, 0, "Value", Colors::NodeConnections::AnyValue);
 
         break;
     }

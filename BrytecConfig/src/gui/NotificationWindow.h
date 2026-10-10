@@ -22,6 +22,9 @@ struct Notification {
     std::string text = "";
     NotificationType type = NotificationType::None;
     float timeout = 3.0f;
+
+    // Set when added
+    float totalTime = 0.0f;
 };
 
 class NotificationWindow {

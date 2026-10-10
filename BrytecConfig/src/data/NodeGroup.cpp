@@ -175,6 +175,9 @@ void NodeGroup::evaluateAllNodes()
         auto node = m_nodes[index];
         auto eNode = EBrytecApp::getNode(index);
 
+        if (!eNode)
+            return;
+
         // Outputs
         for (int i = 0; i < node->getOutputs().size(); i++)
             node->getOutput(i) = *(eNode->GetOutput(i));

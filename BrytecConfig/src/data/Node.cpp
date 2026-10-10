@@ -1,5 +1,7 @@
 #include "Node.h"
+#include "BrytecConfigEmbedded/Nodes/E1DMap.h"
 #include "NodeGroup.h"
+#include "gui/NotificationWindow.h"
 #include <iostream>
 
 namespace Brytec {
@@ -38,7 +40,8 @@ const char* Node::s_nodeName[(int)NodeTypes::Count] = {
     "Clamp",
     "Delta Time",
     "Previous Value",
-    "Change"
+    "Change",
+    "1D Map"
 };
 
 Node::Node(int id, ImVec2 position, NodeTypes type)
@@ -313,10 +316,29 @@ Node::Node(int id, ImVec2 position, NodeTypes type)
         m_values.push_back(std::numeric_limits<float>::max()); // Last input
         break;
 
+    case NodeTypes::OneDMap:
+        m_inputs.push_back(0.0f); // Input
+        for (int i = 0; i < EOneDMapSize * 2; i++) // Values inputMap and outputMap
+            m_values.push_back(i);
+        m_outputs.push_back(0.0f); // Output
+        break;
+
     case NodeTypes::Count:
     default:
         assert(false);
         break;
+    }
+
+    // Check inputs and values spec sizes
+    if (m_inputs.size() > ENodeSpec::maxConnections) {
+        std::string msg = "To many max inputs for node - " + (std::string)s_nodeName[(int)type];
+        std::cout << msg << std::endl;
+        NotificationWindow::add({ msg, NotificationType::Error });
+    }
+    if (m_values.size() > ENodeSpec::maxValues) {
+        std::string msg = "To many max values for node - " + (std::string)s_nodeName[(int)type];
+        std::cout << msg << std::endl;
+        NotificationWindow::add({ msg, NotificationType::Error });
     }
 }
 

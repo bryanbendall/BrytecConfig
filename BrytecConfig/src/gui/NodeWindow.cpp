@@ -222,6 +222,11 @@ void NodeWindow::drawPopupMenu(std::shared_ptr<NodeGroup>& nodeGroup)
             ImGui::EndMenu();
         }
 
+        if (ImGui::BeginMenu("Maps")) {
+            drawPopupMenuItem(nodeGroup, NodeTypes::OneDMap);
+            ImGui::EndMenu();
+        }
+
         if (ImGui::BeginMenu("Special")) {
             drawPopupMenuItem(nodeGroup, NodeTypes::Thermistor);
             ImGui::EndMenu();

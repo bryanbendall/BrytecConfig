@@ -24,7 +24,7 @@ void NotificationWindow::drawWindow()
         }),
         s_notifications.end());
 
-    const auto vp_size = ImGui::GetMainViewport()->Size;
+    const auto vpSize = ImGui::GetMainViewport()->Size;
 
     float accumulatedHeight = 0.0f;
 
@@ -35,7 +35,6 @@ void NotificationWindow::drawWindow()
 
         Notification& notification = s_notifications[i];
 
-        ImVec4 textCol = ImGui::GetStyleColorVec4(ImGuiCol_Text);
         ImVec4 iconCol;
         std::string iconText = "";
         switch (notification.type) {
@@ -57,37 +56,51 @@ void NotificationWindow::drawWindow()
             break;
         }
 
-        ImGui::SetNextWindowPos(ImVec2(vp_size.x - s_padding, vp_size.y - s_padding - accumulatedHeight), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
-        if (notification.timeout < 0.5f) {
-            ImGui::SetNextWindowBgAlpha(notification.timeout * 2.0f);
-            textCol.w = notification.timeout * 2.0f;
-            iconCol.w = notification.timeout * 2.0f;
-        }
+        if (accumulatedHeight > vpSize.y)
+            return;
 
-        char window_name[50];
-        sprintf(window_name, "##Notification%d", i);
+        ImGui::SetNextWindowPos(ImVec2(vpSize.x - s_padding, vpSize.y - s_padding - accumulatedHeight), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
+
+        // Fade out
+        float alpha = 1.0f;
+        static constexpr float fadeTime = 0.1f;
+        if (notification.timeout < fadeTime)
+            alpha = notification.timeout / fadeTime;
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
 
         // Round borders
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.f);
 
-        ImGui::Begin(window_name, NULL, flags);
+        char windowName[50];
+        sprintf(windowName, "##Notification%d", i);
+        ImGui::Begin(windowName, NULL, flags);
 
         // Wrap the text after 1/3 of the screen width
-        ImGui::PushTextWrapPos(vp_size.x / 3.0f);
+        ImGui::PushTextWrapPos(vpSize.x / 3.0f);
 
         if (iconText != "") {
             ImGui::TextColored(iconCol, "%s", iconText.c_str());
             ImGui::SameLine();
         }
 
-        ImGui::TextColored(textCol, "%s", notification.text.c_str());
+        ImGui::Text("%s", notification.text.c_str());
 
         ImGui::PopTextWrapPos();
+
+        {
+            ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
+
+            float progress = notification.timeout / notification.totalTime;
+            ImGui::ProgressBar(progress, ImVec2(0.0f, 3.0f), "");
+
+            ImGui::PopStyleColor();
+        }
 
         accumulatedHeight += ImGui::GetWindowHeight() + s_spacing;
 
         ImGui::End();
 
+        ImGui::PopStyleVar();
         ImGui::PopStyleVar();
     }
 }
@@ -95,6 +108,6 @@ void NotificationWindow::drawWindow()
 void NotificationWindow::add(const Notification& notification)
 {
     s_notifications.push_back(notification);
+    s_notifications.back().totalTime = s_notifications.back().timeout;
 }
-
 }

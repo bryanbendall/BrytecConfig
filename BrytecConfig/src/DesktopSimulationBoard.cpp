@@ -54,6 +54,12 @@ void BrytecBoard::error(EBrytecErrors error)
     case EBrytecErrors::CanBufferFull:
         std::cout << "Can Buffer Full" << std::endl;
         break;
+    case EBrytecErrors::SpecToManyInputs:
+        std::cout << "Spec - To Many Inputs" << std::endl;
+        break;
+    case EBrytecErrors::SpecToManyValues:
+        std::cout << "Spec - To Many Values" << std::endl;
+        break;
 
     default:
         std::cout << "Unknown Error" << std::endl;
