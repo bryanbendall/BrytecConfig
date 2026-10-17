@@ -6,6 +6,7 @@
 #include "data/InternalPin.h"
 #include "data/PhysicalPin.h"
 #include "utils/ModuleSerializer.h"
+#include <IconsFontAwesome5.h>
 #include <imgui.h>
 
 namespace Brytec {
@@ -15,7 +16,7 @@ void CommunicationModals::open()
     m_open = true;
     AppManager::getCanBusStream().getModuleStatuses().clear();
     AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
-    AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+    AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
 }
 
 void CommunicationModals::draw()
@@ -51,7 +52,14 @@ void CommunicationModals::drawTable()
     static ImGuiTableFlags flags = ImGuiTableFlags_Sortable | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter
         | ImGuiTableFlags_BordersV | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_ScrollY;
 
+    ImGui::AlignTextToFramePadding();
     ImGui::TextUnformatted("Modules");
+    ImGui::SameLine();
+    if (ImGui::Button(ICON_FA_SYNC)) {
+        AppManager::getCanBusStream().getModuleStatuses().clear();
+        AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
+        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
+    }
 
     if (ImGui::BeginTable("Modules", 4, flags, ImVec2(tableWidth, 300.0f))) {
 
@@ -150,6 +158,7 @@ void CommunicationModals::drawModuleCommands()
     if (ImGui::Button("Set Stopped")) {
         AppManager::getCanBusStream().changeMode(m_selectedModuleAddr, EBrytecApp::Mode::Stopped);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        m_currentCommand = "Set Stopped";
     }
 
     ImGui::SameLine();
@@ -157,6 +166,7 @@ void CommunicationModals::drawModuleCommands()
     if (ImGui::Button("Set Normal")) {
         AppManager::getCanBusStream().changeMode(m_selectedModuleAddr, EBrytecApp::Mode::Normal);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        m_currentCommand = "Set Normal";
     }
 
     ImGui::SameLine();
@@ -164,6 +174,7 @@ void CommunicationModals::drawModuleCommands()
     if (ImGui::Button("Reload")) {
         AppManager::getCanBusStream().reloadConfig(m_selectedModuleAddr);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        m_currentCommand = "Reload";
     }
 
     ImGui::SameLine();
@@ -216,6 +227,7 @@ void CommunicationModals::drawModuleCommands()
         if (ImGui::Button("Ok", { 120, 0 })) {
             AppManager::getCanBusStream().changeAddress(m_selectedModuleAddr, m_newAddress);
             AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+            m_currentCommand = "Change Address";
 
             if (module && m_changeModuleAddress)
                 module->setAddress(m_newAddress);
@@ -248,6 +260,7 @@ void CommunicationModals::drawSendReceive()
             },
             false);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        m_currentCommand = "Get Module Template";
     }
 
     ImGui::EndDisabled();
@@ -288,6 +301,7 @@ void CommunicationModals::drawSendReceive()
             },
             true);
         AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+        m_currentCommand = "Get From Module";
     }
 
     ImGui::EndDisabled();
@@ -309,6 +323,7 @@ void CommunicationModals::drawSendReceive()
             BinarySerializer ser = moduleSer.serializeBinary();
             AppManager::getCanBusStream().sendNewConfig(module->getAddress(), ser.getData());
             AppManager::getCanBusStream().send(std::bind(&CommunicationModals::callback, this, std::placeholders::_1));
+            m_currentCommand = "Send To Module";
         }
     }
 
@@ -324,6 +339,10 @@ void CommunicationModals::drawSendReceive()
 
 void CommunicationModals::drawProgressBar()
 {
+    ImGui::Separator();
+
+    ImGui::TextUnformatted(m_currentCommand.c_str());
+
     if (!m_callbackData.error)
         ImGui::ProgressBar((float)(m_callbackData.total - m_callbackData.leftToSend) / (float)m_callbackData.total);
     else
@@ -345,7 +364,7 @@ void CommunicationModals::callback(CanBusStreamCallbackData data)
     if (m_callbackData.leftToSend == 0) {
         AppManager::getCanBusStream().getModuleStatuses().clear();
         AppManager::getCanBusStream().requestModuleStatus(CanCommands::AllModules);
-        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) {});
+        AppManager::getCanBusStream().send([](CanBusStreamCallbackData data) { });
     }
 }
 }

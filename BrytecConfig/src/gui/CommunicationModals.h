@@ -23,6 +23,7 @@ private:
     uint8_t m_selectedModuleAddr = CanCommands::AllModules;
     uint8_t m_newAddress = 1;
     bool m_changeModuleAddress = true;
-    CanBusStreamCallbackData m_callbackData = {};
+    CanBusStreamCallbackData m_callbackData = { };
+    std::string m_currentCommand;
 };
 }
